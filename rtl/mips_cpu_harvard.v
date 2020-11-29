@@ -21,9 +21,10 @@ module mips_cpu_harvard(
 );
 
 //Control Flags
-logic Jump, Branch, MemtoReg, ALUSrc, ALUZero, RegWrite;
+logic Jump, Branch, ALUSrc, ALUZero, RegWrite;
 logic[5:0] ALUOp = instr_readdata[31:26];
 logic[999999999999999999999999999999999999999999999999999999999999999999:0] ALUFlags;
+logic[1:0] RegDst, MemtoReg;
 
 //PC wires
 logic[31:0] pc_curr;
@@ -38,7 +39,7 @@ assign instr_address = pc_curr;
 logic[5:0] opcode = instr_readdata[31:26];
 logic[4:0] rs = instr_readdata[25:21];
 logic[4:0] rt = instr_readdata[20:16];
-logic[4:0] rd = RegDst ? instr_readdata[15:11] : instr_readdata[20:16];
+logic[4:0] rd = RegDst==2'b10 ? 5'b11111 : RegDst==2'b01 ? instr_readdata[15:11] : instr_readdata[20:16];
 logic[15:0] immediate = instr_readdata[15:0];
 
 //ALU Data
@@ -51,7 +52,7 @@ assign data_address = ALUOut; //address to be written to comes from ALU
 assign data_writedata = read_data2; //data to be written comes from reg read bus 2
 
 //Writeback logic
-logic[31:0] writeback = MemtoReg ? data_readdata : ALUOut;
+logic[31:0] writeback = MemtoReg==2'b10 ? {pc_curr+4} : MemtoReg==2'b01 ? data_readdata : ALUOut;
 
 pc pc(
 .clk(clk),
@@ -67,7 +68,8 @@ control control( //control flags block
 .memtoreg(MemtoReg), //0: writeback = ALUout, 1: writeback = data_readdata
 .memwrite(data_write), //tells data memory to store data_writedata at data_writeaddress
 .alusrc(ALUSrc), //0: ALUin2 = read_data2, 1: ALUin2 = signextended(instr_readdata[15:0])
-.regwrite(RegWrite) //tells register file to write writeback to rd
+.regwrite(RegWrite), //tells register file to write writeback to rd
+.regdst(RegDst) //select Rt, Rd or $ra to store to
 );
 
 regfile regfile(
