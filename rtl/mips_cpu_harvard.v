@@ -81,7 +81,8 @@ regfile regfile(
 .writedata(writeback),
 .regwrite(RegWrite),
 .readdata1(read_data1),
-.readdata2(read_data2)
+.readdata2(read_data2),
+.regv0(register_v0) //debug output of $v0 or $2 (first register for returning function results
 );
 
 alucontrol alucontrol(
