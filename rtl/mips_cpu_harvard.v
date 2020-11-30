@@ -40,7 +40,8 @@ logic[5:0] opcode = instr_readdata[31:26];
 logic[4:0] rs = instr_readdata[25:21];
 logic[4:0] rt = instr_readdata[20:16];
 logic[4:0] rd = RegDst==2'b10 ? 5'b11111 : RegDst==2'b01 ? instr_readdata[15:11] : instr_readdata[20:16];
-logic[15:0] immediate = instr_readdata[15:0];
+logic[10:6] shamt = instr_readdata[10:6]; // Shamt needed for the sll instruction
+
 
 //ALU Data
 logic[31:0] alu_in1 = read_data1;
