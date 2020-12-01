@@ -75,6 +75,7 @@ control control( //control flags block
 );
 
 regfile regfile(
+.clk(clk), //clock input for triggering write port
 .readreg1(rs),
 .readreg2(rt),
 .writereg(rd),
