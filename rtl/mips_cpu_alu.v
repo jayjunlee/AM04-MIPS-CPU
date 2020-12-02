@@ -173,10 +173,10 @@ module mips_cpu_alu(
 
       BNE: begin
           if A<=0 begin
-            ALUOut = 0;
+            Cond = 1;
           end
           else begin
-            ALUOut = ALUOut;
+            Cond = 0;
           end
       end
 
