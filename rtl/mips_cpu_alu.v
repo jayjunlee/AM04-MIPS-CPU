@@ -5,7 +5,7 @@ module mips_cpu_alu(
 
     /*  The ALU Flags is 6 bits for now update when reduced */
 
-  output logic ALUZero, //Is the output of the ALU 0? - used to check result
+  output logic Cond, //IF condition is met Cond is asserted
 
   output logic[31:0] ALUOut, // The ouput of the ALU 
   
@@ -36,10 +36,6 @@ module mips_cpu_alu(
         //BNE = 6'd11,    //Branch on not equal
         //DIV = 6'd12, 	//Divide
         //DIVU = 6'd13, 	//Divide unsigned
-        J = 6'd14, 	    //Jump
-        JALR = 6'd15, 	//Jump and link register
-        JAL = 6'd16, 	//Jump and link
-        JR = 6'd17, 	//Jump register
         //LB = 6'd18, 	//Load byte
         //LBU = 6'd19,   	//Load byte unsigned
         //LH = 6'd20, 	//Load half-word
@@ -79,7 +75,7 @@ module mips_cpu_alu(
 
   } ALUFlags;
 
-  always @(A,B, ALUFlags)
+  always_comb
   begin
 
   SignExtend = {{16{immediate[15]}}, immediate};
@@ -130,13 +126,13 @@ module mips_cpu_alu(
       AND: begin
           ALUOut = A & B;
       end
-      
+  //kjfdhlkjsfhlsajdflskajflsjflskjf;lksjf;jsf;kl    
       BEQ: begin
           if A == B begin
-              ALUOut = 0;
+            Cond = 1;
           end
           else begin
-            ALUOut = ALUOut;
+            Cond = 0;
           end
           
       end
@@ -239,15 +235,7 @@ module mips_cpu_alu(
     endcase
   end
 	
-  always @(ALUOut) begin
-		if (ALUOut == 0) begin
-			ALUZero <= 1;
-		end else begin
-			ALUZero <= 0;
-		end
 	
-	end
-	end
 
 
 endmodule
