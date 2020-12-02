@@ -46,18 +46,31 @@ Memtoreg:
 /*
 Aluop:
 0: r-type instructions
-1: <0
+1: <0 
+   -BLTZAL BLTZ
 2: >=0
+   -BGEZAL BGEZ
 3: =0
+   -BEQ
 4: =/=0
+   -BNE
 5: <=0
+   -BLEZ
 6: >0
+   -BGTZ
 7: add
+   -ADDIU
+   -all load and store instructions
 8: slt (signed)
+   -STLI
 9: slt (unsigned)
+   -STLIU
 10: and
+    -ANDI
 11: or
+    -ORI
 12: xor
+    -XORI
 */
 
 //Commented signals represents dont care(x)
