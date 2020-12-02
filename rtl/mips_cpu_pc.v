@@ -1,43 +1,25 @@
-module ProgramCounter(
+module pc(
+input logic clk,
+input logic rst,
+input logic[31:0] pc_in,
+output logic[31:0] pc_out
+);
 
-	input logic			rst, 
-	input logic			clk, 
-	
-	input logic[31:0]	pcWriteAddr,
-	input logic			pcWriteEn,
+reg[31:0] pc_curr;
 
-	output logic[31:0]  pcRes,
+initial begin
+	pc_curr = 32'hBFC00000;
+end : initial
 
-	);
-
-	logic[31:0] pcIncr;
-
-	initial begin
-	
-		pcRes <= 32'h00000000;
+always_comb begin
+	if (rst) begin
+		pc_curr = 32'hBFC00000;
 	end
+	pc_out = pc_curr;
+end
 
-	always_comb begin
-		pcIncr = pcRes + 32'h00000004
-	end
+always_ff @(posedge clk) begin
+	pc_curr <= pc_in;
+end
 
-    always @(posedge clk)
-    begin
-    	if (rst == 1)
-    	begin
-    		pcRes <= 32'h00000000;
-    	end
-    	else
-    	begin
-			if (pcWriteEn == 1) begin
-				pcRes <= pcWriteAddr;
-			end
-			else begin
-				pcRes <= pcIncr;
-			end
-    	end
-
-		$display("pc = %h",pcRes);
-    end
-
-endmodule
+endmodule : pc

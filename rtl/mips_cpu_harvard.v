@@ -33,7 +33,7 @@ logic[31:0] Jump_addr = {{pc_curr+4}[31:28], instr_readdata[25:0], 2'b00};
 logic PCSrc = Branch && ALUZero;
 
 //Instruction MEM
-assign instr_address = pc_curr;
+assign instr_address = pc_delay;
 
 //deconstruction of instruction :)
 logic[5:0] opcode = instr_readdata[31:26];
@@ -56,8 +56,13 @@ assign data_writedata = read_data2; //data to be written comes from reg read bus
 //Writeback logic
 logic[31:0] writeback = MemtoReg==2'b10 ? {pc_curr+4} : MemtoReg==2'b01 ? data_readdata : ALUOut;
 
+always_ff @(posedge clk) begin
+    pc_delay <= pc_curr;
+end
+
 pc pc(
 .clk(clk),
+.rst(reset),
 .pc_in(pc_next),
 .pc_out(pc_curr)
 );
