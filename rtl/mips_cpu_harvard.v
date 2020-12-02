@@ -76,13 +76,14 @@ control control( //control flags block
 
 regfile regfile(
 .clk(clk), //clock input for triggering write port
-.readreg1(rs),
-.readreg2(rt),
-.writereg(rd),
-.writedata(writeback),
-.regwrite(RegWrite),
-.readdata1(read_data1),
-.readdata2(read_data2),
+.readreg1(rs), //read port 1 selector
+.readreg2(rt), //read port 2 selector
+.writereg(rd), //write port selector
+.writedata(writeback), //write port input data
+.regwrite(RegWrite), //enable line for write port
+.opcode(opcode), //opcode input for controlling partial load weirdness
+.readdata1(read_data1), //read port 1 output
+.readdata2(read_data2), //read port 2 output
 .regv0(register_v0) //debug output of $v0 or $2 (first register for returning function results
 );
 
