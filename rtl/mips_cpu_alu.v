@@ -13,7 +13,7 @@ module mips_cpu_alu(
 
   reg [31:0] SignExtend, ZeroExtend;
 
-  input logic[10:6] shamt = instr_readdata[10:6];
+  input logic[10:6] shamt = instr_readdata[10:6]
 
 );
 
@@ -73,168 +73,180 @@ module mips_cpu_alu(
 
 /* This is how I believe our ctrl flags should be arranged */
 
-    typedef enum logic [6:0]{
+  typedef enum logic [6:0]{
 
 
-    } ALUFlags;
+  } ALUFlags;
 
-    always @(alu_in1, alu_in2, ALUFlags)
-    begin
+  always @(A,B, ALUFlags)
+  begin
 
-	SignExtend = {{16{immediate[15]}}, immediate};
-	ZeroExtend = {{16{1'b0}}, immediate};
+  SignExtend = {{16{immediate[15]}}, immediate};
+  ZeroExtend = {{16{1'b0}}, immediate};
 
-      case(ALUFlags)
-        ADD: begin
-            ALUOut = A + B; // is it = or <= ??
-        end
-        
-        SUB: begin
-            ALUOut = A - B; 
-        end        
+    case(ALUFlags)
+      ADD: begin
+          ALUOut = A + B; // is it = or <= ??
+      end
+      
+      SUB: begin
+          ALUOut = A - B; 
+      end        
 
-        MULT: begin
-            ALUOut = A * B; 
-        end
+      MULT: begin
+          ALUOut = A * B; 
+      end
 
-        DIV: begin
-            ALUOut = A / B;
-        end
+      DIV: begin
+          ALUOut = A / B;
+      end
 
 
-        XOR: begin
-            ALUOut = A^B;
-        end
+      XOR: begin
+          ALUOut = A^B;
+      end
 
-        OR: begin
-            ALUOut = A | B;
-        end
-       
-        SLL: begin
-            ALUOut = B << shamt //Shamt is instruction read data [10:6]
-        end
+      OR: begin
+          ALUOut = A | B;
+      end
+      
+      SLL: begin
+          ALUOut = B << shamt //Shamt is instruction read data [10:6]
+      end
 
-        SRL: begin
-            ALUOut = B >> shamt //Shamt is instruction read data [10:6]
-        end        
+      SRL: begin
+          ALUOut = B >> shamt //Shamt is instruction read data [10:6]
+      end        
 
-        SLLV: begin
-            ALUOut = B << A
-        end
+      SLLV: begin
+          ALUOut = B << A
+      end
 
-        SRLV: begin
-            ALUOut = B >> A
-        end     
+      SRLV: begin
+          ALUOut = B >> A
+      end     
 
-        AND: begin
-            ALUOut = A & B;
-        end
-        
-        BEQ: begin
-            if A = B begin
-                ALUOut = 0;
-            end
-            else begin
-              ALUOut;
-            end
-            
-        end
-
-        BGEZ: begin
-            if A>=0 begin
+      AND: begin
+          ALUOut = A & B;
+      end
+      
+      BEQ: begin
+          if A = B begin
               ALUOut = 0;
-            end
-            else begin
-              ALUOut;
-            end
-        end
+          end
+          else begin
+            ALUOut;
+          end
+          
+      end
 
-        BGEZAL: begin
-            if A>=0 begin
-              ALUOut = 0;
-            end
-            else begin
-              ALUOut;
-            end
-        end
+      BGEZ: begin
+          if A>=0 begin
+            ALUOut = 0;
+          end
+          else begin
+            ALUOut;
+          end
+      end
 
-        BGTZ: begin
-            if A>0 begin
-              ALUOut = 0;
-            end
-            else begin
-              AlUOut;
-            end
-        end
+      BGEZAL: begin
+          if A>=0 begin
+            ALUOut = 0;
+          end
+          else begin
+            ALUOut;
+          end
+      end
 
-
-        BLEZ: begin
-            if A<=0 begin
-              ALUOut = 0;
-            end
-            else begin
-              AlUOut;
-            end
-        end
-
-        BNE: begin
-            if A<=0 begin
-              ALUOut = 0;
-            end
-            else begin
-              AlUOut;
-            end
-        end
-
-        LB: begin
-          ALUOut = A + SignExtend
-        end
-
-        LBU: begin
-          ALUOut = A + ZeroExtend
-        end
-
-        LH: begin
-          ALUOut = A + SignExtend
-        end
-
-        LHU: begin
-          ALUOut = A + ZeroExtend
-        end
-
-        LUI: begin
-            ALUOut = {immediate, {16{1'b0}}};
-        end
-
-        SB: begin
-          ALUOut = A + SignExtend
-        end
-
-        SH: begin
-          ALUOut = A + SignExtend
-        end
-
-        SLT: begin
-          ALUOut = $signed(A) < $signed(B) ? 1 : 0;
-        end
-
-        SLTU: begin
-          ALUOut = A < B ? 1 : 0;
-        end
-
-        SRA: begin
-          ALUOut = $signed($signed(B) >>> shamt);  
-        end
-
-        SRAV: begin
-          ALUOut = $signed($signed(B) >>> A);  
-        end
-
-        SW: begin
-          ALUOut = A + SignExtend
-        end
+      BGTZ: begin
+          if A>0 begin
+            ALUOut = 0;
+          end
+          else begin
+            AlUOut;
+          end
+      end
 
 
-    end
+      BLEZ: begin
+          if A<=0 begin
+            ALUOut = 0;
+          end
+          else begin
+            AlUOut;
+          end
+      end
+
+      BNE: begin
+          if A<=0 begin
+            ALUOut = 0;
+          end
+          else begin
+            AlUOut;
+          end
+      end
+
+      LB: begin
+        ALUOut = A + SignExtend
+      end
+
+      LBU: begin
+        ALUOut = A + ZeroExtend
+      end
+
+      LH: begin
+        ALUOut = A + SignExtend
+      end
+
+      LHU: begin
+        ALUOut = A + ZeroExtend
+      end
+
+      LUI: begin
+          ALUOut = {immediate, {16{1'b0}}};
+      end
+
+      SB: begin
+        ALUOut = A + SignExtend
+      end
+
+      SH: begin
+        ALUOut = A + SignExtend
+      end
+
+      SLT: begin
+        ALUOut = $signed(A) < $signed(B) ? 1 : 0;
+      end
+
+      SLTU: begin
+        ALUOut = A < B ? 1 : 0;
+      end
+
+      SRA: begin
+        ALUOut = $signed($signed(B) >>> shamt);  
+      end
+
+      SRAV: begin
+        ALUOut = $signed($signed(B) >>> A);  
+      end
+
+      SW: begin
+        ALUOut = A + SignExtend
+      end
+
+
+    endcase
+  end
+	
+  always @(ALUOut) begin
+		if (ALUOut == 0) begin
+			ALUZero <= 1;
+		end else begin
+			ALUZero <= 0;
+		end
+	
+	end
+	end
+
 
 endmodule
