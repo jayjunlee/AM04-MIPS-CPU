@@ -41,7 +41,7 @@ logic[4:0] rs = instr_readdata[25:21];
 logic[4:0] rt = instr_readdata[20:16];
 logic[4:0] rd = RegDst==2'b10 ? 5'b11111 : RegDst==2'b01 ? instr_readdata[15:11] : instr_readdata[20:16];
 logic[15:0] immediate = instr_readdata[15:0];
-logic[10:6] shamt = instr_readdata[10:6]; // Shamt needed for the sll instruction
+logic[4:0] shamt = instr_readdata[10:6]; // Shamt needed for the sll instruction
 
 
 //ALU Data
@@ -94,10 +94,12 @@ alucontrol alucontrol(
 );
 
 alu alu(
-.aluflags(ALUFlags), //selects the operation carried out by the ALU
-.in1(alu_in1), //operand 1
-.in2(alu_in2), //operand 2
-.zero(ALUZero), //is the result zero, used for checks
-.out(ALUOut) //output/result of operation
+.ALUFlags(ALUFlags), //selects the operation carried out by the ALU
+.A(alu_in1), //operand 1
+.B(alu_in2), //operand 2
+.ALUzero(ALUZero), //is the result zero, used for checks
+.ALUOut(ALUOut), //output/result of operation
+.immediate(immediate),
+.shamt(shamt)
 );
 endmodule : mips_cpu_harvard

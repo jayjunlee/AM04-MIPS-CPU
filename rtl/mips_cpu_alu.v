@@ -8,15 +8,16 @@ module mips_cpu_alu(
   output logic ALUZero, //Is the output of the ALU 0? - used to check result
 
   output logic[31:0] ALUOut, // The ouput of the ALU 
+  
+  input logic[15:0] immediate; 
+
+  input logic[4:0] shamt
+
+);
 
   input [15:0] immediate;
 
   reg [31:0] SignExtend, ZeroExtend;
-
-  input logic[10:6] shamt = instr_readdata[10:6]
-
-);
-
 // Instructions commented out have been accounted for 
 
     /* Using an enum to define constants */
