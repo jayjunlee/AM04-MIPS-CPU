@@ -46,7 +46,7 @@ logic[4:0] shamt = instr_readdata[10:6]; // Shamt needed for the sll instruction
 
 //ALU Data
 logic[31:0] alu_in1 = read_data1;
-logic[31:0] alu_in2 = ALUSrc ? {{16{in[15]}},immediate} : read_data2;
+logic[31:0] alu_in2 = ALUSrc ? {{16{immediate[15]}},immediate} : read_data2;
 logic[31:0] ALUOut;
 
 //Data MEM
@@ -99,7 +99,6 @@ alu alu(
 .B(alu_in2), //operand 2
 .ALUzero(ALUZero), //is the result zero, used for checks
 .ALUOut(ALUOut), //output/result of operation
-.immediate(immediate),
 .shamt(shamt)
 );
 endmodule : mips_cpu_harvard
