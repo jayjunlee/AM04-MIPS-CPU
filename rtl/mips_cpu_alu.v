@@ -112,19 +112,19 @@ module mips_cpu_alu(
       end
       
       SLL: begin
-          ALUOut = B << shamt //Shamt is instruction read data [10:6]
+          ALUOut = B << shamt; //Shamt is instruction read data [10:6]
       end
 
       SRL: begin
-          ALUOut = B >> shamt //Shamt is instruction read data [10:6]
+          ALUOut = B >> shamt; //Shamt is instruction read data [10:6]
       end        
 
       SLLV: begin
-          ALUOut = B << A
+          ALUOut = B << A;
       end
 
       SRLV: begin
-          ALUOut = B >> A
+          ALUOut = B >> A;
       end     
 
       AND: begin
