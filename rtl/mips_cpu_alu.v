@@ -9,7 +9,7 @@ module mips_cpu_alu(
 
   output logic[31:0] ALUOut, // The ouput of the ALU 
   
-  input logic[15:0] immediate; 
+  input logic[15:0] immediate, 
 
   input logic[4:0] shamt
 
@@ -132,11 +132,11 @@ module mips_cpu_alu(
       end
       
       BEQ: begin
-          if A = B begin
+          if A == B begin
               ALUOut = 0;
           end
           else begin
-            ALUOut;
+            ALUOut = ALUOut;
           end
           
       end
@@ -146,7 +146,7 @@ module mips_cpu_alu(
             ALUOut = 0;
           end
           else begin
-            ALUOut;
+            ALUOut = ALUOut;
           end
       end
 
@@ -155,7 +155,7 @@ module mips_cpu_alu(
             ALUOut = 0;
           end
           else begin
-            ALUOut;
+            ALUOut = ALUOut;
           end
       end
 
@@ -164,7 +164,7 @@ module mips_cpu_alu(
             ALUOut = 0;
           end
           else begin
-            AlUOut;
+            ALUOut = ALUOut;
           end
       end
 
@@ -174,7 +174,7 @@ module mips_cpu_alu(
             ALUOut = 0;
           end
           else begin
-            AlUOut;
+            ALUOut = ALUOut;
           end
       end
 
@@ -183,24 +183,24 @@ module mips_cpu_alu(
             ALUOut = 0;
           end
           else begin
-            AlUOut;
+            ALUOut = ALUOut;
           end
       end
 
       LB: begin
-        ALUOut = A + SignExtend
+        ALUOut = A + SignExtend;
       end
 
       LBU: begin
-        ALUOut = A + ZeroExtend
+        ALUOut = A + ZeroExtend;
       end
 
       LH: begin
-        ALUOut = A + SignExtend
+        ALUOut = A + SignExtend;
       end
 
       LHU: begin
-        ALUOut = A + ZeroExtend
+        ALUOut = A + ZeroExtend;
       end
 
       LUI: begin
@@ -208,11 +208,11 @@ module mips_cpu_alu(
       end
 
       SB: begin
-        ALUOut = A + SignExtend
+        ALUOut = A + SignExtend;
       end
 
       SH: begin
-        ALUOut = A + SignExtend
+        ALUOut = A + SignExtend;
       end
 
       SLT: begin
@@ -232,7 +232,7 @@ module mips_cpu_alu(
       end
 
       SW: begin
-        ALUOut = A + SignExtend
+        ALUOut = A + SignExtend;
       end
 
 
