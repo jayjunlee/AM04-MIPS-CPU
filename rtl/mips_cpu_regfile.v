@@ -27,7 +27,7 @@ always_comb begin
 	readdata2 = memory[readreg2]; //combinatorially output register value based on read port 2 selector
 end
 
-always_ff @(posedge clk) begin
+always_ff @(negedge clk) begin
 	if (regwrite) begin
 		case (opcode)
 			6'b100000: begin //lb, load byte
