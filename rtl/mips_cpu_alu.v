@@ -9,13 +9,10 @@ module mips_cpu_alu(
 
   output logic[31:0] ALUOut, // The ouput of the ALU 
   
-  input logic[15:0] immediate, 
-
   input logic[4:0] shamt
 
 );
 
-  input [15:0] immediate;
 
   reg [31:0] SignExtend, ZeroExtend;
 // Instructions commented out have been accounted for 
@@ -139,38 +136,38 @@ module mips_cpu_alu(
 
       BGEZ: begin
           if A>=0 begin
-            ALUOut = 0;
+            Cond = 1;
           end
           else begin
-            ALUOut = ALUOut;
+            Cond = 0;
           end
       end
 
       BGEZAL: begin
           if A>=0 begin
-            ALUOut = 0;
+            Cond = 1;
           end
           else begin
-            ALUOut = ALUOut;
+            Cond = 0;
           end
       end
 
       BGTZ: begin
           if A>0 begin
-            ALUOut = 0;
+            Cond = 1;
           end
           else begin
-            ALUOut = ALUOut;
+            Cond = 0;
           end
       end
 
 
       BLEZ: begin
           if A<=0 begin
-            ALUOut = 0;
+            Cond = 1;
           end
           else begin
-            ALUOut = ALUOut;
+            Cond = 0;
           end
       end
 
