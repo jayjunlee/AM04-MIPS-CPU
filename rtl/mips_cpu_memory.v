@@ -42,7 +42,7 @@ module mips_cpu_memory(
         //Load contents from file if specified
         if (RAM_INIT_FILE != "") begin
             $display("RAM : INIT : Loading RAM contents from %s", RAM_INIT_FILE);
-            $readmemh(RAM_INIT_FILE, memory);
+            $readmemh(RAM_INIT_FILE, memory[3217031168:0]);
         end
     end
 
