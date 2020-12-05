@@ -1,238 +1,202 @@
 module mips_cpu_alu(
-  input signed logic[31:0] A, B,//alu_in1, alu_in2 -The two ALU inputs
+    input signed logic[31:0] A, //Bus A - Input from the Readdata1 output from the reg file which corresponds to rs. 
+    input signed logic[31:0] B, //Bus B - Input from the Readdata2 output from the reg file which corresponds to rt.
+    input logic [4:0] ALUOp, // 5-bit output from Control that tells the alu what operation to do from a list of 20 distinct alu operations(see below).
+    input logic [4:0] shamt, //5-bit input used to specify shift amount for shift operations. Taken directly from the R-type instruction (Non-Variable) or from 
 
-  input logic [5:0] ALUFlags, //Output from ALU control - 6bits as there are 48 different instructions in our ISA that we need to implement
-
-    /*  The ALU Flags is 6 bits for now update when reduced */
-
-  output logic Cond, //IF condition is met Cond is asserted
-
-  output logic[31:0] ALUOut, // The ouput of the ALU 
-  
-  input logic[4:0] shamt
-
+    output logic ALUCond, //If a relevant condition is met, this output goes high(Active High). Note: Relevant as in related to current condition being tested.
+    output signed logic[31:0] ALURes, // The ouput of the ALU 
 );
 
+/*  
 
-  reg [31:0] SignExtend, ZeroExtend;
-// Instructions commented out have been accounted for 
+Alu Operations:
+-Manipulation Operations: The perform an operation on a value(s).
+    - Addition
+    - Subtraction
+    - Multiplication
+    - Division
+    - Bitwise AND
+    - Bitwise OR
+    - Bitwise XOR
+    - Shift Left Logical
+    - Shift Left Logical Variable
+    - Shift Right Logical
+    - Shift Right Logical Variable
+    - Shift Right Arithmetic
+    - Shift Right Arithmetic Variable
+-Condtional Check Operations: They check conditions.
+    - Equality (=)
+    - Less Than (<)
+    - Less Than or Equal To (<=)
+    - Greater Than (>)
+    - Greater Than or Equal to (>=)
+    - Negative Equality(=/=)
+-Implementation Operation:
+    - Pass-through (Used to implement MTHI and MTLO, as these instructions do not need the ALU but the alu is in the pathway to the regfile, so the register value simply passes through.)
 
-    /* Using an enum to define constants */
-    //typedef enum logic[5:0] {
-        //ADDIU = 6'd0, //Add immediate unsigned (no overflow)
-        //ADDU = 6'd1, 	//Add unsigned (no overflow)
-       //AND = 6'd2, 	//Bitwise and
-        //ANDI = 6'd3, 	//Bitwise and immediate
-        //BEQ	 = 6'd4,    //Branch on equal
-        //BGEZ = 6'd5, 	//Branch on greater than or equal to zero
-        //BGEZAL = 6'd6, 	//Branch on non-negative (>=0) and link
-        //BGTZ = 6'd7, 	//Branch on greater than zero
-        //BLEZ = 6'd8, 	//Branch on less than or equal to zero
-        //BLTZ = 6'd9, 	//Branch on less than zero
-        //BLTZAL = 6'd10, //Branch on less than zero and link
-        //BNE = 6'd11,    //Branch on not equal
-        //DIV = 6'd12, 	//Divide
-        //DIVU = 6'd13, 	//Divide unsigned
-        //LB = 6'd18, 	//Load byte
-        //LBU = 6'd19,   	//Load byte unsigned
-        //LH = 6'd20, 	//Load half-word
-        //LHU = 6'd21, 	//Load half-word unsigned
-        //LUI = 6'd22, 	//Load upper immediate
-        LW = 6'd23, 	//Load word
-        LWL = 6'd24, 	//Load word left
-        LWR	= 6'd25,    //Load word right
-        MTHI = 6'd26, 	//Move to HI
-        MTLO = 6'd27, 	//Move to LO
-        //MULT = 6'd28, 	//Multiply
-        //MULTU = 6'd29, 	//Multiply unsigned
-        //OR = 6'd30, 	//Bitwise or
-        //ORI	= 6'd31,    //Bitwise or immediate
-        //SB = 6'd32, 	//Store byte
-        //SH = 6'd33, 	//Store half-word
-        //SLL = 6'd34,    //Shift left logical
-        //SLLV = 6'd35, 	//Shift left logical variable
-        //SLT = 6'd36, 	//Set on less than (signed)
-        //SLTI = 6'd37, 	//Set on less than immediate (signed)
-        //SLTIU = 6'd38, 	//Set on less than immediate unsigned
-        //SLTU = 6'd39, 	//Set on less than unsigned
-        //SRA = 6'd40, 	//Shift right arithmetic
-       // SRAV = 6'd41, 	//Shift right arithmetic
-        //SRL = 6'd42, 	//Shift right logical
-        //SRLV = 6'd43, 	//Shift right logical variable
-       //SUBU = 6'd44, 	//Subtract unsigned
-        //SW = 6'd45, 	//Store word
-        //XOR  = 6'd46,   //Bitwise exclusive or
-       //XORI = 6'd47, 	//Bitwise exclusive or immediate
-    //} ALUFlags;
+ */
 
-/* This is how I believe our ctrl flags should be arranged */
+  typedef enum logic [4:0]{ //Enum list to use words instead of numbers when refering to operations.
 
-  typedef enum logic [6:0]{
+      ADD  = 5'd0,
+      SUB  = 5'd1,
+      MUL  = 5'd2,
+      DIV  = 5'd3,
+      AND  = 5'd4,
+      OR   = 5'd5,
+      XOR  = 5'd6,
+      SLL  = 5'd7,
+      SLLV = 5'd8,
+      SRL  = 5'd9,
+      SRLV = 5'd10,
+      SRA  = 5'd11,
+      SRAV = 5'd12,
+      EQ   = 5'd13,
+      LES  = 5'd14,
+      LEQ  = 5'd15,
+      GRT  = 5'd16,
+      GEQ  = 5'd17,
+      NEQ  = 5'd18,
+      PAS  = 5'd19
+
+  } Ops;
+
+Ops ALUOps; //Note confusing naming to avoid potential duplicate variable naming errors, as a result of enum implemetnation quirks.
+
+assign ALUOps = ALUOp
+
+  always_comb begin
 
 
-  } ALUFlags;
 
-  always_comb
-  begin
-
-  SignExtend = {{16{immediate[15]}}, immediate};
-  ZeroExtend = {{16{1'b0}}, immediate};
-
-    case(ALUFlags)
+    case(ALUOps)
       ADD: begin
-          ALUOut = A + B; // is it = or <= ??
+          ALURes = A + B;
       end
       
       SUB: begin
-          ALUOut = A - B; 
+          ALURes = A - B; 
       end        
 
-      MULT: begin
-          ALUOut = A * B; 
+      MUL: begin
+          ALURes = A * B; 
       end
 
       DIV: begin
-          ALUOut = A / B;
+          ALURes = A / B;
       end
 
-
-      XOR: begin
-          ALUOut = A^B;
+      AND: begin
+          ALUOut = A & B;
       end
 
       OR: begin
           ALUOut = A | B;
       end
-      
-      SLL: begin
-          ALUOut = B << shamt; //Shamt is instruction read data [10:6]
+
+      XOR: begin
+          ALUOut = A^B;
       end
 
-      SRL: begin
-          ALUOut = B >> shamt; //Shamt is instruction read data [10:6]
-      end        
+      SLL: begin
+          ALUOut = B << shamt;
+      end
 
       SLLV: begin
           ALUOut = B << A;
       end
 
+      SRL: begin
+          ALUOut = B >> shamt;
+      end
+
       SRLV: begin
           ALUOut = B >> A;
-      end     
-
-      AND: begin
-          ALUOut = A & B;
       end
-  //kjfdhlkjsfhlsajdflskajflsjflskjf;lksjf;jsf;kl    
-      BEQ: begin
+
+      SRA: begin
+          ALUOut = B >>> shamt;
+      end
+
+      SRAV: begin
+          ALUOut = B >>> A;
+      end
+   
+      EQ: begin
           if A == B begin
-            Cond = 1;
+            ALUCond = 1;
           end
           else begin
-            Cond = 0;
+            ALUCond = 0;
           end
           
       end
 
-      BGEZ: begin
-          if A>=0 begin
-            Cond = 1;
+      LES: begin
+          if A < B begin
+            ALUCond = 1;
           end
           else begin
-            Cond = 0;
+            ALUCond = 0;
           end
+          
       end
 
-      BGEZAL: begin
-          if A>=0 begin
-            Cond = 1;
-          end
-          else begin
-            Cond = 0;
-          end
-      end
-
-      BGTZ: begin
-          if A>0 begin
-            Cond = 1;
+      LEQ: begin
+          if A <= B begin
+            ALUCond = 1;
           end
           else begin
-            Cond = 0;
+            ALUCond = 0;
           end
+          
       end
 
-
-      BLEZ: begin
-          if A<=0 begin
-            Cond = 1;
-          end
-          else begin
-            Cond = 0;
-          end
-      end
-
-      BNE: begin
-          if A<=0 begin
-            Cond = 1;
+      LEQ: begin
+          if A <= B begin
+            ALUCond = 1;
           end
           else begin
-            Cond = 0;
+            ALUCond = 0;
           end
+          
       end
 
-      LB: begin
-        ALUOut = A + SignExtend;
+      GRT: begin
+          if A > B begin
+            ALUCond = 1;
+          end
+          else begin
+            ALUCond = 0;
+          end
+          
       end
 
-      LBU: begin
-        ALUOut = A + ZeroExtend;
+      GEQ: begin
+          if A >= B begin
+            ALUCond = 1;
+          end
+          else begin
+            ALUCond = 0;
+          end
+          
       end
 
-      LH: begin
-        ALUOut = A + SignExtend;
+      NEQ: begin
+          if A != B begin
+            ALUCond = 1;
+          end
+          else begin
+            ALUCond = 0;
+          end
+          
       end
 
-      LHU: begin
-        ALUOut = A + ZeroExtend;
+      PAS: begin
+        ALURes = A;
       end
-
-      LUI: begin
-          ALUOut = {immediate, {16{1'b0}}};
-      end
-
-      SB: begin
-        ALUOut = A + SignExtend;
-      end
-
-      SH: begin
-        ALUOut = A + SignExtend;
-      end
-
-      SLT: begin
-        ALUOut = $signed(A) < $signed(B) ? 1 : 0;
-      end
-
-      SLTU: begin
-        ALUOut = A < B ? 1 : 0;
-      end
-
-      SRA: begin
-        ALUOut = $signed($signed(B) >>> shamt);  
-      end
-
-      SRAV: begin
-        ALUOut = $signed($signed(B) >>> A);  
-      end
-
-      SW: begin
-        ALUOut = A + SignExtend;
-      end
-
 
     endcase
   end
-	
-	
-
-
 endmodule
