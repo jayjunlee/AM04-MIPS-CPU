@@ -29,7 +29,7 @@ then
     do
         # Run Each Testcase File
         echo ${TESTCASE}
-#        iverilog -g 2012 \
+#iverilog -g 2012 \
 #        -s mips_cpu_harvard_tb \
 #        -P mips_cpu_harvard_tb.RAM_INIT_FILE=\"inputs/"${TESTCASE}\" \
 #        -o program/mips_cpu_harvard_tb_${INSTR} testbench/mips_cpu_harvard_tb.v \
@@ -37,13 +37,21 @@ then
     done
 
 else
-    echo "ELSE";
+    echo ${INSTR};
     # Run Testcase File Of Specified Instruction
-#    iverilog -g 2012 \
-#        -s mips_cpu_harvard_tb \
-#        -P mips_cpu_harvard_tb.RAM_INIT_FILE=\"inputs/${INSTR}.hex.txt\" \
-#        -o program/mips_cpu_harvard_tb_${INSTR} testbench/mips_cpu_harvard_tb.v \
-#           ${SRC}
+# Windows Iverilog with WSL
+#/mnt/c/Windows/System32/cmd.exe /C iverilog -g2012 \
+#    -s mips_cpu_harvard_tb \
+#    -P mips_cpu_harvard_tb.RAM_INIT_FILE=\"inputs/${INSTR}.txt\" \
+#    -o program/mips_cpu_harvard_tb_${INSTR} testbench/mips_cpu_harvard_tb.v \
+#    ${SRC}
+
+# Linux Iverilog
+iverilog -g2012 \
+    -s mips_cpu_harvard_tb \
+    -P mips_cpu_harvard_tb.RAM_INIT_FILE=\"inputs/${INSTR}.txt\" \
+    -o program/mips_cpu_harvard_tb_${INSTR} testbench/mips_cpu_harvard_tb.v \
+    ${SRC}
 fi
 
 #/mnt/c/Windows/System32/cmd.exe /C \ # need this to run verilog on windows

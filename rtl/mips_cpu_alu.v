@@ -1,11 +1,11 @@
 module mips_cpu_alu(
-    input signed logic[31:0] A, //Bus A - Input from the Readdata1 output from the reg file which corresponds to rs. 
-    input signed logic[31:0] B, //Bus B - Input from the Readdata2 output from the reg file which corresponds to rt.
-    input logic [4:0] ALUOp, // 5-bit output from Control that tells the alu what operation to do from a list of 20 distinct alu operations(see below).
-    input logic [4:0] shamt, //5-bit input used to specify shift amount for shift operations. Taken directly from the R-type instruction (Non-Variable) or from 
+    input logic signed[31:0] A, //Bus A - Input from the Readdata1 output from the reg file which corresponds to rs. 
+    input logic signed[31:0] B, //Bus B - Input from the Readdata2 output from the reg file which corresponds to rt.
+    input logic[4:0] ALUOp, // 5-bit output from Control that tells the alu what operation to do from a list of 20 distinct alu operations(see below).
+    input logic[4:0] shamt, //5-bit input used to specify shift amount for shift operations. Taken directly from the R-type instruction (Non-Variable) or from 
 
     output logic ALUCond, //If a relevant condition is met, this output goes high(Active High). Note: Relevant as in related to current condition being tested.
-    output signed logic[31:0] ALURes, // The ouput of the ALU 
+    output logic signed[31:0] ALURes // The ouput of the ALU 
 );
 
 /*  
@@ -64,7 +64,7 @@ Alu Operations:
 
 Ops ALUOps; //Note confusing naming to avoid potential duplicate variable naming errors, as a result of enum implemetnation quirks.
 
-assign ALUOps = ALUOp
+assign ALUOps = ALUOp;
 
   always_comb begin
 
@@ -88,43 +88,43 @@ assign ALUOps = ALUOp
       end
 
       AND: begin
-          ALUOut = A & B;
+          ALURes = A & B;
       end
 
       OR: begin
-          ALUOut = A | B;
+          ALURes = A | B;
       end
 
       XOR: begin
-          ALUOut = A^B;
+          ALURes = A^B;
       end
 
       SLL: begin
-          ALUOut = B << shamt;
+          ALURes = B << shamt;
       end
 
       SLLV: begin
-          ALUOut = B << A;
+          ALURes = B << A;
       end
 
       SRL: begin
-          ALUOut = B >> shamt;
+          ALURes = B >> shamt;
       end
 
       SRLV: begin
-          ALUOut = B >> A;
+          ALURes = B >> A;
       end
 
       SRA: begin
-          ALUOut = B >>> shamt;
+          ALURes = B >>> shamt;
       end
 
       SRAV: begin
-          ALUOut = B >>> A;
+          ALURes = B >>> A;
       end
    
       EQ: begin
-          if A == B begin
+          if (A == B) begin
             ALUCond = 1;
           end
           else begin
@@ -134,7 +134,7 @@ assign ALUOps = ALUOp
       end
 
       LES: begin
-          if A < B begin
+          if (A < B) begin
             ALUCond = 1;
           end
           else begin
@@ -144,17 +144,7 @@ assign ALUOps = ALUOp
       end
 
       LEQ: begin
-          if A <= B begin
-            ALUCond = 1;
-          end
-          else begin
-            ALUCond = 0;
-          end
-          
-      end
-
-      LEQ: begin
-          if A <= B begin
+          if (A <= B) begin
             ALUCond = 1;
           end
           else begin
@@ -164,7 +154,7 @@ assign ALUOps = ALUOp
       end
 
       GRT: begin
-          if A > B begin
+          if (A > B) begin
             ALUCond = 1;
           end
           else begin
@@ -174,7 +164,7 @@ assign ALUOps = ALUOp
       end
 
       GEQ: begin
-          if A >= B begin
+          if (A >= B) begin
             ALUCond = 1;
           end
           else begin
@@ -184,7 +174,7 @@ assign ALUOps = ALUOp
       end
 
       NEQ: begin
-          if A != B begin
+          if (A != B) begin
             ALUCond = 1;
           end
           else begin

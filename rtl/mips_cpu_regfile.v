@@ -15,7 +15,7 @@ reg[31:0] memory [31:0]; //32 register slots, 32-bits wide
 
 initial begin
 	integer i; //Initialise to zero by default
-    for (i = 0; i < 31; i++) begin
+    for (i = 0; i < 32; i++) begin
         memory[i] = 0;
     end
 end

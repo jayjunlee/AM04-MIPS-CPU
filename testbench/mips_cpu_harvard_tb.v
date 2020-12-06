@@ -10,8 +10,30 @@ module mips_cpu_harvard_tb;
     logic data_read, data_write;
     logic[31:0] data_readdata, data_writedata, data_address;
 
-    mips_cpu_memory #(RAM_INIT_FILE) ramInst(clk, data_address, data_write, data_read, data_writedata, data_readdata, instr_address, instr_readdata);    
-    mips_cpu_harvard cpuInst(clk, reset, active, register_v0, clk_enable, instr_address, instr_readdata, data_address, data_write, data_read, data_writedata, data_readdata);
+    mips_cpu_memory #(RAM_INIT_FILE) ramInst(
+        .clk(clk), 
+        .data_address(data_address), 
+        .data_write(data_write), 
+        .data_read(data_read), 
+        .data_writedata(data_writedata), 
+        .data_readdata(data_readdata), 
+        .instr_address(instr_address), 
+        .instr_readdata(instr_readdata)
+    );    
+    mips_cpu_harvard cpuInst(
+        .clk(clk), 
+        .reset(reset), 
+        .active(active), 
+        .register_v0(register_v0), 
+        .clk_enable(clk_enable), 
+        .instr_address(instr_address), 
+        .instr_readdata(instr_readdata), 
+        .data_address(data_address), 
+        .data_write(data_write), 
+        .data_read(data_read), 
+        .data_writedata(data_writedata), 
+        .data_readdata(data_readdata)
+    );
 
     // Generate clock
     initial begin
@@ -37,14 +59,15 @@ module mips_cpu_harvard_tb;
         reset <= 0;
 
         @(posedge clk);
-        assert(running==1)
-        else $display("TB : CPU did not set running=1 after reset.");
+        assert(active==1) // Is this assert still valid?
+        else $display("TB : CPU did not set active=1 after reset.");
 
-        while (running) begin
+        while (active) begin
             @(posedge clk);
         end
 
         $display("TB : finished; running=0");
+        $display("%d",register_v0);
         $finish;
 
     end

@@ -45,7 +45,7 @@ Memtoreg:
 
 //Commented signals represents dont care(x)
 
-module mips_cpu_control{
+module mips_cpu_control(
     input logic[5:0] Instr,
     input logic[5:0] rt,
     output logic[1:0] Regdst,
@@ -55,7 +55,7 @@ module mips_cpu_control{
     output logic Memwrite,
     output logic Alusrc,
     output logic Regwrite,
-    output logic Jump,
+    output logic Jump
     );
 
     always_comb begin
@@ -119,7 +119,7 @@ module mips_cpu_control{
                 //Memtoreg=;
                 Memwrite=0;
                 Alusrc=0;
-                Regwrite=0
+                Regwrite=0;
                 Jump=0;
             end
             6'd6: begin
@@ -206,7 +206,7 @@ module mips_cpu_control{
                 Regdst=2'b00;
                 Branch=0;
                 Memread=0;
-                Memtoreg=2b'00;
+                Memtoreg=2'b00;
                 Memwrite=0;
                 Alusrc=1;
                 Regwrite=1;
