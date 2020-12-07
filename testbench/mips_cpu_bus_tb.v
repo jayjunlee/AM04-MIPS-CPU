@@ -1,4 +1,4 @@
-module CPU_MU0_delay1_tb;
+module mips_cpu_bus_tb;
     timeunit 1ns / 10ps;
 
     parameter RAM_INIT_FILE = "test/01-binary/countdown.hex.txt";
