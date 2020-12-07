@@ -1,319 +1,201 @@
-/*
-Instr
-*0:  XOR SUBU SRLV SRL SRAV SRA SLTU SLT SLLV
-    SLL OR MULTU MULT MTLO MTHI JR JALR DIVU 
-    DIV AND ADDU 
-1:  BLTZAL BLTZ BGEZAL BGEZ
-2:  J   
-3:  JAL
-4:  BEQ
-5:  BNE
-6:  BLEZ
-7:  BGTZ
-*9:  ADDIU
-10: SLTI
-11: SLTIU
-12: ANDI
-13: ORI
-14: XORI
-15: LUI
-32: LB
-33: LH
-34: LWL
-*35: LW
-36: LBU
-37: LHU
-38: LWR
-40: SB 
-41: SH
-*43: SW
-*/
+module mips_cpu_control(
 
-/*
-Regdst:
-00:Instr[20-16]
-01:Instr[15-11]
-10:2'd31
-*/
+    input logic[31:0] Instr,
+    input logic ALUCond,
+    
+    output logic CtrlRegDst,
+    output logic[1:0] CtrlPC,
+    output logic CtrlMemRead,
+    output logic CtrlMemtoReg,
+    output logic[4:0] CtrlALUOp,
+    output logic[4:0] Ctrlshamt,
+    output logic CtrlMemWrite,
+    output logic CtrlALUSrc,
+    output logic CtrlRegWrite
 
-/*
-Memtoreg:
-00: Alu output
-01: Memory output
-10: PC+4 output
-*/
+);
 
-//Commented signals represents dont care(x)
+/* logic[5:0] op;
+logic[5:0] funct;
+logic[4:0] rt; */
 
-module mips_cpu_control{
-    input logic[5:0] Instr,
-    input logic[5:0] rt,
-    output logic[1:0] Regdst,
-    output logic Branch,
-    output logic Memread,
-    output logic[1:0] Memtoreg,
-    output logic Memwrite,
-    output logic Alusrc,
-    output logic Regwrite,
-    output logic Jump,
-    );
+/* assign op       = Instr[31:26];
+assign funct    = Instr[5:0];
+assign rt       = Instr[20:16]; */
 
-    always_comb begin
-        case(Instr)
-            6'd0: begin
-                Regdst=2'b01;
-                Branch=0;
-                Memread=0;               
-                Memwrite=0;
-                Memtoreg=2'b00;
-                Alusrc=0;
-                Regwrite=1;
-                Jump=0;
-            end
-            6'd1: begin
-                Regdst=2'b10;
-                Branch=1;
-                Memread=0;
-                Memwrite=0;
-                if(rt[5]==1)begin
-                    Memtoreg=2'b10;
-                    Regwrite=1;
-                end
-                Alusrc=0;
-                Jump=0;
-            end
-            6'd2: begin
-                //Regdst=2'b;
-                Branch=0;
-                Memread=0;
-                //Memtoreg=;
-                Memwrite=0;
-                //Alusrc=;
-                Regwrite=0;
-                Jump=1;
-            end
-            6'd3: begin
-                Regdst=2'b10;
-                Branch=0;
-                Memread=0;
-                Memtoreg=2'b10;
-                Memwrite=0;
-                //Alusrc=;
-                Regwrite=1;
-                Jump=1;
-            end
-            6'd4: begin
-                //Regdst=2'b;
-                Branch=1;
-                Memread=0;
-                //Memtoreg=;
-                Memwrite=0;
-                Alusrc=0;
-                Regwrite=0;
-                Jump=0;
-            end
-            6'd5: begin
-                //Regdst=2'b;
-                Branch=1;
-                Memread=0;
-                //Memtoreg=;
-                Memwrite=0;
-                Alusrc=0;
-                Regwrite=0
-                Jump=0;
-            end
-            6'd6: begin
-                //Regdst=2'b;
-                Branch=1;
-                Memread=0;
-                //Memtoreg=;
-                Memwrite=0;
-                Alusrc=0;
-                Regwrite=0;
-                Jump=0;
-            end
-            6'd7: begin
-                //Regdst=2'b;
-                Branch=1;
-                Memread=0;
-                //Memtoreg=;
-                Memwrite=0;
-                Alusrc=0;
-                Regwrite=0;
-                Jump=0;
-            end
-            6'd9: begin
-                Regdst=2'b00;
-                Branch=0;
-                Memread=0;
-                Memtoreg=2'b00;
-                Memwrite=0;
-                Alusrc=1;
-                Regwrite=1;
-                Jump=0;
-            end
-            6'd10: begin
-                Regdst=2'b00;
-                Branch=0;
-                Memread=0;
-                Memtoreg=2'b00;
-                Memwrite=0;
-                Alusrc=1;
-                Regwrite=1;
-                Jump=0;
-            end
-            6'd11: begin
-                Regdst=2'b00;
-                Branch=0;
-                Memread=0;
-                Memtoreg=2'b00;
-                Memwrite=0;
-                Alusrc=1;
-                Regwrite=1;
-                Jump=0;
-            end
-            6'd12: begin
-                Regdst=2'b00;
-                Branch=0;
-                Memread=0;
-                Memtoreg=2'b00;
-                Memwrite=0;
-                Alusrc=1;
-                Regwrite=1;
-                Jump=0;
-            end
-            6'd13: begin
-                Regdst=2'b00;
-                Branch=0;
-                Memread=0;
-                Memtoreg=2'b00;
-                Memwrite=0;
-                Alusrc=1;
-                Regwrite=1;
-                Jump=0;
-            end
-            6'd14: begin
-                Regdst=2'b00;
-                Branch=0;
-                Memread=0;
-                Memtoreg=2'b00;
-                Memwrite=0;
-                Alusrc=1;
-                Regwrite=1;
-                Jump=0;
-            end
-            6'd15: begin
-                Regdst=2'b00;
-                Branch=0;
-                Memread=0;
-                Memtoreg=2b'00;
-                Memwrite=0;
-                Alusrc=1;
-                Regwrite=1;
-                Jump=0;
-            end
-            6'd32: begin
-                Regdst=2'b00;
-                Branch=0;
-                Memread=1;
-                Memtoreg=2'b01;
-                Memwrite=0;
-                Alusrc=1;
-                Regwrite=1;
-                Jump=0;
-            end
-            6'd33: begin
-                Regdst=2'b00;
-                Branch=0;
-                Memread=1;
-                Memtoreg=2'b01;
-                Memwrite=0;
-                Alusrc=1;
-                Regwrite=1;
-                Jump=0;
-            end
-            6'd34: begin
-                Regdst=2'b00;
-                Branch=0;
-                Memread=1;
-                Memtoreg=2'b01;
-                Memwrite=0;
-                Alusrc=1;
-                Regwrite=1;
-                Jump=0;
-            end
-            6'd35: begin
-                Regdst=2'b00;
-                Branch=0;
-                Memread=1;
-                Memtoreg=2'b01;
-                Memwrite=0;
-                Alusrc=1;
-                Regwrite=1;
-                Jump=0;
-            end
-            6'd36: begin
-                Regdst=2'b00;
-                Branch=0;
-                Memread=1;
-                Memtoreg=2'b01;
-                Memwrite=0;
-                Alusrc=1;
-                Regwrite=1;
-                Jump=0;
-            end
-            6'd37: begin
-                Regdst=2'b00;
-                Branch=0;
-                Memread=1;
-                Memtoreg=2'b01;
-                Memwrite=0;
-                Alusrc=1;
-                Regwrite=1;
-                Jump=0;
-            end
-            6'd38: begin
-                Regdst=2'b00;
-                Branch=0;
-                Memread=1;
-                Memtoreg=2'b01;
-                Memwrite=0;
-                Alusrc=1;
-                Regwrite=1;
-                Jump=0;
-            end
-            6'd40: begin
-                //Regdst=2'b;
-                Branch=0;
-                Memread=0;
-                //Memtoreg=;
-                Memwrite=1;
-                Alusrc=1;
-                Regwrite=0;
-                Jump=0;
-            end
-            6'd41: begin
-                //Regdst=2'b;
-                Branch=0;
-                Memread=0;
-                //Memtoreg=;
-                Memwrite=1;
-                Alusrc=1;
-                Regwrite=0;
-                Jump=0;
-            end
-            6'd43: begin
-                //Regdst=2'b;
-                Branch=0;
-                Memread=0;
-                //Memtoreg=;
-                Memwrite=1;
-                Alusrc=1;
-                Regwrite=0;
-                Jump=0;
-            end
-        endcase
+typedef enum logic[5:0]{
+    SPECIAL = 6'd0,
+    REGIMM  = 6'd1,
+    J       = 6'd2,
+    JAL     = 6'd3,
+    BEQ     = 6'd4,
+    BNE     = 6'd5,
+    BLEZ    = 6'd6,
+    BGTZ    = 6'd7,
+    ADDI    = 6'd8,
+    ADDIU   = 6'd9,
+    SLTI    = 6'd10,
+    SLTIU   = 6'd11,
+    ANDI    = 6'd12,
+    ORI     = 6'd13,
+    XORI    = 6'd14,
+    LUI     = 6'd15,
+    LB      = 6'd32,
+    LH      = 6'd33,
+    LWL     = 6'd34,
+    LW      = 6'd35,
+    LBU     = 6'd36,
+    LHU     = 6'd37,
+    LWR     = 6'd38,
+    SB      = 6'd40,
+    SH      = 6'd41,
+    SW      = 6'd43
+} op_enum;
+op_enum op;
+assign op   = Instr[31:26];
+
+typedef enum logic[5:0]{
+    SLL     = 6'd0,
+    SRL     = 6'd2,
+    SRA     = 6'd3,
+    SLLV    = 6'd4,
+    SRLV    = 6'd6,
+    SRAV    = 6'd7,
+    JR      = 6'd8,
+    JALR    = 6'd9,
+    MTHI    = 6'd17,
+    MTLO    = 6'd19,
+    MULT    = 6'd24,
+    MULTU   = 6'd25,
+    DIV     = 6'd26,
+    DIVU    = 6'd27,
+    ADDU    = 6'd33,
+    SUBU    = 6'd35,
+    AND     = 6'd36,
+    OR      = 6'd37,
+    XOR     = 6'd38,
+    SLT     = 6'd42,
+    SLTU    = 6'd43
+} funct_enum;
+funct_enum funct;
+assign funct = Instr[5:0];
+
+typedef enum logic[4:0]{
+    BLTZ    = 5'd0,
+    BGEZ    = 5'd1,
+    BLTZAL  = 5'd16,
+    BGEZAL  = 5'd17
+} rt_enum;
+rt_enum rt;
+assign rt   = Instr[20:16];
+
+always_comb begin
+    
+    //CtrlRegDst logic
+    if(op == (ADDIU | ANDI | LB | LBU | LH | LHU | LUI | LW | LWL | LWR | ORI | SLTI | SLTIU | XORI))begin
+        CtrlRegDst = 0; //Write address comes from rt
+    end else if (op == (SPECIAL & (funct == (ADDU | AND | JALR | OR | SLL | SLLV | SLT | SLTU | SRA | SRAV | SRL | SRLV | SUBU | XOR))))begin
+        CtrlRegDst = 1; //Write address comes from rd
+    end else begin CtrlRegDst = 1'bx; end//Not all instructions are encompassed so, added incase for debug purposes
+
+    //CtrlPC logic
+    if(op == (BEQ | BGTZ | BLEZ | BNE | (REGIMM & (rt == (BGEZ | BGEZAL | BLTZ | BLTZAL)))))begin
+        CtrlPC = 2'd1; // Branches - Jumps relative to PC
+    end else if(op == (J | JAL))begin
+        CtrlPC = 2'd2; // Jumps within 256MB Region using 26-bit immediate in J type instruction
+    end else if(op == (JR | JALR))begin
+        CtrlPC = 2'd3; // Jumps using Register.
+    end else begin CtrlPC = 2'd0;end // No jumps, just increment to next word
+
+    //CtrlMemRead and CtrlMemtoReg logic -- Interesting quirk that they have the same logic. Makes sense bc you'd only want to select the read data out when the memory itself is read enabled.
+    if(op == (LB | LBU | LH | LHU | LW | LWL | LWR))begin
+        CtrlMemRead = 1;//Memory is read enabled
+        CtrlMemtoReg = 1;//write data port of memory is fed from data memory
+    end else if (op == (ADDIU | ANDI | ORI | SLTI | SLTIU | XORI | (SPECIAL & (funct == (ADDU | AND | DIV | DIVU | MTHI | MTLO | MULT | MULTU | OR |  SLL | SLLV | SLT | SLTU | SRA | SRAV | SRL | SRLV | SUBU | XOR)))))begin
+        CtrlMemRead = 0;//Memory is read disabled
+        CtrlMemtoReg = 0;//write data port of memory if fed from ALURes
+    end else begin CtrlMemRead = 1'bx;end//Not all instructions are encompassed so, added incase for debug purposes
+
+    //CtrlALUOp Logic
+    if(op == (ADDIU | (SPECIAL & (funct == ADDU))))begin
+        CtrlALUOp = 5'd0; //ADD from ALUOps
+    end else if (op == (ANDI | (SPECIAL & (funct == AND))))begin
+        CtrlALUOp = 5'd4;//AND from ALUOps
+    end else if (op == BEQ) begin
+        CtrlALUOp = 5'd13;//EQ from ALUOps
+    end else if (op == (REGIMM & (rt == (BGEZ | BGEZAL))))begin
+        CtrlALUOp = 5'd17;//GEQ from ALUOps
+    end else if (op == BGTZ)begin
+        CtrlALUOp = 5'd16;//GRT from ALUOps
+    end else if (op == BLEZ)begin
+        CtrlALUOp = 5'd15;//LEQ from ALUOps
+    end else if (op == (REGIMM & (rt == (BLTZ | BLTZAL))))begin
+        CtrlALUOp = 5'd14;//LES from ALUOps
+    end else if (OP == BNE)begin
+        CtrlALUOp = 5'd18;//NEQ from ALUOps
+    end else if (op == (SPECIAL & (funct == DIV)))begin
+        CtrlALUOp = 5'd3;//DIV from ALUOps
+    end else if (op == (SPECIAL & (funct == DIVU)))begin
+        CtrlALUOp = 5'd23;//DIVU from ALUOps
+    end else if (op == (LB | LBU | LH | LHU | LW | LWL | LWR | SB | SBH | SW))begin
+        CtrlALUOp = 5'd0;//ADD from ALUOps
+    end else if (op == LUI)begin
+        CtrlALUOp = 5'd7;//SLL from ALUOps
+    end else if (op == (SPECIAL & (funct == MTHI | MTLO)))begin
+        CtrlALUOp = 5'd19;//PAS from ALUOps
+    end else if (op == (SPECIAL & (funct == MULT)))begin
+        CtrlALUOp = 5'd2;//MUL from ALUOps
+    end else if (op == (SPECIAL & (funct == MULTU)))begin
+        CtrlALUOp = 5'd22;//MULU from ALUOps
+    end else if (op == (ORI | (SPECIAL & (funct == OR))))begin
+        CtrlALUOp = 5'd5;//OR from ALUOps
+    end else if (op == (SPECIAL & (funct == SLL)))begin
+        CtrlALUOp = 5'd7;//SLL from ALUOps
+    end else if (op == (SPECIAL & (funct == SLLV)))begin
+        CtrlALUOp = 5'd8;//SLLV from ALUOps
+    end else if (op == (SPECIAL & (funct == SRA)))begin
+        CtrlALUOp = 5'd11;//SRA from ALUOps
+    end else if (op == (SPECIAL & (funct == SRAV)))begin
+        CtrlALUOp = 5'd12;//SRAV from ALUOps
+    end else if (op == (SPECIAL & (funct == SRL)))begin
+        CtrlALUOp = 5'd9;//SRL from ALUOps
+    end else if (op == (SPECIAL & (funct == SRLV)))begin
+        CtrlALUOp = 5'd10;//SRLV from ALUOps
+    end else if (op == (SLTI | (SPECIAL & (funct == SLT))))begin
+        CtrlALUOp = 5'd20;//SLT from ALUOps
+    end else if (op == (SLTIU | (SPECIAL & (funct == SLTU))))begin
+        CtrlALUOp = 5'd21;//SLTU from ALUOps
+    end else if (op == (SPECIAL & (funct == SUBU)))begin
+        CtrlALUOp = 5'd1;//SUB from ALUOps
+    end else if (op == (XORI | (SPECIAL & (funct == XOR))))begin
+        CtrlALUOp = 5'd6;//XOR from ALUOps
+    end else begin
+        CtrlALUOp = 5'bxxxxx;
     end
-   
-   
+
+    //Ctrlshamt logic
+    if(op == (SPECIAL & (funct == (SRA | SRL | SLL))))begin
+        Ctrlshamt = Instr[10:6];// Shift amount piped in from the instruction
+    end else if(op == LUI)begin
+        Ctrlshamt = 5'd16;//Used specifically to implement LUI as the instruction itslef does not include shamt
+    end else begin Ctrlshamt = 5'bxxxxx;end
+
+    //CtrlMemWrite logic
+    if(op == (SB | SH | SW)begin
+        CtrlMemWrite = 1;//Memory is write enabled
+    end else begin CtrlMemWrite = 0;end//default is 0 to ensure no accidental overwriting.
+    
+    //CtrlALUSrc logic
+    if(op == (ADDIU | ANDI | LUI | ORI | SLTI | SLTIU | XORI | LB | LBU | LH | LHU | LW | LWL | LWR | SB | SH | SW)begin
+        CtrlALUSrc = 1;//ALU Bus B is fed from the 16-bit immediate sign extended to 32-bit value taken from Instr[15-0]
+    end else if (op == (BEQ | BGTZ | BLEZ | BNE | (REGIMM & (rt == (BGEZ | BGEZAL | BLTZ | BLTZAL)) (SPECIAL & (funct == (ADDU | AND | DIV | DIVU | MULT | MULTU | OR | SLLV | SLT | SLTU | SRAV | SRLV | SUBU | XOR)))))begin 
+        CtrlALUSrc = 0;///ALU Bus B is fed from rt.
+    end else begin CtrlALUSrc = 1'bx;end
+
+    //CtrlRegWrite logic
+    if(op == (ADDIU | ANDI | LB | LBU | LH | LHU | LUI | LW | LWL | LWR | ORI | SLTI | SLTIU | XORI | (SPECIAL & (funct == (ADDU | AND | DIV | DIVU | MULT | MULTU | JALR | OR | SLL | SLLV | SLT | SLTU | SRA | SRAV | SRL | SRLV | SUBU | XOR)))))begin
+        CtrlRegWrite = 1;//The Registers are Write Enabled
+    end else begin CtrlRegWrite = 0;end // The Registers are Write Disabled
+    
+end
 endmodule
