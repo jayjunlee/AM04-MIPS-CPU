@@ -181,14 +181,14 @@ always_comb begin
     end else begin Ctrlshamt = 5'bxxxxx;end
 
     //CtrlMemWrite logic
-    if(op == (SB | SH | SW)begin
+    if(op == (SB | SH | SW))begin
         CtrlMemWrite = 1;//Memory is write enabled
     end else begin CtrlMemWrite = 0;end//default is 0 to ensure no accidental overwriting.
     
     //CtrlALUSrc logic
-    if(op == (ADDIU | ANDI | LUI | ORI | SLTI | SLTIU | XORI | LB | LBU | LH | LHU | LW | LWL | LWR | SB | SH | SW)begin
+    if(op == (ADDIU | ANDI | LUI | ORI | SLTI | SLTIU | XORI | LB | LBU | LH | LHU | LW | LWL | LWR | SB | SH | SW))begin
         CtrlALUSrc = 1;//ALU Bus B is fed from the 16-bit immediate sign extended to 32-bit value taken from Instr[15-0]
-    end else if (op == (BEQ | BGTZ | BLEZ | BNE | (REGIMM & (rt == (BGEZ | BGEZAL | BLTZ | BLTZAL)) (SPECIAL & (funct == (ADDU | AND | DIV | DIVU | MULT | MULTU | OR | SLLV | SLT | SLTU | SRAV | SRLV | SUBU | XOR)))))begin 
+    end else if (op == (BEQ | BGTZ | BLEZ | BNE | (REGIMM & (rt == (BGEZ | BGEZAL | BLTZ | BLTZAL))) | (SPECIAL & (funct == (ADDU | AND | DIV | DIVU | MULT | MULTU | OR | SLLV | SLT | SLTU | SRAV | SRLV | SUBU | XOR)))))begin 
         CtrlALUSrc = 0;///ALU Bus B is fed from rt.
     end else begin CtrlALUSrc = 1'bx;end
 
