@@ -23,13 +23,15 @@ module mips_cpu_harvard(
 //Control Flags
 logic Jump, Branch, ALUSrc, ALUZero, RegWrite;
 logic[5:0] ALUOp = instr_readdata[31:26];
-logic[999999999999999999999999999999999999999999999999999999999999999999:0] ALUFlags;
+logic[30:0] ALUFlags; //Not sure if this is needed anymore
 logic[1:0] RegDst, MemtoReg;
 
 //PC wires
 logic[31:0] pc_curr;
-logic[31:0] pc_next = Jump ? Jump_addr : PCSrc ? {pc_curr+4+{{14{instr_readdata[15]}}, instr_readdata[15:0], 2'b00}} : {pc_curr+4};
-logic[31:0] Jump_addr = {{pc_curr+4}[31:28], instr_readdata[25:0], 2'b00};
+logic[31:0] pc_curr_next = pc_curr + 3'd4; //Added due to compilation error
+logic[31:0] pc_delay; //Added due to compilation error
+logic[31:0] Jump_addr = {pc_curr_next[31:28], instr_readdata[25:0], 2'b00};
+logic[31:0] pc_next = Jump ? Jump_addr : PCSrc ? {pc_curr_next + {{14{instr_readdata[15]}}, instr_readdata[15:0], 2'b00}} : pc_curr_next;
 logic PCSrc = Branch && ALUZero;
 
 //Instruction MEM
@@ -54,7 +56,7 @@ assign data_address = ALUOut; //address to be written to comes from ALU
 assign data_writedata = read_data2; //data to be written comes from reg read bus 2
 
 //Writeback logic
-logic[31:0] writeback = MemtoReg==2'b10 ? {pc_curr+4} : MemtoReg==2'b01 ? data_readdata : ALUOut;
+logic[31:0] writeback = MemtoReg==2'b10 ? {pc_curr_next} : MemtoReg==2'b01 ? data_readdata : ALUOut;
 
 always_ff @(posedge clk) begin
     pc_delay <= pc_curr;
@@ -67,16 +69,16 @@ pc pc(
 .pc_out(pc_curr)
 );
 
-control control( //control flags block
-.opcode(opcode), //opcode to be decoded
-.jump(Jump), //jump flag: 0 - increment or branch, 1 - J-type jump
-.branch(Branch), //branch flag: 0 - increment, 1 - branch if ALU.Zero == 1
-.memread(data_read), //tells data memory to read out data at dMEM[ALUout]
-.memtoreg(MemtoReg), //0: writeback = ALUout, 1: writeback = data_readdata
-.memwrite(data_write), //tells data memory to store data_writedata at data_writeaddress
-.alusrc(ALUSrc), //0: ALUin2 = read_data2, 1: ALUin2 = signextended(instr_readdata[15:0])
-.regwrite(RegWrite), //tells register file to write writeback to rd
-.regdst(RegDst) //select Rt, Rd or $ra to store to
+mips_cpu_control control( //control flags block
+.Instr(opcode), //opcode to be decoded
+.Jump(Jump), //jump flag: 0 - increment or branch, 1 - J-type jump
+.Branch(Branch), //branch flag: 0 - increment, 1 - branch if ALU.Zero == 1
+.Memread(data_read), //tells data memory to read out data at dMEM[ALUout]
+.Memtoreg(MemtoReg), //0: writeback = ALUout, 1: writeback = data_readdata
+.Memwrite(data_write), //tells data memory to store data_writedata at data_writeaddress
+.Alusrc(ALUSrc), //0: ALUin2 = read_data2, 1: ALUin2 = signextended(instr_readdata[15:0])
+.Regwrite(RegWrite), //tells register file to write writeback to rd
+.Regdst(RegDst) //select Rt, Rd or $ra to store to
 );
 
 regfile regfile(
@@ -91,19 +93,20 @@ regfile regfile(
 .readdata2(read_data2), //read port 2 output
 .regv0(register_v0) //debug output of $v0 or $2 (first register for returning function results
 );
-
+/*
 alucontrol alucontrol(
 .ALUOp(ALUOp), //opcode of instruction
 .funct(immediate[5:0]), //funct of instruction
 .aluflags(ALUFlags) //ALU Control flags
 );
-
-alu alu(
-.ALUFlags(ALUFlags), //selects the operation carried out by the ALU
+*/
+mips_cpu_alu alu(
+//.ALUFlags(ALUFlags), //selects the operation carried out by the ALU
 .A(alu_in1), //operand 1
 .B(alu_in2), //operand 2
-.ALUzero(ALUZero), //is the result zero, used for checks
-.ALUOut(ALUOut), //output/result of operation
-.shamt(shamt)
+.ALUCond(ALUZero), //is the result zero, used for checks
+.ALURes(ALUOut), //output/result of operation
+.shamt(shamt),
+.ALUOp(ALUOp)
 );
 endmodule : mips_cpu_harvard

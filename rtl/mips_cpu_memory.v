@@ -42,18 +42,20 @@ module mips_cpu_memory(
         //Load contents from file if specified
         if (RAM_INIT_FILE != "") begin
             $display("RAM : INIT : Loading RAM contents from %s", RAM_INIT_FILE);
-            $readmemh(RAM_INIT_FILE, memory[3217031168:0]);
+            $readmemh(RAM_INIT_FILE, memory, 32'hBFC00000, 32'd0);
         end
     end
 
     //Combinatorial read path for data and instruction.
-    if (clk == 1) begin
-        assign data_readdata = data_read ? memory[data_address] : 16'hxxxx;
-        assign instr_readdata = memory[instr_address];
-    end
-    else begin
-        assign data_readdata = data_readdata;
-        assign instr_readdata = instr_address;
+    always_comb begin
+        if (clk == 1'd1) begin
+            data_readdata = data_read ? memory[data_address] : 16'hxxxx;
+            instr_readdata = memory[instr_address];
+        end
+        else begin
+            data_readdata = data_readdata;
+            instr_readdata = instr_address;
+        end
     end
 
 

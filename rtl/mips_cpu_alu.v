@@ -5,7 +5,7 @@ module mips_cpu_alu(
     input logic [4:0] shamt, //5-bit input used to specify shift amount for shift operations. Taken directly from the R-type instruction (Non-Variable) or from 
 
     output logic ALUCond, //If a relevant condition is met, this output goes high(Active High). Note: Relevant as in related to current condition being tested.
-    output signed logic[31:0] ALURes, // The ouput of the ALU 
+    output logic signed[31:0] ALURes // The ouput of the ALU 
 );
 
 /*  
@@ -73,7 +73,7 @@ Alu Operations:
 
 Ops ALUOps; //Note confusing naming to avoid potential duplicate variable naming errors, as a result of enum implemetnation.
 
-assign ALUOps = ALUOp
+assign ALUOps = ALUOp;
 
   always_comb begin
 
@@ -97,39 +97,39 @@ assign ALUOps = ALUOp
       end
 
       AND: begin
-          ALUOut = A & B;
+          ALURes = A & B;
       end
 
       OR: begin
-          ALUOut = A | B;
+          ALURes = A | B;
       end
 
       XOR: begin
-          ALUOut = A^B;
+          ALURes = A^B;
       end
 
       SLL: begin
-          ALUOut = B << shamt;
+          ALURes = B << shamt;
       end
 
       SLLV: begin
-          ALUOut = B << A;
+          ALURes = B << A;
       end
 
       SRL: begin
-          ALUOut = B >> shamt;
+          ALURes = B >> shamt;
       end
 
       SRLV: begin
-          ALUOut = B >> A;
+          ALURes = B >> A;
       end
 
       SRA: begin
-          ALUOut = B >>> shamt;
+          ALURes = B >>> shamt;
       end
 
       SRAV: begin
-          ALUOut = B >>> A;
+          ALURes = B >>> A;
       end
    
       EQ: begin
