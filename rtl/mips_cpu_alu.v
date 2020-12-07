@@ -77,8 +77,6 @@ assign ALUOps = ALUOp;
 
   always_comb begin
 
-
-
     case(ALUOps)
       ADD: begin
           ALURes = $signed(A) + $signed(B);

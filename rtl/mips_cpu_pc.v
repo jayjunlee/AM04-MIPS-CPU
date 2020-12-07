@@ -9,17 +9,19 @@ reg[31:0] pc_curr;
 
 initial begin
 	pc_curr = 32'hBFC00000;
-end : initial
+end // initial
 
 always_comb begin
 	if (rst) begin
 		pc_curr = 32'hBFC00000;
+	end else begin
+		pc_curr = pc_in;
 	end
-	pc_out = pc_curr;
+	
 end
 
 always_ff @(posedge clk) begin
-	pc_curr <= pc_in;
+	pc_out <= pc_curr;
 end
 
-endmodule : pc
+endmodule // pc

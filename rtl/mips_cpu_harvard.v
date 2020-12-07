@@ -7,106 +7,143 @@ module mips_cpu_harvard(
 
     /* New clock enable. See below. */
     input logic clk_enable,
-
+    
     /* Combinatorial read access to instructions */
-    output logic[31:0] instr_address,
-    input logic[31:0] instr_readdata,
+    output logic[31:0] instr_address,//Port from PC out to instruction memory address input.
+    input logic[31:0] instr_readdata,//port from instruction memory out, going to various inputs.
 
     /* Combinatorial read and single-cycle write access to instructions */
-    output logic[31:0] data_address,
-    output logic data_write,
-    output logic data_read,
-    output logic[31:0] data_writedata,
-    input logic[31:0] data_readdata
+    output logic[31:0] data_address,//Port from ALURes going into Data Memory 'Address' port
+    output logic data_write,//Control line from 'control' CtrlMemWrite enabling/disabling write access for Data Memory.
+    output logic data_read,//Control line from 'control' CtrlMemRead enabling/disabling read access for Data Memory.
+    output logic[31:0] data_writedata,//Data from Register file 'Read data 2' port, aka rt's data, going to 'Write data' port on Data Memory.
+    input logic[31:0] data_readdata//port from data memory out, going to the 'Write Register' port in regfile.
 );
 
-//Control Flags
-logic Jump, Branch, ALUSrc, ALUZero, RegWrite;
-logic[5:0] ALUOp = instr_readdata[31:26];
-logic[30:0] ALUFlags; //Not sure if this is needed anymore
-logic[1:0] RegDst, MemtoReg;
+always_comb begin
+    instr_address   = out_pc_out;
+    data_address    = out_ALURes;
+    data_write      = out_MemWrite;
+    data_read       = out_MemRead;
+    data_writedata  = out_readdata2;
+end
 
-//PC wires
-logic[31:0] pc_curr;
-logic[31:0] pc_curr_next = pc_curr + 3'd4; //Added due to compilation error
-logic[31:0] pc_delay; //Added due to compilation error
-logic[31:0] Jump_addr = {pc_curr_next[31:28], instr_readdata[25:0], 2'b00};
-logic[31:0] pc_next = Jump ? Jump_addr : PCSrc ? {pc_curr_next + {{14{instr_readdata[15]}}, instr_readdata[15:0], 2'b00}} : pc_curr_next;
-logic PCSrc = Branch && ALUZero;
+logic[31:0] in_pc_in;
+logic[4:0]  in_readreg1;
+logic[4:0]  in_readreg2;
+logic[4:0]  in_writereg;
+logic[31:0] in_writedata;
+logic[5:0]  in_opcode;
+logic[31:0] in_B;
 
-//Instruction MEM
-assign instr_address = pc_delay;
+always_comb begin
 
-//deconstruction of instruction :)
-logic[5:0] opcode = instr_readdata[31:26];
-logic[4:0] rs = instr_readdata[25:21];
-logic[4:0] rt = instr_readdata[20:16];
-logic[4:0] rd = RegDst==2'b10 ? 5'b11111 : RegDst==2'b01 ? instr_readdata[15:11] : instr_readdata[20:16];
-logic[15:0] immediate = instr_readdata[15:0];
-logic[4:0] shamt = instr_readdata[10:6]; // Shamt needed for the sll instruction
+    in_readreg1 = instr_readdata[25:21];
+    in_readreg2 = instr_readdata[20:16];
+    in_opcode   = instr_readdata[31:26];
 
+//Picking what the next value of PC should be.
+    case(out_PC)
+        2'd0: begin
+            in_pc_in = out_pc_out + 32'd4;//No branch or jump or load, so no delay slot.
+        end
+        2'd1: begin
+            in_pc_in = //help
+        end
+        2'd2: begin
+            in_pc_in = //my brain hurts
+        end
+        2'd3: begin
+            in_pc_in = //I need to sleep......
+        end
+    endcase
 
-//ALU Data
-logic[31:0] alu_in1 = read_data1;
-logic[31:0] alu_in2 = ALUSrc ? {{16{immediate[15]}},immediate} : read_data2;
-logic[31:0] ALUOut;
+//Picking what register should be written to.
+    case(out_RegDst)
+        2'd0:begin
+            in_writereg = instr_readdata[20:16];//GPR rt
+        end
+        2'd1:begin
+            in_writereg = instr_readdata[15:11];//GPR rd
+        end
+        2'd2:begin
+            in_writereg = 5'd31;//Link Register 31.
+        end
+    endcase
 
-//Data MEM
-assign data_address = ALUOut; //address to be written to comes from ALU
-assign data_writedata = read_data2; //data to be written comes from reg read bus 2
+//Picking which output should be written to regfile.
+    case(out_MemtoReg)
+        2'd0:begin
+            in_writedata = out_ALURes;//Output from ALU Result.
+        end
+        2'd1:begin
+            in_writedata = data_readdata;//Output from Data Memory.
+        end
+        2'd2:begin
+            in_writedata = (out_pc_out + 32'd8);//Output from PC +8.
+        end
+    endcase
 
-//Writeback logic
-logic[31:0] writeback = MemtoReg==2'b10 ? {pc_curr_next} : MemtoReg==2'b01 ? data_readdata : ALUOut;
-
-always_ff @(posedge clk) begin
-    pc_delay <= pc_curr;
+//Picking which output should be taken as the second operand for ALU.
+    case(out_ALUSrc)
+        1'b1:begin
+            in_B = {{16{instr_readdata[15]}},instr_readdata[15:0]};//Output from the 16-bit immediate values sign extened to 32bits.
+        end
+        1'b0:begin
+            in_B = out_readdata2;//Output from 'Read data 2' port of regfile.
+        end
+    endcase
 end
 
 pc pc(
-.clk(clk),
-.rst(reset),
-.pc_in(pc_next),
-.pc_out(pc_curr)
+//PC inputs
+    .clk(clk),//clk taken from the Standard signals
+    .rst(reset),//clk taken from the Standard signals
+    .pc_in(in_pc_in),//what the pc will output on the next clock cycle taken from either: PC itself + 4(Normal/Default Operation); or 16-bit signed valued taken from Instr[15-0] sign extend to 32bit then shifted by 2 then added to PC + 4(Branch Operation); or 26-bit instruction address taken from J-type instr[25-0] shifted left by 2 then concatanated to form Jump Address (PC-region branch); or from the GPR rs.
+//PC outputs
+    .pc_out(out_pc_out)//What the pc outputs at every clock edge that goes into the 'Read address' port of Instruction Memory.
 );
 
-mips_cpu_control control( //control flags block
-.Instr(opcode), //opcode to be decoded
-.Jump(Jump), //jump flag: 0 - increment or branch, 1 - J-type jump
-.Branch(Branch), //branch flag: 0 - increment, 1 - branch if ALU.Zero == 1
-.Memread(data_read), //tells data memory to read out data at dMEM[ALUout]
-.Memtoreg(MemtoReg), //0: writeback = ALUout, 1: writeback = data_readdata
-.Memwrite(data_write), //tells data memory to store data_writedata at data_writeaddress
-.Alusrc(ALUSrc), //0: ALUin2 = read_data2, 1: ALUin2 = signextended(instr_readdata[15:0])
-.Regwrite(RegWrite), //tells register file to write writeback to rd
-.Regdst(RegDst) //select Rt, Rd or $ra to store to
+mips_cpu_control control( //instance of the 'mips_cpu_control' module called 'control' in top level 'harvard'
+//Inputs to control
+    .Instr(instr_readdata), //Full instruction taken from the Instruction Memory.
+    .ALUCond(out_ALUCond), //Active high condition check from ALU
+//Outputs from control
+    .CtrlRegDst(out_RegDst),
+    .CtrlPC(out_PC),
+    .CtrlMemRead(out_MemRead),
+    .CtrlMemtoReg(out_MemtoReg),
+    .CtrlALUOp(out_ALUOp),
+    .Ctrlshamt(out_shamt),
+    .CtrlMemWrite(out_MemWrite),
+    .CtrlALUSrc(out_ALUSrc),
+    .CtrlRegWrite(out_RegWrite)
 );
 
-regfile regfile(
-.clk(clk), //clock input for triggering write port
-.readreg1(rs), //read port 1 selector
-.readreg2(rt), //read port 2 selector
-.writereg(rd), //write port selector
-.writedata(writeback), //write port input data
-.regwrite(RegWrite), //enable line for write port
-.opcode(opcode), //opcode input for controlling partial load weirdness
-.readdata1(read_data1), //read port 1 output
-.readdata2(read_data2), //read port 2 output
-.regv0(register_v0) //debug output of $v0 or $2 (first register for returning function results
+mips_cpu_regfile regfile(
+//Inputs to refile
+    .clk(clk), //clock input for triggering write port
+    .readreg1(in_readreg1), //read port 1 selector
+    .readreg2(in_readreg2), //read port 2 selector
+    .writereg(in_writereg), //write port selector
+    .writedata(in_writedata), //write port input data
+    .regwrite(out_RegWrite), //enable line for write port
+    .opcode(in_opcode), //opcode input for controlling partial load weirdness
+//Outputs from regfile
+    .readdata1(out_readdata1), //read port 1 output
+    .readdata2(out_readdata2), //read port 2 output
+    .regv0(register_v0) //debug output of $v0 or $2 (first register for returning function results
 );
-/*
-alucontrol alucontrol(
-.ALUOp(ALUOp), //opcode of instruction
-.funct(immediate[5:0]), //funct of instruction
-.aluflags(ALUFlags) //ALU Control flags
-);
-*/
+
 mips_cpu_alu alu(
-//.ALUFlags(ALUFlags), //selects the operation carried out by the ALU
-.A(alu_in1), //operand 1
-.B(alu_in2), //operand 2
-.ALUCond(ALUZero), //is the result zero, used for checks
-.ALURes(ALUOut), //output/result of operation
-.shamt(shamt),
-.ALUOp(ALUOp)
+//Inputs to ALU
+    .A(out_readdata1), //operand 1 taken from 'Read data 1' aka the data stored in GPR rs.
+    .B(in_B), //operand 2 taken either from: 'Read data 2' aka the data stored in rt; or 16-bit immediate sign extended to 32 bits.
+    .ALUOp(out_ALUOp), //Operation selection for ALU decided, and output by control.
+    .shamt(out_shamt), //Shift amount required for shift instruction taken from control.
+//Outputs from ALU
+    .ALUCond(out_ALUCond), //condition used by control to decide on branch instructions.
+    .ALURes(out_ALURes) //output/result of operation that goes to either: 'Address' port of Data Memory; or 'Write Data' port of the register file.
 );
-endmodule : mips_cpu_harvard
+
+endmodule

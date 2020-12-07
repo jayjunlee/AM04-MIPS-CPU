@@ -3,10 +3,10 @@ module mips_cpu_control(
     input logic[31:0] Instr,
     input logic ALUCond,
     
-    output logic CtrlRegDst,
+    output logic[1:0] CtrlRegDst,
     output logic[1:0] CtrlPC,
     output logic CtrlMemRead,
-    output logic CtrlMemtoReg,
+    output logic[1:0] CtrlMemtoReg,
     output logic[4:0] CtrlALUOp,
     output logic[4:0] Ctrlshamt,
     output logic CtrlMemWrite,
@@ -19,7 +19,7 @@ module mips_cpu_control(
 logic[5:0] funct;
 logic[4:0] rt; */
 
-/* assign op       = Instr[31:26];
+/* assign op    = Instr[31:26];
 assign funct    = Instr[5:0];
 assign rt       = Instr[20:16]; */
 
@@ -93,27 +93,31 @@ always_comb begin
     
     //CtrlRegDst logic
     if(op == (ADDIU | ANDI | LB | LBU | LH | LHU | LUI | LW | LWL | LWR | ORI | SLTI | SLTIU | XORI))begin
-        CtrlRegDst = 0; //Write address comes from rt
+        CtrlRegDst = 2'd0; //Write address comes from rt
     end else if (op == (SPECIAL & (funct == (ADDU | AND | JALR | OR | SLL | SLLV | SLT | SLTU | SRA | SRAV | SRL | SRLV | SUBU | XOR))))begin
-        CtrlRegDst = 1; //Write address comes from rd
+        CtrlRegDst = 2'd1; //Write address comes from rd
+    end else if (op == JAL)begin
+        CtrlRegDst = 2'd2; //const reg 31, for writing to the link register
     end else begin CtrlRegDst = 1'bx; end//Not all instructions are encompassed so, added incase for debug purposes
 
     //CtrlPC logic
-    if(op == (BEQ | BGTZ | BLEZ | BNE | (REGIMM & (rt == (BGEZ | BGEZAL | BLTZ | BLTZAL)))))begin
+    if(ALUCond & (op == (BEQ | BGTZ | BLEZ | BNE | (REGIMM & (rt == (BGEZ | BGEZAL | BLTZ | BLTZAL))))))begin
         CtrlPC = 2'd1; // Branches - Jumps relative to PC
     end else if(op == (J | JAL))begin
         CtrlPC = 2'd2; // Jumps within 256MB Region using 26-bit immediate in J type instruction
     end else if(op == (JR | JALR))begin
         CtrlPC = 2'd3; // Jumps using Register.
-    end else begin CtrlPC = 2'd0;end // No jumps, just increment to next word
+    end else begin CtrlPC = 2'd0;end // No jumps or branches, just increment to next word
 
     //CtrlMemRead and CtrlMemtoReg logic -- Interesting quirk that they have the same logic. Makes sense bc you'd only want to select the read data out when the memory itself is read enabled.
     if(op == (LB | LBU | LH | LHU | LW | LWL | LWR))begin
         CtrlMemRead = 1;//Memory is read enabled
-        CtrlMemtoReg = 1;//write data port of memory is fed from data memory
+        CtrlMemtoReg = 2'd1;//write data port of memory is fed from data memory
     end else if (op == (ADDIU | ANDI | ORI | SLTI | SLTIU | XORI | (SPECIAL & (funct == (ADDU | AND | DIV | DIVU | MTHI | MTLO | MULT | MULTU | OR |  SLL | SLLV | SLT | SLTU | SRA | SRAV | SRL | SRLV | SUBU | XOR)))))begin
         CtrlMemRead = 0;//Memory is read disabled
-        CtrlMemtoReg = 0;//write data port of memory if fed from ALURes
+        CtrlMemtoReg = 2'd0;//write data port of memory is fed from ALURes
+    end else if (op == (JAL | (SPECIAL &(funct == JALR))))begin
+        CtrlMemtoReg = 2'd2;//write data port of memory is fed from PC + 8
     end else begin CtrlMemRead = 1'bx;end//Not all instructions are encompassed so, added incase for debug purposes
 
     //CtrlALUOp Logic

@@ -1,8 +1,8 @@
-module regfile(
+module mips_cpu_regfile(
 input logic clk, //clock input for triggering write port
-input logic[4:0] readreg1, //read port 1 selector
-input logic[4:0] readreg2, //read port 2 selector
-input logic[4:0] writereg, //write port selector
+input logic[4:0] readreg1, //read port 1 register selector
+input logic[4:0] readreg2, //read port 2 register selector
+input logic[4:0] writereg, //write port register selector
 input logic[31:0] writedata, //write port input data
 input logic regwrite, //enable line for write port
 input[5:0] opcode, //opcode input for controlling partial load weirdness
@@ -80,4 +80,4 @@ always_ff @(negedge clk) begin
 	end
 end
 
-endmodule : regfile
+endmodule
