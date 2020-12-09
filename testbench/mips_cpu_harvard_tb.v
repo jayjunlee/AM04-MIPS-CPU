@@ -1,14 +1,10 @@
 module mips_cpu_harvard_tb;
-    timeunit 1ns / 10ps;
 
-    parameter RAM_INIT_FILE = "inputs/";
-    parameter TIMEOUT_CYCLES = 10000;
+    parameter RAM_INIT_FILE = "inputs/addu.txt";
+    parameter TIMEOUT_CYCLES = 100;
 
-    logic clk, clk_enable, reset, active;
-    logic[31:0] register_v0;
-    logic[31:0] instr_address, instr_readdata;
-    logic data_read, data_write;
-    logic[31:0] data_readdata, data_writedata, data_address;
+    logic clk, clk_enable, reset, active, data_read, data_write;
+    logic[31:0] register_v0, instr_address, instr_readdata, data_readdata, data_writedata, data_address;
 
     mips_cpu_memory #(RAM_INIT_FILE) ramInst(
         .clk(clk), 
@@ -50,24 +46,29 @@ module mips_cpu_harvard_tb;
     end
 
     initial begin
+        $display("Initial Reset 0");
         reset <= 0;
-
+        
+        
+        $display("Initial Reset 1");
         @(posedge clk);
         reset <= 1;
 
+        $display("Initial Reset 0: Start Program");
         @(posedge clk);
         reset <= 0;
 
         @(posedge clk);
-        assert(active==1) // Is this assert still valid?
-        else $display("TB : CPU did not set active=1 after reset.");
+        assert(active==1);
+        else $display("TB: CPU did not set active=1 after reset.");
 
         while (active) begin
             @(posedge clk);
+            $display("Register v0: %d", register_v0);
         end
 
-        $display("TB : finished; running=0");
-        $display("%d",register_v0);
+        $display("TB: finished; active=0");
+        $display("Output: %d", register_v0);
         $finish;
 
     end

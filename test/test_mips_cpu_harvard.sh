@@ -23,41 +23,30 @@ echo ${INSTR};
 if [[ ${INSTR} == "No instruction specified: running all testcases" ]];
 then
     # All Testcase Files
-    TESTCASES=$(ls ./inputs | grep ".hex.txt");
+    TESTCASES=$(ls ./inputs | grep ".txt");
     echo ${TESTCASES}
     for TESTCASE in ${TESTCASES}
     do
-        # Run Each Testcase File
-        echo ${TESTCASE}
-#iverilog -g 2012 \
-#        -s mips_cpu_harvard_tb \
-#        -P mips_cpu_harvard_tb.RAM_INIT_FILE=\"inputs/"${TESTCASE}\" \
-#        -o program/mips_cpu_harvard_tb_${INSTR} testbench/mips_cpu_harvard_tb.v \
-#           ${SRC}
+    # Run Each Testcase File
+    echo ${TESTCASE}
+/mnt/c/Windows/System32/cmd.exe /C \
+iverilog -Wall -g2012 \
+    -s mips_cpu_harvard_tb \
+    -P mips_cpu_harvard_tb.RAM_INIT_FILE=\"inputs/${TESTCASE}.txt\" \
+    -o exec/mips_cpu_harvard_tb_${TESTCASE} testbench/mips_cpu_harvard_tb.v \
+    ${SRC}
+/mnt/c/Windows/System32/cmd.exe /C vvp ./exec/mips_cpu_harvard_tb_${TESTCASE};
     done
 
 else
-    echo ${INSTR};
     # Run Testcase File Of Specified Instruction
-# Windows Iverilog with WSL
-#/mnt/c/Windows/System32/cmd.exe /C iverilog -g2012 \
-#    -s mips_cpu_harvard_tb \
-#    -P mips_cpu_harvard_tb.RAM_INIT_FILE=\"inputs/${INSTR}.txt\" \
-#    -o program/mips_cpu_harvard_tb_${INSTR} testbench/mips_cpu_harvard_tb.v \
-#    ${SRC}
-
-# Linux Iverilog
-iverilog -g2012 \
+    echo ${INSTR};
+/mnt/c/Windows/System32/cmd.exe /C \
+iverilog -Wall -g2012 \
     -s mips_cpu_harvard_tb \
     -P mips_cpu_harvard_tb.RAM_INIT_FILE=\"inputs/${INSTR}.txt\" \
-    -o program/mips_cpu_harvard_tb_${INSTR} testbench/mips_cpu_harvard_tb.v \
+    -o exec/mips_cpu_harvard_tb_${INSTR} testbench/mips_cpu_harvard_tb.v \
     ${SRC}
+/mnt/c/Windows/System32/cmd.exe /C vvp ./exec/mips_cpu_harvard_tb_${INSTR};
 fi
-
-#/mnt/c/Windows/System32/cmd.exe /C \ # need this to run verilog on windows
-#iverilog -g 2012 \
-#   -s mips_cpu_harvard_tb \
-#   -P mips_cpu_harvard_tb.RAM_INIT_FILE=\"inputs/addiu.hex.txt\" \
-#   -o program/mips_cpu_harvard_tb testbench/mips_cpu_harvard_tb.v test/mips_cpu_harvard.v \ 
-#    test/mips_cpu_control.v test/mips_cpu_alu.v test/mips_cpu_memory.v test/mips_cpu_regfile.v test/mips_cpu_pc.v
 

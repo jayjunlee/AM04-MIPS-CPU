@@ -15,12 +15,11 @@ reg[31:0] memory [31:0]; //32 register slots, 32-bits wide
 
 initial begin
 	integer i; //Initialise to zero by default
-    for (i = 1; i < 32; i++) begin
+    for (i = 0; i < 32; i++) begin
         memory[i] = 0;
     end
 end
 
-assign memory[0] = 32'h00000000;
 assign regv0 = memory[2]; //assigning debug $v0 line to $2 of memory
 
 always_comb begin
@@ -29,7 +28,9 @@ always_comb begin
 end
 
 always_ff @(negedge clk) begin
-	if (regwrite) begin
+	if (writereg == 5'b00000) begin
+		// skip writing if rd is $0
+	end else if (regwrite) begin
 		case (opcode)
 			6'b100000: begin //lb, load byte
 				case (readdata1[1:0])
