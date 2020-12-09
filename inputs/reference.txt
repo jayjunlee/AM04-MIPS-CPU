@@ -188,10 +188,87 @@ register_v0 = 1
 
 DIV	Divide
 DIVU	Divide unsigned
-J	Jump
-JALR	Jump and link register
-JAL	Jump and link
-JR	Jump register
+
+==J	Jump==
+J 4
+NOP
+JR $0
+NOP
+ORI $2,$0,1
+JR $0
+
+08000004
+00000000
+00000008
+00000000
+34020001
+00000008
+
+register_v0 = 1
+
+==JALR	Jump and link register==
+ORI $5,$0,1C
+LUI $5,BFC0
+JALR $4,$5
+NOP
+ADDIU $2,$2,1
+JR $0
+NOP
+ORI $2,$0,1
+JR $4
+
+3405001C
+3C05BCF0
+00A02009
+00000000
+24420001
+00000008
+00000000
+34020001
+00800008
+24C60000
+
+register_v0 = 2
+
+==JAL	Jump and link==
+JAL 5
+NOP
+ADDIU $2,$2,1
+JR $0
+NOP
+ORI $2,$0,1
+JR $31
+
+0C000005
+00000000
+24420001
+00000008
+00000000
+34020001
+03E00008
+
+register_v0 = 2
+
+==JR	Jump register==
+ORI $5,$0,14
+LUI $5,BFC0  
+JR $5  
+NOP
+JR $0
+NOP
+ORI $2,$0,1
+JR $0
+
+34050014
+3C05BCF0
+00A00008
+00000000
+00000008
+34020001
+00000008
+
+register_v0 = 1
+
 LB	Load byte
 LBU	Load byte unsigned
 LH	Load half-word
