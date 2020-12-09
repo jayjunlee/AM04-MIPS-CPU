@@ -92,114 +92,114 @@ assign rt   = Instr[20:16];
 always_comb begin
     
     //CtrlRegDst logic
-    if(op == (ADDIU | ANDI | LB | LBU | LH | LHU | LUI | LW | LWL | LWR | ORI | SLTI | SLTIU | XORI))begin
+    if((op==ADDIU) || (op==ANDI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LUI) || (op==LW) || (op==LWL) || (op==LWR) || (op==ORI) || (op==SLTI) || (op==SLTIU) || (op==XORI))begin //
         CtrlRegDst = 2'd0; //Write address comes from rt
-    end else if (op == (SPECIAL & (funct == (ADDU | AND | JALR | OR | SLL | SLLV | SLT | SLTU | SRA | SRAV | SRL | SRLV | SUBU | XOR))))begin
+    end else if ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==JALR) || (funct==OR) || (funct==SLL) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRA) || (funct==SRAV) || (funct==SRL) || (funct==SRLV) || (funct==SUBU) || (funct==XOR)))begin//
         CtrlRegDst = 2'd1; //Write address comes from rd
     end else if (op == JAL)begin
         CtrlRegDst = 2'd2; //const reg 31, for writing to the link register
     end else begin CtrlRegDst = 1'bx; end//Not all instructions are encompassed so, added incase for debug purposes
 
     //CtrlPC logic
-    if(ALUCond & (op == (BEQ | BGTZ | BLEZ | BNE | (REGIMM & (rt == (BGEZ | BGEZAL | BLTZ | BLTZAL))))))begin
+    if(ALUCond && ((op==BEQ) || (op==BGTZ) || (op==BLEZ) || (op==BNE) || ((op==REGIMM)&&((rt==BGEZ) || (rt==BGEZAL) || (rt==BLTZ) || (rt==BLTZAL)))))begin
         CtrlPC = 2'd1; // Branches - Jumps relative to PC
-    end else if(op == (J | JAL))begin
+    end else if((op==J) || (op==JAL))begin
         CtrlPC = 2'd2; // Jumps within 256MB Region using 26-bit immediate in J type instruction
-    end else if(op == (JR | JALR))begin
+    end else if((op==JR) || (op==JALR))begin
         CtrlPC = 2'd3; // Jumps using Register.
     end else begin CtrlPC = 2'd0;end // No jumps or branches, just increment to next word
 
     //CtrlMemRead and CtrlMemtoReg logic -- Interesting quirk that they have the same logic. Makes sense bc you'd only want to select the read data out when the memory itself is read enabled.
-    if(op == (LB | LBU | LH | LHU | LW | LWL | LWR))begin
+    if((op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LW) || (op==LWL) || (op==LWR))begin
         CtrlMemRead = 1;//Memory is read enabled
         CtrlMemtoReg = 2'd1;//write data port of memory is fed from data memory
-    end else if (op == (ADDIU | ANDI | ORI | SLTI | SLTIU | XORI | (SPECIAL & (funct == (ADDU | AND | DIV | DIVU | MTHI | MTLO | MULT | MULTU | OR |  SLL | SLLV | SLT | SLTU | SRA | SRAV | SRL | SRLV | SUBU | XOR)))))begin
+    end else if ((op==ADDIU) || (op==ANDI) || (op==ORI) || (op==SLTI) || (op==SLTIU) || (op==XORI) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==DIV) || (funct==DIVU) ||  (funct==MTHI) ||  (funct==MTLO) ||  (funct==MULT) ||  (funct==MULTU) ||  (funct==OR) ||  (funct==SLL) ||  (funct==SLLV) ||  (funct==SLT) ||  (funct==SLTU) ||  (funct==SRA) ||  (funct==SRAV) ||  (funct==SRL) || (funct==SRLV) ||  (funct==SUBU) ||  (funct==XOR))))begin
         CtrlMemRead = 0;//Memory is read disabled
         CtrlMemtoReg = 2'd0;//write data port of memory is fed from ALURes
-    end else if (op == (JAL | (SPECIAL &(funct == JALR))))begin
+    end else if ((op==JAL) || ((op==SPECIAL)&&(funct == JALR)))begin
         CtrlMemtoReg = 2'd2;//write data port of memory is fed from PC + 8
     end else begin CtrlMemRead = 1'bx;end//Not all instructions are encompassed so, added incase for debug purposes
 
     //CtrlALUOp Logic
-    if(op == (ADDIU | (SPECIAL & (funct == ADDU))))begin
+    if((op==ADDIU) || ((op==SPECIAL)&&(funct==ADDU)))begin
         CtrlALUOp = 5'd0; //ADD from ALUOps
-    end else if (op == (ANDI | (SPECIAL & (funct == AND))))begin
+    end else if((op==ANDI) || ((op==SPECIAL)&&(funct==AND)))begin((op==ANDI) || ((op==SPECIAL)&&(funct==AND)))
         CtrlALUOp = 5'd4;//AND from ALUOps
-    end else if (op == BEQ) begin
+    end else if(op==BEQ) begin
         CtrlALUOp = 5'd13;//EQ from ALUOps
-    end else if (op == (REGIMM & (rt == (BGEZ | BGEZAL))))begin
+    end else if((op==REGIMM)&&((rt==BGEZ) || (rt==BGEZAL)))begin
         CtrlALUOp = 5'd17;//GEQ from ALUOps
-    end else if (op == BGTZ)begin
+    end else if(op==BGTZ)begin
         CtrlALUOp = 5'd16;//GRT from ALUOps
-    end else if (op == BLEZ)begin
+    end else if(op==BLEZ)begin
         CtrlALUOp = 5'd15;//LEQ from ALUOps
-    end else if (op == (REGIMM & (rt == (BLTZ | BLTZAL))))begin
+    end else if((op==REGIMM)&&((rt==BLTZ) || (rt==BLTZAL)))begin
         CtrlALUOp = 5'd14;//LES from ALUOps
-    end else if (OP == BNE)begin
+    end else if(op==BNE)begin
         CtrlALUOp = 5'd18;//NEQ from ALUOps
-    end else if (op == (SPECIAL & (funct == DIV)))begin
+    end else if((op==SPECIAL)&&(funct==DIV))begin
         CtrlALUOp = 5'd3;//DIV from ALUOps
-    end else if (op == (SPECIAL & (funct == DIVU)))begin
+    end else if((op==SPECIAL)&&(funct==DIVU))begin
         CtrlALUOp = 5'd23;//DIVU from ALUOps
-    end else if (op == (LB | LBU | LH | LHU | LW | LWL | LWR | SB | SBH | SW))begin
+    end else if((op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LW) || (op==LWL) || (op==LWR) || (op==SB) || (op==SBH) || (op==SW))begin
         CtrlALUOp = 5'd0;//ADD from ALUOps
-    end else if (op == LUI)begin
+    end else if(op==LUI)begin
         CtrlALUOp = 5'd7;//SLL from ALUOps
-    end else if (op == (SPECIAL & (funct == MTHI | MTLO)))begin
+    end else if((op==SPECIAL)&&((funct==MTHI) || (funct==MTLO)))begin
         CtrlALUOp = 5'd19;//PAS from ALUOps
-    end else if (op == (SPECIAL & (funct == MULT)))begin
+    end else if((op==SPECIAL)&&(funct==MULT))begin
         CtrlALUOp = 5'd2;//MUL from ALUOps
-    end else if (op == (SPECIAL & (funct == MULTU)))begin
+    end else if((op==SPECIAL)&&(funct==MULTU))begin
         CtrlALUOp = 5'd22;//MULU from ALUOps
-    end else if (op == (ORI | (SPECIAL & (funct == OR))))begin
+    end else if((op==ORI) || ((op==SPECIAL)&&(funct==OR)))begin
         CtrlALUOp = 5'd5;//OR from ALUOps
-    end else if (op == (SPECIAL & (funct == SLL)))begin
+    end else if((op==SPECIAL)&&(funct==SLL))begin
         CtrlALUOp = 5'd7;//SLL from ALUOps
-    end else if (op == (SPECIAL & (funct == SLLV)))begin
+    end else if((op==SPECIAL)&&(funct==SLLV))begin
         CtrlALUOp = 5'd8;//SLLV from ALUOps
-    end else if (op == (SPECIAL & (funct == SRA)))begin
+    end else if((op==SPECIAL)&&(funct==SRA))begin
         CtrlALUOp = 5'd11;//SRA from ALUOps
-    end else if (op == (SPECIAL & (funct == SRAV)))begin
+    end else if((op==SPECIAL)&&(funct==SRAV))begin
         CtrlALUOp = 5'd12;//SRAV from ALUOps
-    end else if (op == (SPECIAL & (funct == SRL)))begin
+    end else if((op==SPECIAL)&&(funct==SRL))begin
         CtrlALUOp = 5'd9;//SRL from ALUOps
-    end else if (op == (SPECIAL & (funct == SRLV)))begin
+    end else if((op==SPECIAL)&&(funct==SRLV))begin
         CtrlALUOp = 5'd10;//SRLV from ALUOps
-    end else if (op == (SLTI | (SPECIAL & (funct == SLT))))begin
+    end else if((op==SLTI) || ((op==SPECIAL)&&(funct==SLT)))begin
         CtrlALUOp = 5'd20;//SLT from ALUOps
-    end else if (op == (SLTIU | (SPECIAL & (funct == SLTU))))begin
+    end else if((op==SLTIU) || ((op==SPECIAL)&&(funct==SLTU)))begin
         CtrlALUOp = 5'd21;//SLTU from ALUOps
-    end else if (op == (SPECIAL & (funct == SUBU)))begin
+    end else if((op==SPECIAL)&&(funct==SUBU))begin
         CtrlALUOp = 5'd1;//SUB from ALUOps
-    end else if (op == (XORI | (SPECIAL & (funct == XOR))))begin
+    end else if((op==XORI) || ((op==SPECIAL)&&(funct==XOR)))begin
         CtrlALUOp = 5'd6;//XOR from ALUOps
     end else begin
         CtrlALUOp = 5'bxxxxx;
     end
 
     //Ctrlshamt logic
-    if(op == (SPECIAL & (funct == (SRA | SRL | SLL))))begin
+    if((op==SPECIAL)&&((funct==SRA) || (funct==SRL) || (funct==SLL)))begin
         Ctrlshamt = Instr[10:6];// Shift amount piped in from the instruction
     end else if(op == LUI)begin
         Ctrlshamt = 5'd16;//Used specifically to implement LUI as the instruction itslef does not include shamt
     end else begin Ctrlshamt = 5'bxxxxx;end
 
     //CtrlMemWrite logic
-    if(op == (SB | SH | SW))begin
+    if((op==SB) || (op==SH) || (op==SW))begin
         CtrlMemWrite = 1;//Memory is write enabled
     end else begin CtrlMemWrite = 0;end//default is 0 to ensure no accidental overwriting.
     
     //CtrlALUSrc logic
-    if(op == (ADDIU | ANDI | LUI | ORI | SLTI | SLTIU | XORI | LB | LBU | LH | LHU | LW | LWL | LWR | SB | SH | SW))begin
+    if((op==ADDIU) || (op==ANDI) || (op==LUI) || (op==ORI) || (op==SLTI) || (op==SLTIU) || (op==XORI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LW) || (op==LWL) || (op==LWR) || (op==SB) || (op==SH) || (op==SW))begin
         CtrlALUSrc = 1;//ALU Bus B is fed from the 16-bit immediate sign extended to 32-bit value taken from Instr[15-0]
-    end else if (op == (BEQ | BGTZ | BLEZ | BNE | (REGIMM & (rt == (BGEZ | BGEZAL | BLTZ | BLTZAL))) | (SPECIAL & (funct == (ADDU | AND | DIV | DIVU | MULT | MULTU | OR | SLLV | SLT | SLTU | SRAV | SRLV | SUBU | XOR)))))begin 
+    end else if((op==BEQ) || (op==BGTZ) || (op==BLEZ) || (op==BNE) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==DIV) || (funct==DIVU) || (funct==MULT) || (funct==MULTU) || (funct==OR) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRAV) || (funct==SRLV) || (funct==SUBU) || (funct==XOR))) || ((op==REGIMM)&&((rt==BGEZ) || (rt==BGEZAL) || (rt==BLTZ) || (rt==BLTZAL))))begin 
         CtrlALUSrc = 0;///ALU Bus B is fed from rt.
     end else begin CtrlALUSrc = 1'bx;end
-
+       
     //CtrlRegWrite logic
     if(op == (ADDIU | ANDI | LB | LBU | LH | LHU | LUI | LW | LWL | LWR | ORI | SLTI | SLTIU | XORI | (SPECIAL & (funct == (ADDU | AND | DIV | DIVU | MULT | MULTU | JALR | OR | SLL | SLLV | SLT | SLTU | SRA | SRAV | SRL | SRLV | SUBU | XOR)))))begin
         CtrlRegWrite = 1;//The Registers are Write Enabled
     end else begin CtrlRegWrite = 0;end // The Registers are Write Disabled
-    
+     ((op==ADDIU) || (op==ANDI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LUI) || (op==LW) || (op==LWL) || (op==LWR) || (op==ORI) || (op==SLTI) || (op==XORI) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==DIV) || (funct==DIVU) || (funct==MULT) || (funct==MULTU) || (funct==OR) || (funct==SLL) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRA) || (funct==SRAV) || (funct==SRL) || (funct==SRLV) || (funct==SUBU) || (funct==XOR))))
 end
 endmodule
