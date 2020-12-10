@@ -25,8 +25,25 @@ JR $0
 
 register_v0 = 8
 
-AND Bitwise and
-ANDI Bitwise and immediate
+==AND Bitwise and==
+
+ORI $5,$0,0xCCCC
+LUI $5,0xCCCC 
+ORI $4,$0,0xAAAA
+LUI $4,0xAAAA  
+AND  $2,$4,$5
+JR $0
+
+register_v0 = 0x88888888
+
+==ANDI Bitwise and immediate==
+
+ORI $4,$0,0xAAAA
+LUI $4,0xAAAA  
+ANDI  $2,$4,0xCCCC
+JR $0
+
+register_v0 = 0x00008888
 
 ==BEQ	Branch on equal==
 
@@ -114,7 +131,7 @@ register_v0 = 1
 
 ==BLEZ Branch on less than or equal to zero==
 
-ORI $4,$0,-1
+LUI $4,0xFFFF
 BLEZ $4,3
 NOP
 JR $0
@@ -122,7 +139,7 @@ NOP
 ORI $2,$0,1
 JR $0
 
-3404FFFF
+3C05FFFF
 18800003
 00000000
 00000008
@@ -134,7 +151,7 @@ register_v0 = 1
 
 ==BLTZ Branch on less than zero==
 
-ORI $4,$0,-1
+LUI $4,0xFFFF 
 BLTZ $4,3
 NOP
 JR $0
@@ -142,7 +159,7 @@ NOP
 ORI $2,$0,1
 JR $0
 
-3404FFFF
+3C05FFFF
 04800003
 00000000
 00000008
@@ -154,7 +171,7 @@ register_v0 = 1
 
 ==BLTZAL	Branch on less than zero and link==
 
-ORI $4,$0,-1
+LUI $4,0xFFFF 
 BLTZAL $4,4
 NOP
 ADDIU $2,$2,1
@@ -163,7 +180,7 @@ NOP
 ORI $2,$0,1
 JR $31
 
-3404FFFF
+3C05FFFF
 04900004
 00000000
 24420001
@@ -196,10 +213,32 @@ JR $0
 
 register_v0 = 1
 
-DIV	Divide
-DIVU	Divide unsigned
+==DIV	Divide== //May need other testcases for -ve/+ve, -ve/-ve
+
+ORI $4,$0,3
+ORI $5,$0,9
+DIV  $5,$4
+MFHI $4
+MFLO $5
+ADDU $2,$4,$5
+JR $0
+
+register_v0 = 3
+
+==DIVU	Divide unsigned== //May need other testcases for -ve/+ve, -ve/-ve
+
+LUI $4,0x8000 
+ORI $5,$0,2
+DIV  $4,$5
+MFHI $4
+MFLO $5
+ADDU $2,$4,$5
+JR $0
+
+register_v0 = 0x40000000
 
 ==J	Jump==
+
 J 4
 NOP
 JR $0
@@ -217,8 +256,9 @@ JR $0
 register_v0 = 1
 
 ==JALR	Jump and link register==
-ORI $5,$0,1C
-LUI $5,BFC0
+
+ORI $5,$0,0x001C
+LUI $5,0xBFC0
 JALR $4,$5
 NOP
 ADDIU $2,$2,1
@@ -241,6 +281,7 @@ JR $4
 register_v0 = 2
 
 ==JAL	Jump and link==
+
 JAL 5
 NOP
 ADDIU $2,$2,1
@@ -260,8 +301,9 @@ JR $31
 register_v0 = 2
 
 ==JR	Jump register==
-ORI $5,$0,14
-LUI $5,BFC0  
+
+ORI $5,$0,0x0014
+LUI $5,0xBFC0  
 JR $5  
 NOP
 JR $0
@@ -316,7 +358,7 @@ LWR	Load word right
 
 //SLTU	Set on less than unsigned
 
-///SRA	Shift right arithmetic
+//SRA	Shift right arithmetic
 
 //SRAV	Shift right arithmetic
 
