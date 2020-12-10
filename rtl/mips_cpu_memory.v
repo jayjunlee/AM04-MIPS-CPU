@@ -49,7 +49,7 @@ module mips_cpu_memory(
         //$display("RAM : INFO : data_read=%h, data_address = %h, mem=%h", data_read, data_address, memory[data_address]);
         if (!data_read & data_write) begin              //cannot read and write to memory in the same cycle
             if (instr_address != data_address) begin    //cannot modify the instruction being read
-                data_memory[data_address] <= data_writedata;            
+                data_memory[data_address>>2] <= data_writedata;            
             end
         end
     end

@@ -83,9 +83,9 @@ assign rt = Instr[20:16];
 
 always @(*) begin
     //CtrlRegDst logic
-    if((op==ADDIU) || (op==ANDI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LUI) || (op==LW) || (op==LWL) || (op==LWR) || (op==ORI) || (op==SLTI) || (op==SLTIU) || (op==XORI))begin //
+    if((op==ADDIU) || (op==ANDI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LUI) || (op==LW) || (op==LWL) || (op==LWR) || (op==ORI) || (op==SLTI) || (op==SLTIU) || (op==XORI))begin
         CtrlRegDst = 2'd0; //Write address comes from rt
-    end else if ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==JALR) || (funct==OR) || (funct==SLL) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRA) || (funct==SRAV) || (funct==SRL) || (funct==SRLV) || (funct==SUBU) || (funct==XOR)))begin//
+    end else if ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==JALR) || (funct==OR) || (funct==SLL) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRA) || (funct==SRAV) || (funct==SRL) || (funct==SRLV) || (funct==SUBU) || (funct==XOR)))begin
         CtrlRegDst = 2'd1; //Write address comes from rd
     end else if (op == JAL)begin
         CtrlRegDst = 2'd2; //const reg 31, for writing to the link register
@@ -96,10 +96,10 @@ always @(*) begin
         CtrlPC = 2'd1; // Branches - Jumps relative to PC
     end else if((op==J) || (op==JAL))begin
         CtrlPC = 2'd2; // Jumps within 256MB Region using 26-bit immediate in J type instruction
-    end else if((op==JR) || (op==JALR))begin
+    end else if((funct==JR) || (funct==JALR))begin
         CtrlPC = 2'd3; // Jumps using Register.
-        $display("Ctrl PC Jump Register");
-    end else begin CtrlPC = 2'd0; $display("Ctrl PC No Jump/Branch");end // No jumps or branches, just increment to next word
+        //$display("Ctrl PC Jump Register");
+    end else begin CtrlPC = 2'd0; /*/$display("Ctrl PC No Jump/Branch");*/end // No jumps or branches, just increment to next word
 
     //CtrlMemRead and CtrlMemtoReg logic -- Interesting quirk that they have the same logic. Makes sense bc you'd only want to select the read data out when the memory itself is read enabled.
     if((op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LW) || (op==LWL) || (op==LWR))begin
@@ -115,7 +115,7 @@ always @(*) begin
     //CtrlALUOp Logic
     if((op==ADDIU) || ((op==SPECIAL)&&(funct==ADDU)))begin
         CtrlALUOp = 5'd0; //ADD from ALUOps
-    end else if((op==ANDI) || ((op==SPECIAL)&&(funct==AND)))begin((op==ANDI) || ((op==SPECIAL)&&(funct==AND)))
+    end else if((op==ANDI) || ((op==SPECIAL)&&(funct==AND)))begin
         CtrlALUOp = 5'd4;//AND from ALUOps
     end else if(op==BEQ) begin
         CtrlALUOp = 5'd13;//EQ from ALUOps
@@ -133,7 +133,7 @@ always @(*) begin
         CtrlALUOp = 5'd3;//DIV from ALUOps
     end else if((op==SPECIAL)&&(funct==DIVU))begin
         CtrlALUOp = 5'd23;//DIVU from ALUOps
-    end else if((op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LW) || (op==LWL) || (op==LWR) || (op==SB) || (op==SBH) || (op==SW))begin
+    end else if((op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LW) || (op==LWL) || (op==LWR) || (op==SB) || (op==SH) || (op==SW))begin
         CtrlALUOp = 5'd0;//ADD from ALUOps
     end else if(op==LUI)begin
         CtrlALUOp = 5'd7;//SLL from ALUOps
@@ -189,9 +189,8 @@ always @(*) begin
     end else begin CtrlALUSrc = 1'bx;end
        
     //CtrlRegWrite logic
-    if((op == ADDIU | op == ANDI | op == LB | op == LBU | op == LH | op == LHU | op == LUI | op == LW | op == LWL | op == LWR | op == ORI | op == SLTI | op == SLTIU | op == XORI | (op == SPECIAL & ((funct == ADDU | funct == AND | funct == DIV | funct == DIVU | funct == MULT | funct == MULTU | funct == JALR | funct == OR | funct == SLL | funct == SLLV | funct == SLT | funct == SLTU | funct == SRA | funct == SRAV | funct == SRL | funct == SRLV | funct == SUBU | funct == XOR)))))begin
+    if     ((op==ADDIU) || (op==ANDI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LUI) || (op==LW) || (op==LWL) || (op==LWR) || (op==ORI) || (op==SLTI) || (op==XORI) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==DIV) || (funct==DIVU) || (funct==MULT) || (funct==MULTU) || (funct==OR) || (funct==SLL) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRA) || (funct==SRAV) || (funct==SRL) || (funct==SRLV) || (funct==SUBU) || (funct==XOR)))) begin
         CtrlRegWrite = 1;//The Registers are Write Enabled
     end else begin CtrlRegWrite = 0;end // The Registers are Write Disabled
-     ((op==ADDIU) || (op==ANDI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LUI) || (op==LW) || (op==LWL) || (op==LWR) || (op==ORI) || (op==SLTI) || (op==XORI) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==DIV) || (funct==DIVU) || (funct==MULT) || (funct==MULTU) || (funct==OR) || (funct==SLL) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRA) || (funct==SRAV) || (funct==SRL) || (funct==SRLV) || (funct==SUBU) || (funct==XOR))))
 end
 endmodule
