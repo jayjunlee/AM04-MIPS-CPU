@@ -330,13 +330,21 @@ LW	Load word
 LWL	Load word left
 LWR	Load word right
 
+// DIVU Divide unsigned
+
+// DIV Divide
+
+//MFHI Move from Hi 
+
+//MFLO Move from lo 
+
 //MTHI	Move to HI
 
 //MTLO	Move to LO
 
-//MULT	Multiply
+//MULT	Multiply**
 
-//MULTU	Multiply unsigned
+//MULTU	Multiply unsigned**
 
 //OR	Bitwise or
 
@@ -344,11 +352,11 @@ LWR	Load word right
 
 //SB	Store byte
 
-//SH	Store half-word
+//SH	Store half-word**
 
 //SLL	Shift left logical
 
-//SLLV	Shift left logical variable
+//SLLV	Shift left logical variable **
 
 //SLT	Set on less than (signed)
 
@@ -360,11 +368,11 @@ LWR	Load word right
 
 //SRA	Shift right arithmetic
 
-//SRAV	Shift right arithmetic
+//SRAV	Shift right arithmetic**
 
 //SRL	Shift right logical
 
-//SRLV	Shift right logical variable
+//SRLV	Shift right logical variable**
 
 //SUBU	Subtract unsigned
 
