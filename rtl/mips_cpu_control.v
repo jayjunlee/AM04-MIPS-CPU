@@ -83,13 +83,17 @@ assign rt = Instr[20:16];
 
 always @(*) begin
     //CtrlRegDst logic
+    $display("Opcode: %h", op);
     if((op==ADDIU) || (op==ANDI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LUI) || (op==LW) || (op==LWL) || (op==LWR) || (op==ORI) || (op==SLTI) || (op==SLTIU) || (op==XORI))begin
         CtrlRegDst = 2'd0; //Write address comes from rt
+        $display("CTRLREGDST: Rt");
     end else if ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==JALR) || (funct==OR) || (funct==SLL) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRA) || (funct==SRAV) || (funct==SRL) || (funct==SRLV) || (funct==SUBU) || (funct==XOR)))begin
         CtrlRegDst = 2'd1; //Write address comes from rd
+        $display("CTRLREGDST: Rd");
     end else if (op == JAL)begin
         CtrlRegDst = 2'd2; //const reg 31, for writing to the link register
-    end else begin CtrlRegDst = 1'bx; end//Not all instructions are encompassed so, added incase for debug purposes
+        $display("CTRLREGDST: Link");
+    end else begin CtrlRegDst = 1'bx; $display("xxxxxxxxxxxxxx");end//Not all instructions are encompassed so, added incase for debug purposes
 
     //CtrlPC logic
     if(ALUCond && ((op==BEQ) || (op==BGTZ) || (op==BLEZ) || (op==BNE) || ((op==REGIMM)&&((rt==BGEZ) || (rt==BGEZAL) || (rt==BLTZ) || (rt==BLTZAL)))))begin
@@ -105,9 +109,11 @@ always @(*) begin
     if((op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LW) || (op==LWL) || (op==LWR))begin
         CtrlMemRead = 1;//Memory is read enabled
         CtrlMemtoReg = 2'd1;//write data port of memory is fed from data memory
+        $display("Memory read enabled");
     end else if ((op==ADDIU) || (op==ANDI) || (op==ORI) || (op==SLTI) || (op==SLTIU) || (op==XORI) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==DIV) || (funct==DIVU) ||  (funct==MTHI) ||  (funct==MTLO) ||  (funct==MULT) ||  (funct==MULTU) ||  (funct==OR) ||  (funct==SLL) ||  (funct==SLLV) ||  (funct==SLT) ||  (funct==SLTU) ||  (funct==SRA) ||  (funct==SRAV) ||  (funct==SRL) || (funct==SRLV) ||  (funct==SUBU) ||  (funct==XOR))))begin
         CtrlMemRead = 0;//Memory is read disabled
         CtrlMemtoReg = 2'd0;//write data port of memory is fed from ALURes
+        $display("Memory read disabled");
     end else if ((op==JAL) || ((op==SPECIAL)&&(funct == JALR)))begin
         CtrlMemtoReg = 2'd2;//write data port of memory is fed from PC + 8
     end else begin CtrlMemRead = 1'bx;end//Not all instructions are encompassed so, added incase for debug purposes
@@ -115,6 +121,7 @@ always @(*) begin
     //CtrlALUOp Logic
     if((op==ADDIU) || ((op==SPECIAL)&&(funct==ADDU)))begin
         CtrlALUOp = 5'd0; //ADD from ALUOps
+        $display("ALU OP = 0 (ADDU/ADDIU)");
     end else if((op==ANDI) || ((op==SPECIAL)&&(funct==AND)))begin
         CtrlALUOp = 5'd4;//AND from ALUOps
     end else if(op==BEQ) begin
@@ -165,6 +172,7 @@ always @(*) begin
         CtrlALUOp = 5'd1;//SUB from ALUOps
     end else if((op==XORI) || ((op==SPECIAL)&&(funct==XOR)))begin
         CtrlALUOp = 5'd6;//XOR from ALUOps
+        $display("ALU Op = 6 (XOR)");
     end else begin
         CtrlALUOp = 5'bxxxxx;
     end
@@ -189,7 +197,7 @@ always @(*) begin
     end else begin CtrlALUSrc = 1'bx;end
        
     //CtrlRegWrite logic
-    if     ((op==ADDIU) || (op==ANDI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LUI) || (op==LW) || (op==LWL) || (op==LWR) || (op==ORI) || (op==SLTI) || (op==XORI) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==DIV) || (funct==DIVU) || (funct==MULT) || (funct==MULTU) || (funct==OR) || (funct==SLL) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRA) || (funct==SRAV) || (funct==SRL) || (funct==SRLV) || (funct==SUBU) || (funct==XOR)))) begin
+    if((op==ADDIU) || (op==ANDI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LUI) || (op==LW) || (op==LWL) || (op==LWR) || (op==ORI) || (op==SLTI) || (op==XORI) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==DIV) || (funct==DIVU) || (funct==MULT) || (funct==MULTU) || (funct==OR) || (funct==SLL) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRA) || (funct==SRAV) || (funct==SRL) || (funct==SRLV) || (funct==SUBU) || (funct==XOR)))) begin
         CtrlRegWrite = 1;//The Registers are Write Enabled
     end else begin CtrlRegWrite = 0;end // The Registers are Write Disabled
 end

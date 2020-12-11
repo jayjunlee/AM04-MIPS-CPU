@@ -14,7 +14,7 @@ module mips_cpu_memory(
 
 );
     parameter RAM_INIT_FILE = "";
-
+    parameter MEM_INIT_FILE = "";
     reg [31:0] data_memory [0:63];
     reg [31:0] instr_memory [0:63];
 
@@ -36,10 +36,21 @@ module mips_cpu_memory(
         for (integer j = 0; j<$size(instr_memory); j++) begin
             $display("byte +%h: %h", 32'hBFC00000+j*4, instr_memory[j]);
         end
+
+        if (MEM_INIT_FILE != "") begin
+            $display("MEM: Loading MEM contents from %s", MEM_INIT_FILE);
+            $readmemh(MEM_INIT_FILE, data_memory);
+        end else begin
+            $display("MEM FILE NOT GIVEN");
+        end
+
+        for (integer k = 0; k<$size(data_memory); k++) begin
+            $display("byte +%h: %h", 32'h00001000+k*4, data_memory[k]);
+        end
     end
 
     //Combinatorial read path for data and instruction.
-    assign data_readdata = data_read ? data_memory[data_address>>2] : 32'hxxxxxxxx;
+    assign data_readdata = data_read ? data_memory[(data_address-32'h00001000)>>2] : 32'hxxxxxxxx;
     assign instr_readdata = (instr_address >= 32'hBFC00000 && instr_address < 32'hBFC00000+$size(instr_memory)) ? instr_memory[(instr_address-32'hBFC00000)>>2] : 32'hxxxxxxxx;
 
 
@@ -54,3 +65,4 @@ module mips_cpu_memory(
         end
     end
 endmodule
+

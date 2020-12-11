@@ -21,57 +21,38 @@ module mips_cpu_harvard(
 );
 
 always_comb begin
-    instr_address   = out_pc_out;
+    instr_address   = in_pc_in;
     data_address    = out_ALURes;
     data_write      = out_MemWrite;
     data_read       = out_MemRead;
     data_writedata  = out_readdata2;
 end
 
-logic[31:0] in_pc_in;
-logic[4:0]  in_readreg1;
-logic[4:0]  in_readreg2;
-logic[4:0]  in_writereg;
-logic[31:0] in_writedata;
+logic[31:0] in_pc_in, out_pc_out = 32'hBFC00000, out_ALURes, out_readdata1, out_readdata2, in_B, in_writedata;
+logic[4:0]  in_readreg1, in_readreg2, in_writereg, out_shamt, out_ALUOp;
 logic[5:0]  in_opcode;
-logic[31:0] in_B;
+logic out_ALUCond, out_RegWrite, out_ALUSrc, out_MemWrite, out_MemRead;
+logic[1:0] out_RegDst, out_PC, out_MemtoReg;
+
+assign in_readreg1 = instr_readdata[25:21];
+assign in_readreg2 = instr_readdata[20:16];
+assign in_opcode   = instr_readdata[31:26];
 
 always_comb begin
-
-    in_readreg1 = instr_readdata[25:21];
-    in_readreg2 = instr_readdata[20:16];
-    in_opcode   = instr_readdata[31:26];
-
-//Picking what the next value of PC should be.
-    case(out_PC)
-        2'd0: begin
-            in_pc_in = out_pc_out + 32'd4;//No branch or jump or load, so no delay slot.
-        end
-        2'd1: begin
-            in_pc_in = //help
-        end
-        2'd2: begin
-            in_pc_in = //my brain hurts
-        end
-        2'd3: begin
-            in_pc_in = //I need to sleep......
-        end
-    endcase
-
-//Picking what register should be written to.
+    //Picking what register should be written to.
     case(out_RegDst)
-        2'd0:begin
+        2'd0: begin
             in_writereg = instr_readdata[20:16];//GPR rt
         end
-        2'd1:begin
+        2'd1: begin
             in_writereg = instr_readdata[15:11];//GPR rd
         end
-        2'd2:begin
+        2'd2: begin
             in_writereg = 5'd31;//Link Register 31.
         end
     endcase
 
-//Picking which output should be written to regfile.
+    //Picking which output should be written to regfile.
     case(out_MemtoReg)
         2'd0:begin
             in_writedata = out_ALURes;//Output from ALU Result.
@@ -84,7 +65,7 @@ always_comb begin
         end
     endcase
 
-//Picking which output should be taken as the second operand for ALU.
+    //Picking which output should be taken as the second operand for ALU.
     case(out_ALUSrc)
         1'b1:begin
             in_B = {{16{instr_readdata[15]}},instr_readdata[15:0]};//Output from the 16-bit immediate values sign extened to 32bits.
@@ -99,9 +80,11 @@ pc pc(
 //PC inputs
     .clk(clk),//clk taken from the Standard signals
     .rst(reset),//clk taken from the Standard signals
-    .pc_in(in_pc_in),//what the pc will output on the next clock cycle taken from either: PC itself + 4(Normal/Default Operation); or 16-bit signed valued taken from Instr[15-0] sign extend to 32bit then shifted by 2 then added to PC + 4(Branch Operation); or 26-bit instruction address taken from J-type instr[25-0] shifted left by 2 then concatanated to form Jump Address (PC-region branch); or from the GPR rs.
+    .pc_ctrl(out_PC),
+    .pc_in(out_pc_out),//what the pc will output on the next clock cycle taken from either: PC itself + 4(Normal/Default Operation); or 16-bit signed valued taken from Instr[15-0] sign extend to 32bit then shifted by 2 then added to PC + 4(Branch Operation); or 26-bit instruction address taken from J-type instr[25-0] shifted left by 2 then concatanated to form Jump Address (PC-region branch); or from the GPR rs.
 //PC outputs
-    .pc_out(out_pc_out)//What the pc outputs at every clock edge that goes into the 'Read address' port of Instruction Memory.
+    .pc_out(in_pc_in),//What the pc outputs at every clock edge that goes into the 'Read address' port of Instruction Memory.
+    .active(active)
 );
 
 mips_cpu_control control( //instance of the 'mips_cpu_control' module called 'control' in top level 'harvard'

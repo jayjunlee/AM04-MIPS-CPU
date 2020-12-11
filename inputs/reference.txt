@@ -5,7 +5,9 @@ Hex code
 Reference Output
 ================
 
-ADDIU Add immediate unsigned (no overflow) 
+== ADDIU Add immediate unsigned (no overflow) ==
+
+
 
 == ADDU Add unsigned (no overflow) ==
 
@@ -25,169 +27,142 @@ JR $0
 
 register_v0 = 8
 
-==AND Bitwise and==
 
-ORI $5,$0,0xCCCC
-LUI $5,0xCCCC 
-ORI $4,$0,0xAAAA
-LUI $4,0xAAAA  
-AND  $2,$4,$5
-JR $0
+== AND Bitwise and ==
 
-register_v0 = 0x88888888
-
-==ANDI Bitwise and immediate==
-
-ORI $4,$0,0xAAAA
-LUI $4,0xAAAA  
-ANDI  $2,$4,0xCCCC
-JR $0
-
-register_v0 = 0x00008888
+ANDI Bitwise and immediate
 
 ==BEQ	Branch on equal==
 
 ORI $4,$0,5
 ORI $5,$0,5
-BEQ $4,$5,3
-NOP 
+BEQ $4,$5,2
+ADDIU $6,$6,0 
 JR $0
-NOP
 ORI $2,$0,1
 JR $0
 
-34040005
-34050005
-10850003
-00000000
-00000008
-00000000
-34020001
-00000008
+50004043
+50005043
+20005801
+00006C42
+80000000
+10002043
+80000000
 
 register_v0 = 1
+
 
 ==BGEZ Branch on greater than or equal to zero==
 
 ORI $4,$0,3
-BGEZ $4,3
-NOP
+BGEZ $4,2
+ADDIU $6,$6,0
 JR $0
-NOP
 ORI $2,$0,1
 JR $0
 
-34040003
-04810003
-00000000
-00000008
-00000000
-34020001
-00000008
+30004043
+20001840
+00006C42
+80000000
+10002043
+80000000
 
 register_v0 = 1
 
 ==BGEZAL Branch on non-negative (>=0) and link==
 
 ORI $4,$0,3
-BGEZAL $4,4
-NOP
+BGEZAL $4,3
+ADDIU $6,$6,0
 ADDIU $2,$2,1
 JR $0
-NOP
 ORI $2,$0,1
 JR $31
 
-34040003
-04910004
-00000000
-24420001
-00000008
-00000000
-34020001
-03E00008
+30004043
+30001940
+00006C42
+10002442
+80000000
+10002043
+80000000
 
 register_v0 = 2
+
 
 ==BGTZ Branch on greater than zero==
 
 ORI $4,$0,3
-BGTZ $4,3
-NOP
+BGTZ $4,2
+ADDIU $6,$6,0
 JR $0
-NOP
 ORI $2,$0,1
 JR $0
 
-34040003
-1C800003
-00000000
-00000008
-00000000
-34020001
-00000008
+30004043
+200008C1
+00006C42
+80000000
+10002043
+80000000
 
 register_v0 = 1
 
 ==BLEZ Branch on less than or equal to zero==
 
-LUI $4,0xFFFF
-BLEZ $4,3
-NOP
+ORI $4,$0,-1
+BLEZ $4,2
+ADDIU $6,$6,0
 JR $0
-NOP
 ORI $2,$0,1
 JR $0
 
-3C05FFFF
-18800003
-00000000
-00000008
-00000000
-34020001
-00000008
+FFFF4043
+20000881
+00006C42
+80000000
+10002043
+80000000
 
 register_v0 = 1
 
 ==BLTZ Branch on less than zero==
 
-LUI $4,0xFFFF 
-BLTZ $4,3
-NOP
+ORI $4,$0,-1
+BLTZ $4,2
+ADDIU $6,$6,0
 JR $0
-NOP
 ORI $2,$0,1
 JR $0
 
-3C05FFFF
-04800003
-00000000
-00000008
-00000000
-34020001
-00000008
+FFFF4043
+20000840
+00006C42
+80000000
+10002043
+80000000
 
 register_v0 = 1
 
 ==BLTZAL	Branch on less than zero and link==
 
-LUI $4,0xFFFF 
-BLTZAL $4,4
-NOP
+ORI $4,$0,-1
+BLTZAL $4,3
+ADDIU $6,$6,0
 ADDIU $2,$2,1
 JR $0
-NOP
 ORI $2,$0,1
 JR $31
 
-3C05FFFF
-04900004
-00000000
-24420001
-00000000
-00000008
-34020001
-03E00008
+FFFF4043
+20000940
+00006C42
+10002442
+80000000
+10002043
+80000000
 
 register_v0 = 2
 
@@ -195,132 +170,28 @@ register_v0 = 2
 
 ORI $4,$0,3
 ORI $5,$0,5
-BNE $4,$5,3
-NOP
+BNE $4,$5,2
+ADDIU $6, $6, 0
 JR $0
-NOP
 ORI $2,$0,1
-JR $0
+JR $
 
-34040003
-34040005
-14850003
-00000000
-00000008
-00000000
-34020001
-00000008
+30004043
+50005043
+20005841
+00006C42
+80000000
+10002043
+80000000
 
 register_v0 = 1
 
-==DIV	Divide== //May need other testcases for -ve/+ve, -ve/-ve
-
-ORI $4,$0,3
-ORI $5,$0,9
-DIV  $5,$4
-MFHI $4
-MFLO $5
-ADDU $2,$4,$5
-JR $0
-
-register_v0 = 3
-
-==DIVU	Divide unsigned== //May need other testcases for -ve/+ve, -ve/-ve
-
-LUI $4,0x8000 
-ORI $5,$0,2
-DIV  $4,$5
-MFHI $4
-MFLO $5
-ADDU $2,$4,$5
-JR $0
-
-register_v0 = 0x40000000
-
-==J	Jump==
-
-J 4
-NOP
-JR $0
-NOP
-ORI $2,$0,1
-JR $0
-
-08000004
-00000000
-00000008
-00000000
-34020001
-00000008
-
-register_v0 = 1
-
-==JALR	Jump and link register==
-
-ORI $5,$0,0x001C
-LUI $5,0xBFC0
-JALR $4,$5
-NOP
-ADDIU $2,$2,1
-JR $0
-NOP
-ORI $2,$0,1
-JR $4
-
-3405001C
-3C05BCF0
-00A02009
-00000000
-24420001
-00000008
-00000000
-34020001
-00800008
-
-
-register_v0 = 2
-
-==JAL	Jump and link==
-
-JAL 5
-NOP
-ADDIU $2,$2,1
-JR $0
-NOP
-ORI $2,$0,1
-JR $31
-
-0C000005
-00000000
-24420001
-00000008
-00000000
-34020001
-03E00008
-
-register_v0 = 2
-
-==JR	Jump register==
-
-ORI $5,$0,0x0014
-LUI $5,0xBFC0  
-JR $5  
-NOP
-JR $0
-NOP
-ORI $2,$0,1
-JR $0
-
-34050014
-3C05BCF0
-00A00008
-00000000
-00000008
-34020001
-00000008
-
-register_v0 = 1
-
+DIV	Divide
+DIVU	Divide unsigned
+J	Jump
+JALR	Jump and link register
+JAL	Jump and link
+JR	Jump register
 LB	Load byte
 LBU	Load byte unsigned
 LH	Load half-word
@@ -329,55 +200,25 @@ LUI	Load upper immediate
 LW	Load word
 LWL	Load word left
 LWR	Load word right
-
-// DIVU Divide unsigned
-
-// DIV Divide
-
-//MFHI Move from Hi 
-
-//MFLO Move from lo 
-
-//MTHI	Move to HI
-
-//MTLO	Move to LO
-
-//MULT	Multiply**
-
-//MULTU	Multiply unsigned**
-
-//OR	Bitwise or
-
-//ORI	Bitwise or immediate
-
-//SB	Store byte
-
-//SH	Store half-word**
-
-//SLL	Shift left logical
-
-//SLLV	Shift left logical variable **
-
-//SLT	Set on less than (signed)
-
-//SLTI	Set on less than immediate (signed)
-
-//SLTIU	Set on less than immediate unsigned
-
-//SLTU	Set on less than unsigned
-
-//SRA	Shift right arithmetic
-
-//SRAV	Shift right arithmetic**
-
-//SRL	Shift right logical
-
-//SRLV	Shift right logical variable**
-
-//SUBU	Subtract unsigned
-
-//SW	Store word
-
-//XOR	Bitwise exclusive or
-
-//XORI	Bitwise exclusive or immediate
+MTHI	Move to HI
+MTLO	Move to LO
+MULT	Multiply
+MULTU	Multiply unsigned
+OR	Bitwise or
+ORI	Bitwise or immediate
+SB	Store byte
+SH	Store half-word
+SLL	Shift left logical
+SLLV	Shift left logical variable
+SLT	Set on less than (signed)
+SLTI	Set on less than immediate (signed)
+SLTIU	Set on less than immediate unsigned
+SLTU	Set on less than unsigned
+SRA	Shift right arithmetic
+SRAV	Shift right arithmetic
+SRL	Shift right logical
+SRLV	Shift right logical variable
+SUBU	Subtract unsigned
+SW	Store word
+XOR	Bitwise exclusive or
+XORI	Bitwise exclusive or immediate

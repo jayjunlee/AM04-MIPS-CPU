@@ -1,12 +1,13 @@
 module mips_cpu_harvard_tb;
 
-    parameter RAM_INIT_FILE = "inputs/addu.txt";
+    parameter RAM_INIT_FILE = "inputs/addiu.txt";
+    parameter MEM_INIT_FILE = "inputs/addiu.data.txt";
     parameter TIMEOUT_CYCLES = 100;
 
     logic clk, clk_enable, reset, active, data_read, data_write;
     logic[31:0] register_v0, instr_address, instr_readdata, data_readdata, data_writedata, data_address;
 
-    mips_cpu_memory #(RAM_INIT_FILE) ramInst(
+    mips_cpu_memory #(RAM_INIT_FILE, MEM_INIT_FILE) ramInst(
         .clk(clk), 
         .data_address(data_address), 
         .data_write(data_write), 
@@ -33,6 +34,8 @@ module mips_cpu_harvard_tb;
 
     // Generate clock
     initial begin
+        $dumpfile("mips_cpu_harvard.vcd");
+        $dumpvars(0,mips_cpu_harvard_tb);
         clk=0;
 
         repeat (TIMEOUT_CYCLES) begin
@@ -63,12 +66,15 @@ module mips_cpu_harvard_tb;
         else $display("TB: CPU did not set active=1 after reset.");
 
         while (active) begin
+            //$display("Clk: %d", clk);
             @(posedge clk);
-            $display("Register v0: %d", register_v0);
+            //$display("Register v0: %d", register_v0);
+            $display("Reg File Write data: %d", cpuInst.in_writedata);
         end
-
-        $display("TB: finished; active=0");
-        $display("Output: %d", register_v0);
+        @(posedge clk);
+        $display("TB: CPU Halt; active=0");
+        $display("Output:");
+        $display("%d",register_v0);
         $finish;
 
     end
