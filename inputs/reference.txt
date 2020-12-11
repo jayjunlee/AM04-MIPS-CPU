@@ -34,14 +34,26 @@ LUI $4,0xAAAA
 AND  $2,$4,$5
 JR $0
 
+3405cccc
+3c05cccc
+3404aaaa
+3c04aaaa
+00851024
+00000008
+
 register_v0 = 0x88888888
 
 ==ANDI Bitwise and immediate==
 
 ORI $4,$0,0xAAAA
 LUI $4,0xAAAA  
-ANDI  $2,$4,0xCCCC
+ANDI $2,$4,0xCCCC
 JR $0
+
+3404aaaa
+3c04aaaa
+3082cccc
+00000008
 
 register_v0 = 0x00008888
 
@@ -223,17 +235,33 @@ MFLO $5
 ADDU $2,$4,$5
 JR $0
 
+34040003
+34050009
+00A4001A
+00002010
+00002812
+00851021
+00000008
+
 register_v0 = 3
 
 ==DIVU	Divide unsigned== //May need other testcases for -ve/+ve, -ve/-ve
 
 LUI $4,0x8000 
 ORI $5,$0,2
-DIV  $4,$5
+DIVU  $4,$5
 MFHI $4
 MFLO $5
 ADDU $2,$4,$5
 JR $0
+
+34048000
+34050002
+0085001B
+00002010
+00002812
+00851021
+00000008
 
 register_v0 = 0x40000000
 
@@ -276,7 +304,6 @@ JR $4
 00000000
 34020001
 00800008
-
 
 register_v0 = 2
 
@@ -321,14 +348,154 @@ JR $0
 
 register_v0 = 1
 
-LB	Load byte
-LBU	Load byte unsigned
-LH	Load half-word
-LHU	Load half-word unsigned
-LUI	Load upper immediate
-LW	Load word
-LWL	Load word left
-LWR	Load word right
+==LB	Load byte==
+
+ORI $4,$0,0x1003
+LB  $2,3($4)
+JR $0
+
+-Instruction Hex
+
+34041003
+80820003
+00000008
+
+-Memory Hex
+
+00000000
+008A0000
+
+register_v0 = 0xFFFFFF8A
+
+==LBU	Load byte unsigned==
+
+ORI $4,$0,0x1003
+LBU  $2,3($4)
+JR $0
+
+-Instruction Hex
+
+34041003
+90820003
+00000008
+
+-Memory Hex
+
+00000000
+008A0000
+
+register_v0 = 0x0000008A
+
+==LH	Load half-word==
+
+ORI $4,$0,0x1003
+LH  $2,4($4)
+JR $0
+
+-Instruction Hex
+
+34041003
+84820004
+00000008
+
+-Memory Hex
+
+00000000
+00008123
+
+register_v0 = 0xFFFF8123
+
+==LHU	Load half-word unsigned==
+
+ORI $4,$0,0x1003
+LHU $2,4($4)
+JR $0
+
+-Instruction Hex
+
+34041003
+94820004
+00000008
+
+-Memory Hex
+
+00000000
+00008123
+
+register_v0 = 0x00008123
+
+==LUI	Load upper immediate==
+
+ORI $2,$0,0x5678
+LUI $2,0x1234
+JR $0
+
+34045678
+3C021234
+00000008
+
+register_v0 = 0x12345678
+
+==LW	Load word==
+
+ORI $4,$0,0x1002
+LW  $2, 2($4)
+JR $0
+
+-Instruction Hex
+
+34041002
+8C820002
+00000008
+
+-Memory Hex
+
+00000000
+12345678
+
+register_v0 = 0x12345678
+
+==LWL	Load word left==
+
+ORI $4,$0,0x1003
+ORI $2,$0,0x5678
+LWL  $2,3($4)
+JR $0
+
+-Instruction Hex
+
+34041003
+34025678
+88820003
+00000008
+
+-Memory Hex
+
+00000000
+AAAA1234
+
+register_v0 = 0x12345678
+
+==LWR	Load word right==
+
+ORI $4,$0,0x1003
+LUI $2,0x1234
+LWR $2,2($4)
+JR $0
+
+-Instruction Hex
+
+34041003
+3C021234
+98820002
+00000008
+
+-Memory Hex
+
+00000000
+5678AAAA
+
+register_v0 = 0x12345678
 
 // DIVU Divide unsigned
 
