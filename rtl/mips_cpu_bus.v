@@ -24,8 +24,11 @@ logic harvard_read; // harvard cpu read flag
 logic harvard_write; // harvard cpu write flag
 logic[31:0] harvard_data_address; // data addr from ALU
 logic[31:0] harvard_readdata; // <= data read from Avalon MM Device
+logic[31:0] harvard_writedata; // data to be written to Avalon MM Device
 logic[3:0] write_byteenable; // byteenable calculator for partial write
 logic clk_state; // make sure posedge and negedge of clk do not occur repeatedly
+logic partial_write; // flag to control datapath when doing a partial write
+logic[31:0] partial_writedata; // modified data for partial writes (StoreHalfword or StoreByte)
 
 initial begin
     clk_internal = 1'b0;
@@ -83,6 +86,58 @@ always_ff @(negedge clk) begin // CLK Falling Edge
 end
 
 always_comb begin
+    case (instr_reg[31:26])
+        6'b101000: begin // Store Byte
+            partial_write = 1'b1;
+            case (harvard_data_address[1:0])
+                2'b00: begin
+                    partial_writedata = {24{1'b0}, harvard_writedata[7:0]};
+                    write_byteenable = 4'b0001;
+                end
+                2'b01: begin
+                    partial_writedata = {16{1'b0}, harvard_writedata[7:0], 8{1'b0}};
+                    write_byteenable = 4'b0010;
+                end
+                2'b10: begin
+                    partial_writedata = {8{1'b0}, harvard_writedata[7:0], 16{1'b0}};
+                    write_byteenable = 4'b0100;
+                end
+                2'b11: begin
+                    partial_writedata = {harvard_writedata[7:0], 24{1'b0}};
+                    write_byteenable = 4'b1000;
+                end
+            endcase
+        end
+        6'b101001: begin // Store Halfword
+            partial_write = 1'b1;
+            case (harvard_data_address[1:0])
+                2'b00: begin
+                    partial_writedata = {16{1'b0}, harvard_writedata[15:0]};
+                    write_byteenable = 4'b0011;
+                end
+                2'b01: begin // halfword address must be matrually aligned, last bit must be 0
+                    partial_writedata = 32'hxxxxxxxx;
+                    write_byteenable = 4'bxxxx;
+                end
+                2'b10: begin
+                    partial_writedata = {harvard_writedata[15:0], 16{1'b0}};
+                    write_byteenable = 4'b1100;
+                end
+                2'b11: begin // halfword address must be matrually aligned, last bit must be 0
+                    partial_writedata = 32'hxxxxxxxx;
+                    write_byteenable = 4'bxxxx;
+                end
+            endcase
+        end
+        default: begin // Store Word OR All other instructions (These flags are ignored outside the write state)
+            partial_write = 1'b0;
+            partial_writedata = 32'h00000000;
+            write_byteenable = 4'b1111;
+        end
+    endcase
+end
+
+always_comb begin
     if (reset) begin
         clk_internal = 1'b0;
         n_state = 2'b00;
@@ -134,7 +189,7 @@ always_comb begin
                 write = 1'b1;
                 byteenable = write_byteenable;
                 harvard_readdata = 32'h00000000;
-                writedata = harvard_writedata;
+                writedata = partial_write ? partial_writedata : harvard_writedata;
                 n_state = 2'b00;
             end
         endcase // state
