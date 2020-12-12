@@ -1,0 +1,4 @@
+exec/*
+inputs/*.log.txt
+inputs/*.out.txt
+mips_cpu_harvard.vcd

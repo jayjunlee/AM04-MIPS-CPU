@@ -20,13 +20,11 @@ module mips_cpu_harvard(
     input logic[31:0] data_readdata//port from data memory out, going to the 'Write Register' port in regfile.
 );
 
-always_comb begin
-    instr_address   = in_pc_in;
-    data_address    = out_ALURes;
-    data_write      = out_MemWrite;
-    data_read       = out_MemRead;
-    data_writedata  = out_readdata2;
-end
+assign instr_address = in_pc_in;
+assign data_address = out_ALURes;
+assign data_write = out_MemWrite;
+assign data_read = out_MemRead;
+assign data_writedata = out_readdata2;
 
 logic[31:0] in_pc_in, out_pc_out = 32'hBFC00000, out_ALURes, out_readdata1, out_readdata2, in_B, in_writedata;
 logic[4:0]  in_readreg1, in_readreg2, in_writereg, out_shamt, out_ALUOp;
@@ -38,7 +36,7 @@ assign in_readreg1 = instr_readdata[25:21];
 assign in_readreg2 = instr_readdata[20:16];
 assign in_opcode   = instr_readdata[31:26];
 
-always_comb begin
+always @(*) begin
     //Picking what register should be written to.
     case(out_RegDst)
         2'd0: begin
@@ -76,10 +74,12 @@ always_comb begin
     endcase
 end
 
-pc pc(
+mips_cpu_pc pc(
 //PC inputs
     .clk(clk),//clk taken from the Standard signals
     .rst(reset),//clk taken from the Standard signals
+    .instr(instr_readdata), //needed for branches and jumps
+    .reg_readdata(out_readdata1), //needed for jump register
     .pc_ctrl(out_PC),
     .pc_in(out_pc_out),//what the pc will output on the next clock cycle taken from either: PC itself + 4(Normal/Default Operation); or 16-bit signed valued taken from Instr[15-0] sign extend to 32bit then shifted by 2 then added to PC + 4(Branch Operation); or 26-bit instruction address taken from J-type instr[25-0] shifted left by 2 then concatanated to form Jump Address (PC-region branch); or from the GPR rs.
 //PC outputs
