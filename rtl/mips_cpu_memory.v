@@ -56,7 +56,7 @@ module mips_cpu_memory(
 
     //Synchronous write path
     always_ff @(posedge clk) begin
-        //$display("Instruction Read: %h", instr_readdata);
+        $display("Instruction Read: %h", instr_readdata);
         //$display("RAM : INFO : data_read=%h, data_address = %h, mem=%h", data_read, data_address, memory[data_address]);
         if (!data_read & data_write) begin              //cannot read and write to memory in the same cycle
             if (instr_address != data_address) begin    //cannot modify the instruction being read

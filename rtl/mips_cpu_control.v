@@ -83,7 +83,6 @@ assign rt = Instr[20:16];
 
 always @(*) begin
     //CtrlRegDst logic
-    $display("Opcode: %h", op);
     if((op==ADDIU) || (op==ANDI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LUI) || (op==LW) || (op==LWL) || (op==LWR) || (op==ORI) || (op==SLTI) || (op==SLTIU) || (op==XORI))begin
         CtrlRegDst = 2'd0; //Write address comes from rt
         $display("CTRLREGDST: Rt");
@@ -100,7 +99,7 @@ always @(*) begin
         CtrlPC = 2'd1; // Branches - Jumps relative to PC
     end else if((op==J) || (op==JAL))begin
         CtrlPC = 2'd2; // Jumps within 256MB Region using 26-bit immediate in J type instruction
-    end else if((funct==JR) || (funct==JALR))begin
+    end else if((op==SPECIAL)&&(funct==JR) || (funct==JALR))begin
         CtrlPC = 2'd3; // Jumps using Register.
         //$display("Ctrl PC Jump Register");
     end else begin CtrlPC = 2'd0; /*/$display("Ctrl PC No Jump/Branch");*/end // No jumps or branches, just increment to next word
@@ -154,6 +153,7 @@ always @(*) begin
         CtrlALUOp = 5'd5;//OR from ALUOps
     end else if((op==SPECIAL)&&(funct==SLL))begin
         CtrlALUOp = 5'd7;//SLL from ALUOps
+        $display("ALU Op = 7 (SLL)");
     end else if((op==SPECIAL)&&(funct==SLLV))begin
         CtrlALUOp = 5'd8;//SLLV from ALUOps
     end else if((op==SPECIAL)&&(funct==SRA))begin
@@ -161,6 +161,7 @@ always @(*) begin
     end else if((op==SPECIAL)&&(funct==SRAV))begin
         CtrlALUOp = 5'd12;//SRAV from ALUOps
     end else if((op==SPECIAL)&&(funct==SRL))begin
+        $display("ALU Op = 7 (SRL)");
         CtrlALUOp = 5'd9;//SRL from ALUOps
     end else if((op==SPECIAL)&&(funct==SRLV))begin
         CtrlALUOp = 5'd10;//SRLV from ALUOps
@@ -192,7 +193,7 @@ always @(*) begin
     //CtrlALUSrc logic
     if((op==ADDIU) || (op==ANDI) || (op==LUI) || (op==ORI) || (op==SLTI) || (op==SLTIU) || (op==XORI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LW) || (op==LWL) || (op==LWR) || (op==SB) || (op==SH) || (op==SW))begin
         CtrlALUSrc = 1;//ALU Bus B is fed from the 16-bit immediate sign extended to 32-bit value taken from Instr[15-0]
-    end else if((op==BEQ) || (op==BGTZ) || (op==BLEZ) || (op==BNE) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==DIV) || (funct==DIVU) || (funct==MULT) || (funct==MULTU) || (funct==OR) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRAV) || (funct==SRLV) || (funct==SUBU) || (funct==XOR))) || ((op==REGIMM)&&((rt==BGEZ) || (rt==BGEZAL) || (rt==BLTZ) || (rt==BLTZAL))))begin 
+    end else if((op==BEQ) || (op==BGTZ) || (op==BLEZ) || (op==BNE) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==DIV) || (funct==DIVU) || (funct==MULT) || (funct==MULTU) || (funct==OR) || (funct==SLL) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRAV) || (funct==SRL) || (funct==SRLV) || (funct==SUBU) || (funct==XOR))) || ((op==REGIMM)&&((rt==BGEZ) || (rt==BGEZAL) || (rt==BLTZ) || (rt==BLTZAL))))begin 
         CtrlALUSrc = 0;///ALU Bus B is fed from rt.
     end else begin CtrlALUSrc = 1'bx;end
        

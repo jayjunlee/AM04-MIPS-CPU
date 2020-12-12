@@ -12,6 +12,7 @@ do
     SRC_TEMP+=${SRC_DIR}/${src}" ";
 done
 SRC=${SRC_TEMP}
+#echo ${SRC};
 
 # Instruction Argument
 INSTR=${2:-"No instruction specified: running all testcases"};  # e.g. addiu
@@ -20,17 +21,18 @@ INSTR=${2:-"No instruction specified: running all testcases"};  # e.g. addiu
 if [[ ${INSTR} == "No instruction specified: running all testcases" ]];
 then
     # All Testcase Files
-    TESTCASES=$(find ./inputs ! -name '*ref*'  ! -name '*log*' ! -name '*out*' ! -name 'inputs' | sed 's#.*/##');
+    TESTCASES=$(find ./inputs ! -name '*ref*'  ! -name '*log*' ! -name '*out*' ! -name 'inputs' ! -name 'data' | sed 's#.*/##');
     #echo ${TESTCASES}
     for TESTCASE in ${TESTCASES}
     do
         # Run Each Testcase File
         TESTCASE="${TESTCASE%%.*}";
         #echo ${TESTCASE};
-#/mnt/c/Windows/System32/cmd.exe /C \
+/mnt/c/Windows/System32/cmd.exe /C \
 iverilog -Wall -g2012 \
     -s mips_cpu_harvard_tb \
-    -P mips_cpu_harvard_tb.RAM_INIT_FILE=\"inputs/${TESTCASE}.txt\"
+    -P mips_cpu_harvard_tb.RAM_INIT_FILE=\"inputs/${TESTCASE}.txt\" \
+    -P mips_cpu_harvard_tb.MEM_INIT_FILE=\"inputs/${TESTCASE}.data.txt\" \
     -o exec/mips_cpu_harvard_tb_${TESTCASE} testbench/mips_cpu_harvard_tb.v \
     ${SRC} 2> /dev/null
 /mnt/c/Windows/System32/cmd.exe /C vvp ./exec/mips_cpu_harvard_tb_${TESTCASE} &> ./inputs/${TESTCASE}.log.txt;       # log file for debugging (contains $display)

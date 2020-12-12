@@ -22,10 +22,8 @@ end
 
 assign regv0 = memory[2]; //assigning debug $v0 line to $2 of memory
 
-always_comb begin
-	readdata1 = memory[readreg1]; //combinatorially output register value based on read port 1 selector
-	readdata2 = memory[readreg2]; //combinatorially output register value based on read port 2 selector
-end
+assign readdata1 = memory[readreg1]; //combinatorially output register value based on read port 1 selector
+assign readdata2 = memory[readreg2]; //combinatorially output register value based on read port 2 selector
 
 always_ff @(negedge clk) begin
 	if (writereg == 5'b00000) begin
@@ -61,6 +59,9 @@ always_ff @(negedge clk) begin
 				endcase // readdata1[1:0]
 			end
 			6'b100010: begin //lwl, load word left
+				$display("LWLWLWLWLWLWWL");
+				$display(readdata1[1:0]);
+				$display("%h",memory[writereg]);
 				case (readdata1[1:0])
 					2'b00: memory[writereg][31:24] <= writedata[7:0];
 					2'b01: memory[writereg][31:16] <= writedata[15:0];
