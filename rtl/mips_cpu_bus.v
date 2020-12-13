@@ -29,6 +29,7 @@ logic[3:0] write_byteenable; // byteenable calculator for partial write
 logic clk_state; // make sure posedge and negedge of clk do not occur repeatedly
 logic partial_write; // flag to control datapath when doing a partial write
 logic[31:0] partial_writedata; // modified data for partial writes (StoreHalfword or StoreByte)
+logic[31:0] write_data_address; // modified data address for partial writes
 
 initial begin
     clk_internal = 1'b0;
@@ -93,18 +94,22 @@ always_comb begin
                 2'b00: begin
                     partial_writedata = {24{1'b0}, harvard_writedata[7:0]};
                     write_byteenable = 4'b0001;
+                    write_data_address = {harvard_data_address[31:2], 2'b00};
                 end
                 2'b01: begin
                     partial_writedata = {16{1'b0}, harvard_writedata[7:0], 8{1'b0}};
                     write_byteenable = 4'b0010;
+                    write_data_address = {harvard_data_address[31:2], 2'b00};
                 end
                 2'b10: begin
                     partial_writedata = {8{1'b0}, harvard_writedata[7:0], 16{1'b0}};
                     write_byteenable = 4'b0100;
+                    write_data_address = {harvard_data_address[31:2], 2'b00};
                 end
                 2'b11: begin
                     partial_writedata = {harvard_writedata[7:0], 24{1'b0}};
                     write_byteenable = 4'b1000;
+                    write_data_address = {harvard_data_address[31:2], 2'b00};
                 end
             endcase
         end
@@ -114,18 +119,22 @@ always_comb begin
                 2'b00: begin
                     partial_writedata = {16{1'b0}, harvard_writedata[15:0]};
                     write_byteenable = 4'b0011;
+                    write_data_address = {harvard_data_address[31:2], 2'b00};
                 end
                 2'b01: begin // halfword address must be matrually aligned, last bit must be 0
                     partial_writedata = 32'hxxxxxxxx;
                     write_byteenable = 4'bxxxx;
+                    write_data_address = 32'hxxxxxxxx;
                 end
                 2'b10: begin
                     partial_writedata = {harvard_writedata[15:0], 16{1'b0}};
                     write_byteenable = 4'b1100;
+                    write_data_address = {harvard_data_address[31:2], 2'b00};
                 end
                 2'b11: begin // halfword address must be matrually aligned, last bit must be 0
                     partial_writedata = 32'hxxxxxxxx;
                     write_byteenable = 4'bxxxx;
+                    write_data_address = 32'hxxxxxxxx;
                 end
             endcase
         end
@@ -133,6 +142,7 @@ always_comb begin
             partial_write = 1'b0;
             partial_writedata = 32'h00000000;
             write_byteenable = 4'b1111;
+            write_data_address = harvard_data_address;
         end
     endcase
 end
@@ -184,7 +194,7 @@ always_comb begin
                 n_state = 2'b00;
             end
             2'b11: begin // connecting wires when in write state
-                address = harvard_data_address;
+                address = write_data_address;
                 read = 1'b0;
                 write = 1'b1;
                 byteenable = write_byteenable;
