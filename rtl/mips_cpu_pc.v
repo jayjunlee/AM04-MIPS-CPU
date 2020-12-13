@@ -36,15 +36,13 @@ always_ff @(posedge clk) begin
 			end
 			2'd2: begin // Jump
 				pc_next <= {pc_lit_next[31:28], instr[25:0], 2'b00};
-				$display("Im JUMPING");
+				$display("JUMPING");
 				$display("pc_lit_next: %h", pc_lit_next[31:28]);
 				$display("instr: %b", instr[25:0]);
 				$display("%h",pc_next);
 			end
 			2'd3: begin // Jump using Register
 				pc_next <= reg_readdata;
-				$display("Im JUMPING AROUND LOLOLOL");
-				$display("%h",reg_readdata);
 			end
 		endcase
 	end

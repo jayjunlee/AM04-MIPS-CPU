@@ -21,18 +21,19 @@ INSTR=${2:-"No instruction specified: running all testcases"};  # e.g. addiu
 if [[ ${INSTR} == "No instruction specified: running all testcases" ]];
 then
     # All Testcase Files
-    TESTCASES=$(find ./inputs ! -name '*ref*'  ! -name '*log*' ! -name '*out*' ! -name 'inputs' ! -name 'data' | sed 's#.*/##');
+    TESTCASES=$(find ./inputs ! -name '*ref*'  ! -name '*log*' ! -name '*out*' ! -name '*inputs*' ! -name '*data*' | sed 's#.*/##');
     #echo ${TESTCASES}
     for TESTCASE in ${TESTCASES}
     do
         # Run Each Testcase File
-        TESTCASE="${TESTCASE%%.*}";
         #echo ${TESTCASE};
+        TESTCASE="${TESTCASE%%.*}";
+        
 /mnt/c/Windows/System32/cmd.exe /C \
 iverilog -Wall -g2012 \
     -s mips_cpu_harvard_tb \
-    -P mips_cpu_harvard_tb.RAM_INIT_FILE=\"inputs/${TESTCASE}.txt\" \
-    -P mips_cpu_harvard_tb.MEM_INIT_FILE=\"inputs/${TESTCASE}.data.txt\" \
+    -P mips_cpu_harvard_tb.INSTR_INIT_FILE=\"inputs/${TESTCASE}.txt\" \
+    -P mips_cpu_harvard_tb.DATA_INIT_FILE=\"inputs/${TESTCASE}.data.txt\" \
     -o exec/mips_cpu_harvard_tb_${TESTCASE} testbench/mips_cpu_harvard_tb.v \
     ${SRC} 2> /dev/null
 /mnt/c/Windows/System32/cmd.exe /C vvp ./exec/mips_cpu_harvard_tb_${TESTCASE} &> ./inputs/${TESTCASE}.log.txt;       # log file for debugging (contains $display)
@@ -50,10 +51,10 @@ else
 /mnt/c/Windows/System32/cmd.exe /C \
 iverilog -Wall -g2012 \
     -s mips_cpu_harvard_tb \
-    -P mips_cpu_harvard_tb.RAM_INIT_FILE=\"inputs/${INSTR}.txt\" \
-    -P mips_cpu_harvard_tb.MEM_INIT_FILE=\"inputs/${INSTR}.data.txt\" \
+    -P mips_cpu_harvard_tb.INSTR_INIT_FILE=\"inputs/${INSTR}.txt\" \
+    -P mips_cpu_harvard_tb.DATA_INIT_FILE=\"inputs/${INSTR}.data.txt\" \
     -o exec/mips_cpu_harvard_tb_${INSTR} testbench/mips_cpu_harvard_tb.v \
-    ${SRC} #2> /dev/null
+    ${SRC} 2> /dev/null
 /mnt/c/Windows/System32/cmd.exe /C vvp ./exec/mips_cpu_harvard_tb_${INSTR} &> ./inputs/${INSTR}.log.txt;            # log file for debugging (contains $display)
 echo "$(tail -1 ./inputs/${INSTR}.log.txt)" > ./inputs/${INSTR}.out.txt;                                            # register v0 output to compare with reference
 if diff -w ./inputs/${INSTR}.out.txt ./inputs/${INSTR}.ref.txt &> /dev/null                                         # compare

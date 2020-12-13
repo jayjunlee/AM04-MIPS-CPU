@@ -13,8 +13,8 @@ module mips_cpu_memory(
     output logic[31:0] instr_readdata
 
 );
-    parameter RAM_INIT_FILE = "";
-    parameter MEM_INIT_FILE = "";
+    parameter INSTR_INIT_FILE = "";
+    parameter DATA_INIT_FILE = "";
     reg [31:0] data_memory [0:31];
     reg [31:0] instr_memory [0:31];
 
@@ -28,18 +28,18 @@ module mips_cpu_memory(
             instr_memory[i] = 0;
         end
         //Load contents from file if specified
-        if (RAM_INIT_FILE != "") begin
-            $display("RAM: Loading RAM contents from %s", RAM_INIT_FILE);
-            $readmemh(RAM_INIT_FILE, instr_memory);
+        if (INSTR_INIT_FILE != "") begin
+            $display("RAM: Loading RAM contents from %s", INSTR_INIT_FILE);
+            $readmemh(INSTR_INIT_FILE, instr_memory);
         end
 
         for (integer j = 0; j<$size(instr_memory); j++) begin
             $display("byte +%h: %h", 32'hBFC00000+j*4, instr_memory[j]);
         end
 
-        if (MEM_INIT_FILE != "") begin
-            $display("MEM: Loading MEM contents from %s", MEM_INIT_FILE);
-            $readmemh(MEM_INIT_FILE, data_memory);
+        if (DATA_INIT_FILE != "") begin
+            $display("MEM: Loading MEM contents from %s", DATA_INIT_FILE);
+            $readmemh(DATA_INIT_FILE, data_memory);
         end else begin
             $display("MEM FILE NOT GIVEN");
         end
