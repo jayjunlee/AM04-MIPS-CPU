@@ -29,14 +29,17 @@ always_ff @(negedge clk) begin
 	if (writereg == 5'b00000) begin
 		// skip writing if rd is $0
 	end else if (regwrite) begin
+		$display("%b", opcode);
 		case (opcode)
 			6'b100000: begin //lb, load byte
-				case (readdata1[1:0])
+				case (readdata1[1:0])	
 					2'b00: memory[writereg] <= {{24{writedata[7]}}, writedata[7:0]};
 					2'b01: memory[writereg] <= {{24{writedata[15]}}, writedata[15:8]};
 					2'b10: memory[writereg] <= {{24{writedata[23]}}, writedata[23:16]};
 					2'b11: memory[writereg] <= {{24{writedata[31]}}, writedata[31:24]};
 				endcase // readdata1[1:0]
+				$display("writedata %h", writedata);
+				$display("memory writereg %h", memory[writereg]);
 			end
 			6'b100100: begin //lbu, load byte unsigned
 				case (readdata1[1:0])
@@ -59,9 +62,6 @@ always_ff @(negedge clk) begin
 				endcase // readdata1[1:0]
 			end
 			6'b100010: begin //lwl, load word left
-				$display("LWLWLWLWLWLWWL");
-				$display(readdata1[1:0]);
-				$display("%h",memory[writereg]);
 				case (readdata1[1:0])
 					2'b00: memory[writereg][31:24] <= writedata[7:0];
 					2'b01: memory[writereg][31:16] <= writedata[15:0];

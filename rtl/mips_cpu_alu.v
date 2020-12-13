@@ -123,11 +123,11 @@ assign ALUOps = ALUOp;
       end
 
       SRA: begin
-          ALURes = B >>> shamt;
+          ALURes = $signed(B) >>> shamt;
       end
 
       SRAV: begin
-          ALURes = B >>> A;
+          ALURes = $signed(B) >>> A;
       end
    
       EQ: begin

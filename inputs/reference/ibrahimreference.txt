@@ -138,15 +138,17 @@ int main(void) {
     int b = -2147483647>>2; #arithemtic shift not logical - feed in 1s (sign extension)
 }
 
-ori $4, $0, 2
-ori $5,$0,-2147483647
+ori $4, $0, 4
+ori $5,$0,0xF000
 srav $2,$5,$4
+SRAv $v0 $a1 $a0
 jr $0
 
 register 0 = -536870912 (first 3 bits high - rest low)
 
-34040002
-34050001
+34040004
+3405F000
+
 ////////
 ///////
 

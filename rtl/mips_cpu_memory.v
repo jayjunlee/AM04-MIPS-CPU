@@ -15,8 +15,8 @@ module mips_cpu_memory(
 );
     parameter RAM_INIT_FILE = "";
     parameter MEM_INIT_FILE = "";
-    reg [31:0] data_memory [0:63];
-    reg [31:0] instr_memory [0:63];
+    reg [31:0] data_memory [0:31];
+    reg [31:0] instr_memory [0:31];
 
     initial begin
         integer i;
@@ -58,11 +58,17 @@ module mips_cpu_memory(
     always_ff @(posedge clk) begin
         $display("Instruction Read: %h", instr_readdata);
         //$display("RAM : INFO : data_read=%h, data_address = %h, mem=%h", data_read, data_address, memory[data_address]);
-        if (!data_read & data_write) begin              //cannot read and write to memory in the same cycle
+        if (data_write) begin              //cannot read and write to memory in the same cycle
             if (instr_address != data_address) begin    //cannot modify the instruction being read
-                data_memory[data_address>>2] <= data_writedata;            
+                data_memory[(data_address-32'h00001000)>>2] <= data_writedata; 
+                $display("Store in memory");     
+                $display(data_writedata);      
+            end
+            for (integer k = 0; k<$size(data_memory); k++) begin
+            $display("byte +%h: %h", 32'h00001000+k*4, data_memory[k]);
             end
         end
+        
     end
 endmodule
 

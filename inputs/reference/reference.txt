@@ -267,21 +267,21 @@ register_v0 = 0x40000000
 
 ==J	Jump==
 
-J 4
+J 12
 NOP
 JR $0
 NOP
 ORI $2,$0,1
 JR $0
 
-08000004
+0800000C
 00000000
 00000008
 00000000
-34020001
+3402000A
 00000008
 
-register_v0 = 1
+register_v0 = 10
 
 ==JALR	Jump and link register==
 
@@ -329,24 +329,24 @@ register_v0 = 2
 
 ==JR	Jump register==
 
-ORI $5,$0,0x0014
 LUI $5,0xBFC0  
+ORI $5,$5,0x0014
 JR $5  
 NOP
 JR $0
 NOP
-ORI $2,$0,1
+ORI $2,$0,0x10
 JR $0
 
-34050014
-3C05BCF0
+3C05BFC0
+34A50014
 00A00008
 00000000
 00000008
-34020001
+34020010
 00000008
 
-register_v0 = 1
+register_v0 = 16
 
 ==LB	Load byte==
 
@@ -356,8 +356,8 @@ JR $0
 
 -Instruction Hex
 
-34041003
-80820003
+34041000
+80820006
 00000008
 
 -Memory Hex
@@ -434,12 +434,12 @@ register_v0 = 0x00008123
 
 ==LUI	Load upper immediate==
 
-ORI $2,$0,0x5678
 LUI $2,0x1234
+ORI $2,$2,0x5678
 JR $0
 
-34045678
 3C021234
+34425678
 00000008
 
 register_v0 = 0x12345678
@@ -467,14 +467,14 @@ register_v0 = 0x12345678
 
 ==LWL	Load word left==
 
-ORI $4,$0,0x1003
+ORI $4,$0,0x1001
 ORI $2,$0,0x5678
 LWL  $2,3($4)
 JR $0
 
 -Instruction Hex
 
-34041003
+34041001
 34025678
 88820003
 00000008
@@ -490,14 +490,14 @@ register_v0 = 0x12345678
 
 ==LWR	Load word right==
 
-ORI $4,$0,0x1003
+ORI $4,$0,0x1002
 LUI $2,0x1234
 LWR $2,2($4)
 JR $0
 
 -Instruction Hex
 
-34041003
+34041002
 3C021234
 98820002
 00000008
@@ -558,6 +558,25 @@ register_v0 = 0x12345678
 //SUBU	Subtract unsigned
 
 //SW	Store word
+
+ori $4, $0, 0xFFFF  3404FFFF
+ori $5, $0, 0x1008  34051008
+sw $4, 4($5)        ACA40004
+ori $5, $0, 0x100C   3405100C
+lw $2, 0($5)        8CA20000
+jr $0               00000008
+
+ori $4, $0, 0x1234
+ori $5, $0, 0x1008
+sw $4, 0($5)
+lw $2, 0($5)
+jr $0
+
+3404FFFF
+34051008
+ACA40000
+8CA20000
+00000008
 
 //XOR	Bitwise exclusive or
 

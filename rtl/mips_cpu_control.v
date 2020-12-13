@@ -99,6 +99,7 @@ always @(*) begin
         CtrlPC = 2'd1; // Branches - Jumps relative to PC
     end else if((op==J) || (op==JAL))begin
         CtrlPC = 2'd2; // Jumps within 256MB Region using 26-bit immediate in J type instruction
+        $display("Jump PC Ctrl");
     end else if((op==SPECIAL)&&(funct==JR) || (funct==JALR))begin
         CtrlPC = 2'd3; // Jumps using Register.
         //$display("Ctrl PC Jump Register");
@@ -141,6 +142,7 @@ always @(*) begin
         CtrlALUOp = 5'd23;//DIVU from ALUOps
     end else if((op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LW) || (op==LWL) || (op==LWR) || (op==SB) || (op==SH) || (op==SW))begin
         CtrlALUOp = 5'd0;//ADD from ALUOps
+        $display("LB IN CONTROL");
     end else if(op==LUI)begin
         CtrlALUOp = 5'd7;//SLL from ALUOps
     end else if((op==SPECIAL)&&((funct==MTHI) || (funct==MTLO)))begin
@@ -156,8 +158,10 @@ always @(*) begin
         $display("ALU Op = 7 (SLL)");
     end else if((op==SPECIAL)&&(funct==SLLV))begin
         CtrlALUOp = 5'd8;//SLLV from ALUOps
+        $display("ALU Op = 9 (SLLV)");
     end else if((op==SPECIAL)&&(funct==SRA))begin
         CtrlALUOp = 5'd11;//SRA from ALUOps
+        $display("ALU Op = 11 (SRA)");
     end else if((op==SPECIAL)&&(funct==SRAV))begin
         CtrlALUOp = 5'd12;//SRAV from ALUOps
     end else if((op==SPECIAL)&&(funct==SRL))begin
@@ -167,8 +171,10 @@ always @(*) begin
         CtrlALUOp = 5'd10;//SRLV from ALUOps
     end else if((op==SLTI) || ((op==SPECIAL)&&(funct==SLT)))begin
         CtrlALUOp = 5'd20;//SLT from ALUOps
+        $display("ALU Op = 20 (SLT/SLTI)");
     end else if((op==SLTIU) || ((op==SPECIAL)&&(funct==SLTU)))begin
         CtrlALUOp = 5'd21;//SLTU from ALUOps
+        $display("ALU Op = 21 (SLTU/SLTIU)");
     end else if((op==SPECIAL)&&(funct==SUBU))begin
         CtrlALUOp = 5'd1;//SUB from ALUOps
     end else if((op==XORI) || ((op==SPECIAL)&&(funct==XOR)))begin
@@ -193,12 +199,12 @@ always @(*) begin
     //CtrlALUSrc logic
     if((op==ADDIU) || (op==ANDI) || (op==LUI) || (op==ORI) || (op==SLTI) || (op==SLTIU) || (op==XORI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LW) || (op==LWL) || (op==LWR) || (op==SB) || (op==SH) || (op==SW))begin
         CtrlALUSrc = 1;//ALU Bus B is fed from the 16-bit immediate sign extended to 32-bit value taken from Instr[15-0]
-    end else if((op==BEQ) || (op==BGTZ) || (op==BLEZ) || (op==BNE) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==DIV) || (funct==DIVU) || (funct==MULT) || (funct==MULTU) || (funct==OR) || (funct==SLL) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRAV) || (funct==SRL) || (funct==SRLV) || (funct==SUBU) || (funct==XOR))) || ((op==REGIMM)&&((rt==BGEZ) || (rt==BGEZAL) || (rt==BLTZ) || (rt==BLTZAL))))begin 
+    end else if((op==BEQ) || (op==BGTZ) || (op==BLEZ) || (op==BNE) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==DIV) || (funct==DIVU) || (funct==MULT) || (funct==MULTU) || (funct==OR) || (funct==SLL) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRA) || (funct==SRAV) || (funct==SRL) || (funct==SRLV) || (funct==SUBU) || (funct==XOR))) || ((op==REGIMM)&&((rt==BGEZ) || (rt==BGEZAL) || (rt==BLTZ) || (rt==BLTZAL))))begin 
         CtrlALUSrc = 0;///ALU Bus B is fed from rt.
     end else begin CtrlALUSrc = 1'bx;end
        
     //CtrlRegWrite logic
-    if((op==ADDIU) || (op==ANDI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LUI) || (op==LW) || (op==LWL) || (op==LWR) || (op==ORI) || (op==SLTI) || (op==XORI) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==DIV) || (funct==DIVU) || (funct==MULT) || (funct==MULTU) || (funct==OR) || (funct==SLL) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRA) || (funct==SRAV) || (funct==SRL) || (funct==SRLV) || (funct==SUBU) || (funct==XOR)))) begin
+    if((op==ADDIU) || (op==ANDI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LUI) || (op==LW) || (op==LWL) || (op==LWR) || (op==ORI) || (op==SLTI) || (op==XORI) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==DIV) || (funct==DIVU)  || (funct==MULT) || (funct==MULTU) || (funct==OR) || (funct==SLL) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRA) || (funct==SRAV) || (funct==SRL) || (funct==SRLV) || (funct==SUBU) || (funct==XOR)))) begin
         CtrlRegWrite = 1;//The Registers are Write Enabled
     end else begin CtrlRegWrite = 0;end // The Registers are Write Disabled
 end
