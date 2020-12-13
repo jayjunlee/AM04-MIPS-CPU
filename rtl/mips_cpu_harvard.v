@@ -42,22 +42,6 @@ always_comb begin
     in_readreg2 = instr_readdata[20:16];
     in_opcode   = instr_readdata[31:26];
 
-//Picking what the next value of PC should be.
-    case(out_PC)
-        2'd0: begin
-            in_pc_in = out_pc_out + 32'd4;//No branch or jump or load, so no delay slot.
-        end
-        2'd1: begin
-            in_pc_in = //help
-        end
-        2'd2: begin
-            in_pc_in = //my brain hurts
-        end
-        2'd3: begin
-            in_pc_in = //I need to sleep......
-        end
-    endcase
-
 //Picking what register should be written to.
     case(out_RegDst)
         2'd0:begin
@@ -95,11 +79,13 @@ always_comb begin
     endcase
 end
 
-pc pc(
+mips_cpu_pc pc(
 //PC inputs
     .clk(clk),//clk taken from the Standard signals
     .rst(reset),//clk taken from the Standard signals
-    .pc_in(in_pc_in),//what the pc will output on the next clock cycle taken from either: PC itself + 4(Normal/Default Operation); or 16-bit signed valued taken from Instr[15-0] sign extend to 32bit then shifted by 2 then added to PC + 4(Branch Operation); or 26-bit instruction address taken from J-type instr[25-0] shifted left by 2 then concatanated to form Jump Address (PC-region branch); or from the GPR rs.
+    .Instr(instr_readdata),//what the pc will output on the next clock cycle taken from either: PC itself + 4(Normal/Default Operation); or 16-bit signed valued taken from Instr[15-0] sign extend to 32bit then shifted by 2 then added to PC + 4(Branch Operation); or 26-bit instruction address taken from J-type instr[25-0] shifted left by 2 then concatanated to form Jump Address (PC-region branch); or from the GPR rs.
+    .JumpReg(out_readdata1),
+    .pc_ctrl(out_PC),
 //PC outputs
     .pc_out(out_pc_out)//What the pc outputs at every clock edge that goes into the 'Read address' port of Instruction Memory.
 );
