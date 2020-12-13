@@ -1,0 +1,481 @@
+===== ADDIU ==========
+int main(void) {
+    int a = -2147483648 + -32768 ;
+}
+
+ORI $4,$0,-2147483648
+ADDIU $2,$4,-32768
+JR $0
+
+//used to check for overflow 32768 is 2^15 which should 
+be sign extended. 21... is 2^31 
+
+
+register_v0 = 
+
+==========XORI	Bitwise exclusive or immediate=============
+
+int main(void) {
+    int a = 5 ^ 2;
+}
+
+ori $4,$0,5
+xori $2,$4,2
+jr $0
+
+register 0 = 7
+
+34040005
+38820002
+00000008
+
+convert to little endian
+
+////////
+
+====XOR	Bitwise exclusive or==========
+
+int main(void) {
+    int a = 5 ^ 2;
+}
+
+ori $4, $0, 5
+ori $5, $0, 2
+xor $2, $4, $5
+jr $0
+
+register 0 = 7
+
+34040005
+34050002
+00851026
+00000008
+
+convert to little endian
+
+////////
+
+========SW	Store word==============
+
+int main(void) {
+
+
+ori $4, $0, 5 
+ori $5, $0, 1
+sw $4, 1($5)
+jr $0
+
+register 0 = 5
+
+34040005
+34050001
+aca40001
+00000008
+
+
+=========== SUBU	Subtract unsigned ===========
+
+int main(void) {
+    int a = 5-3;
+}
+
+ori $4,$0,5
+ori $5,$0,3
+subu $2,$4,$5
+jr $0
+
+
+register_v0 = 2
+
+
+34040005
+34050003
+00851023
+00000008
+
+
+========= SRLV	Shift right logical variable ======
+
+
+int main(void) {
+    int a = 2;
+    int b = 16>>a;
+}
+
+ori $4,$0,2
+ori $5,$0,16
+srlv $2,$5,$4
+jr $0
+
+register 0 = 3
+
+34040002
+34050010
+//////
+//////
+
+===============  SRL	Shift right logical  ==============
+
+
+int main(void) {
+    int a = -2147483647>>2; #logical shift - should feed in 0s
+}
+
+ori $4,$0,-2147483647
+srl $2,$4,$2
+jr $0
+
+register 0 = 536870912 (2^29)
+
+34040001
+00041002
+00000008
+
+========== SRAV	Shift right arithmetic variable =======
+
+int main(void) {
+    int a = 2;
+    int b = -2147483647>>2; #arithemtic shift not logical - feed in 1s (sign extension)
+}
+
+ori $4, $0, 2
+ori $5,$0,-2147483647
+srav $2,$5,$4
+jr $0
+
+register 0 = -536870912 (first 3 bits high - rest low)
+
+34040002
+34050001
+////////
+///////
+
+====== SRA	Shift right arithmetic ==========
+
+int main(void) {
+    int a = -2147483647>>2; #arithemtic shift not logical - feed in 1s (sign extension)
+}
+
+
+ori $4,$0,-2147483647
+sra $2,$4,$2
+jr $0
+
+register 0 = -536870912 (first 3 bits high - rest low)
+
+34040001
+00041003
+00000008
+
+======= SLTU	Set on less than unsigned =====
+
+int main() {
+    int a = 10;
+    int b = 9;
+
+    max = a < b ? 1 : 0;
+
+    return max;
+}
+
+
+ori $4, $0, 10
+ori $5, $0, 9
+sltu $2, $4, $5
+jr $0
+
+register 0 = 0
+
+3404000a
+34050009
+0085102b
+00000008
+
+=========== SLTIU	Set on less than immediate unsigned ==================
+
+int main() {
+    int a = 10;
+
+    max = a < 9 ? 1 : 0;
+
+    return max;
+}
+
+
+ori $4, $0, 10
+sltiu $2, $4, 9
+jr $0
+
+register 0 = 0
+
+3404000a
+2c820009
+00000008
+
+======= SLTI	Set on less than immediate (signed) ========
+
+int main() {
+    int a = 10;
+
+    max = a < 9 ? 1 : 0;
+
+    return max;
+}
+
+
+ori $4, $0, 10
+slti $2, $4, 9
+jr $0
+
+register 0 = 0
+
+3404000a
+28820009
+00000008
+
+
+
+======= SLLV	Shift left logical variable ======
+
+
+int main(void) {
+    int a = 2;
+    int b = 3<<a;
+}
+
+ori $4,$0,2
+ori $5,$0,3
+sllv $2,$5,$4
+jr $0
+
+register 0 = 16
+
+34040002
+34050003
+//////
+//////
+
+
+======= SLL	Shift left logical  ======
+
+
+int main(void) {
+    int a = 3<<2;
+}
+
+ori $4,$0,3
+sll $2,$4,2
+jr $0
+
+register 0 = 16
+
+34040003
+00041080
+00000008
+
+======== SB	Store byte =======
+
+ori $4, $0, 1029
+ori $5, $0, 1
+sb $4, 1($5)
+jr $0
+
+register 0 = 5
+
+34040405
+34050001
+a0a40001
+00000008
+
+ ======== ORI	Bitwise or immediate ===
+
+ori $4,$0,3
+jr $0
+
+register a0 = 3
+
+34040003
+00000008
+
+======== OR	Bitwise or  ===
+
+int main(){
+    int a =5;
+    int b= 3;
+
+    int c = 5 | 3;
+
+    return 0;
+}
+
+
+ori $4, $0, 5
+ori $5, $0, 3
+or $2, $4, $5
+jr $0
+
+
+34040005
+34050003
+00851025
+00000008
+
+register 0 = 7
+
+======= MULT	Multiply =====
+
+ori $4, $0, 4
+ori $5, $0, 3
+mult $4, $5
+jr $0
+
+$LO = 12
+
+34040004
+34050003
+00850018
+00000008
+
+
+======= MULT Multiply =====
+
+ori $4, $0, 4
+ori $5, $0, 3
+mult $4, $5
+mflo $2
+jr $0
+
+register v0 = 12
+
+34040004
+34050003
+00850018
+00001012
+00000008
+
+======= MULTU	Multiply unsigned =====
+
+ori $4, $0, 4
+ori $5, $0, 3
+multu $4, $5
+jr $0
+
+
+$LO = 12
+
+34040004
+34050003
+00850019
+00000008
+
+
+======= MULTU	Multiply unsigned =====
+
+ori $4, $0, 4
+ori $5, $0, 3
+multu $4, $5
+mflo $2
+jr $0
+
+
+$2 = 12
+
+34040004
+34050003
+00850019
+00001012
+00000008
+
+======= MFLO Move from lo ======
+
+ori $4, $0, 4
+ori $5, $0, 3
+multu $4, $5
+mflo $2
+jr $0
+
+
+$2 = 12
+
+34040004
+34050003
+00850019
+00001012
+00000008
+
+=========== MFHI Move from Hi ==========
+
+ori $4, $0, 3
+mthi $4
+mfhi $2
+jr $0
+
+register v0 = 3
+
+34040003
+00800011
+00001010
+00000008
+
+======== MTHI	Move to HI ====
+
+ori $4, $0, 5
+mthi $4
+jr $0
+
+
+$HI = 5
+
+34040005
+00800011
+00000008
+
+======= MTLO	Move to LO ===
+
+ori $4, $0, 5
+mtlo $4
+jr $0
+
+
+$HI = 5
+
+34040005
+00800013
+00000008
+
+==================== SH	Store half-word =======
+
+/////////
+
+
+======== DIV Divide  ======
+
+
+ori $4, $0, 4
+ori $5, $0, 3
+div $4, $5
+jr $0
+
+
+$LO = 1
+$HI = 1
+
+34040004
+34050003
+0085001A
+00000008
+
+========= DIVU Divide unsigned =====
+
+ori $4, $0, 4
+ori $5, $0, 3
+divu $4, $5
+jr $0
+
+$LO = 1
+$HI = 1
+
+34040004
+34050003
+0085001B
+00000008
