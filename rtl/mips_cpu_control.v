@@ -42,7 +42,7 @@ typedef enum logic[5:0]{
     SW      = 6'd43
 } op_enum;
 op_enum op;
-assign op = Instr[31:26];
+
 
 typedef enum logic[5:0]{
     SLL     = 6'd0,
@@ -68,7 +68,7 @@ typedef enum logic[5:0]{
     SLTU    = 6'd43
 } funct_enum;
 funct_enum funct;
-assign funct = Instr[5:0];
+
 
 typedef enum logic[4:0]{
     BLTZ    = 5'd0,
@@ -77,11 +77,12 @@ typedef enum logic[4:0]{
     BGEZAL  = 5'd17
 } rt_enum;
 rt_enum rt;
-assign rt = Instr[20:16];
-
 
 
 always @(*) begin
+    assign op = Instr[31:26];
+    assign funct = Instr[5:0];
+    assign rt = Instr[20:16];
     //CtrlRegDst logic
     if((op==ADDIU) || (op==ANDI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LUI) || (op==LW) || (op==LWL) || (op==LWR) || (op==ORI) || (op==SLTI) || (op==SLTIU) || (op==XORI))begin
         CtrlRegDst = 2'd0; //Write address comes from rt

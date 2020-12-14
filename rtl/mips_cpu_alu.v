@@ -73,10 +73,8 @@ Alu Operations:
 
 Ops ALUOps; //Note confusing naming to avoid potential duplicate variable naming errors, as a result of enum implemetnation.
 
-assign ALUOps = ALUOp;
-
   always_comb begin
-
+    assign ALUOps = ALUOp;
     case(ALUOps)
       ADD: begin
           ALURes = $signed(A) + $signed(B);

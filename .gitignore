@@ -1,4 +1,5 @@
 exec/*
+!exec/executable.txt
 inputs/*.log.txt
 inputs/*.out.txt
 mips_cpu_harvard.vcd
