@@ -29,15 +29,14 @@ then
         #echo ${TESTCASE};
         TESTCASE="${TESTCASE%%.*}";
         
-#/mnt/c/Windows/System32/cmd.exe /C \
+/mnt/c/Windows/System32/cmd.exe /C \
 iverilog -Wall -g2012 \
     -s mips_cpu_harvard_tb \
     -P mips_cpu_harvard_tb.INSTR_INIT_FILE=\"inputs/${TESTCASE}.txt\" \
     -P mips_cpu_harvard_tb.DATA_INIT_FILE=\"inputs/${TESTCASE}.data.txt\" \
     -o exec/mips_cpu_harvard_tb_${TESTCASE} testbench/mips_cpu_harvard_tb.v \
     ${SRC} 2> /dev/null
-#/mnt/c/Windows/System32/cmd.exe /C vvp 
-./exec/mips_cpu_harvard_tb_${TESTCASE} &> ./inputs/${TESTCASE}.log.txt;       # log file for debugging (contains $display)
+/mnt/c/Windows/System32/cmd.exe /C vvp ./exec/mips_cpu_harvard_tb_${TESTCASE} &> ./inputs/${TESTCASE}.log.txt;       # log file for debugging (contains $display)
 echo "$(tail -1 ./inputs/${TESTCASE}.log.txt)" > ./inputs/${TESTCASE}.out.txt;                                       # register v0 output to compare with reference
 if diff -w ./inputs/${TESTCASE}.out.txt ./inputs/${TESTCASE}.ref.txt &> /dev/null                                    # compare
 then 
@@ -49,15 +48,14 @@ fi
 
 else
     # Run Testcase File Of Specified Instruction
-#/mnt/c/Windows/System32/cmd.exe /C \
+/mnt/c/Windows/System32/cmd.exe /C \
 iverilog -Wall -g2012 \
     -s mips_cpu_harvard_tb \
     -P mips_cpu_harvard_tb.INSTR_INIT_FILE=\"inputs/${INSTR}.txt\" \
     -P mips_cpu_harvard_tb.DATA_INIT_FILE=\"inputs/${INSTR}.data.txt\" \
     -o exec/mips_cpu_harvard_tb_${INSTR} testbench/mips_cpu_harvard_tb.v \
     ${SRC} 2> /dev/null
-#/mnt/c/Windows/System32/cmd.exe /C vvp 
-./exec/mips_cpu_harvard_tb_${INSTR} &> ./inputs/${INSTR}.log.txt;            # log file for debugging (contains $display)
+/mnt/c/Windows/System32/cmd.exe /C vvp ./exec/mips_cpu_harvard_tb_${INSTR} &> ./inputs/${INSTR}.log.txt;            # log file for debugging (contains $display)
 echo "$(tail -1 ./inputs/${INSTR}.log.txt)" > ./inputs/${INSTR}.out.txt;                                            # register v0 output to compare with reference
 if diff -w ./inputs/${INSTR}.out.txt ./inputs/${INSTR}.ref.txt &> /dev/null                                         # compare
 then 
