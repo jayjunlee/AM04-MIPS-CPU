@@ -77,19 +77,19 @@ Ops ALUOps; //Note confusing naming to avoid potential duplicate variable naming
     assign ALUOps = ALUOp;
     case(ALUOps)
       ADD: begin
-          $signed(ALURes) = $signed(A) + $signed(B);
+          ALURes = $signed(A) + $signed(B);
       end
       
       SUB: begin
-          $signed(ALURes) = $signed(A) - $signed(B) ; 
+          ALURes = $signed(A) - $signed(B); 
       end        
 
       MUL: begin
-          $signed(ALURes) = $signed(A) * $signed(B); 
+          ALURes = $signed(A) * $signed(B); 
       end
 
       DIV: begin
-          $signed(ALURes) = $signed(A) / $signed(B);
+          ALURes = $signed(A) / $signed(B);
       end
 
       AND: begin
@@ -121,11 +121,11 @@ Ops ALUOps; //Note confusing naming to avoid potential duplicate variable naming
       end
 
       SRA: begin
-          $signed(ALURes) = $signed(B) >>> shamt;
+          ALURes = $signed(B) >>> shamt;
       end
 
       SRAV: begin
-          $signed(ALURes) = $signed(B) >>> A;
+          ALURes = $signed(B) >>> A;
       end
    
       EQ: begin
@@ -205,11 +205,11 @@ Ops ALUOps; //Note confusing naming to avoid potential duplicate variable naming
       end
 
       MULU: begin
-          $signed(ALURes) = $signed(A) * $signed(B); 
+          ALURes = $signed(A) * $signed(B); 
       end
 
       DIVU: begin
-          $signed(ALURes) = $signed(A) / $signed(B);
+          ALURes = $signed(A) / $signed(B);
       end
 
     endcase
