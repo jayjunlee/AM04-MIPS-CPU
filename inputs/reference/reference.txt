@@ -1,17 +1,22 @@
 == Instruction ==
-C code
 Assembly code
 Hex code
 Reference Output
 ================
 
-ADDIU Add immediate unsigned (no overflow) 
+==ADDIU Add immediate unsigned (no overflow)==
+
+ORI $4,$0,0xA
+ADDIU $2,$4,20
+JR $0
+
+3404000a
+24820014
+00000008
+
+register_v0 = 30
 
 == ADDU Add unsigned (no overflow) ==
-
-int main(void) {
-    int a = 3 + 5;
-}
 
 ORI $4,$0,3
 ORI $5,$0,5
@@ -511,73 +516,277 @@ JR $0
 
 register_v0 = 0x12345678
 
-// DIVU Divide unsigned
+==MTHI	Move to HI==
 
-// DIV Divide
+ori $4, $0, 5
+mthi $4
+mfhi $2
+jr $0
 
-//MFHI Move from Hi 
+34040005
+00800011
+00001010
+00000008
 
-//MFLO Move from lo 
+register_v0 = 5
 
-//MTHI	Move to HI
+==MTLO	Move to LO==
 
-//MTLO	Move to LO
+ori $4, $0, 5
+mtlo $4
+mflo $2
+jr $0
 
-//MULT	Multiply**
+34040005
+00800013
+00001012
+00000008
 
-//MULTU	Multiply unsigned**
+register_v0 = 5
 
-//OR	Bitwise or
+==MULT	Multiply==
 
-//ORI	Bitwise or immediate
+ori $4, $0, 4
+ori $5, $0, 3
+mult $4, $5
+mflo $2
+jr $0
 
-//SB	Store byte
+34040004
+34050003
+00850018
+00001012
+00000008
 
-//SH	Store half-word**
+register_v0 = 12
 
-//SLL	Shift left logical
+==MULTU	Multiply unsigned==
 
-//SLLV	Shift left logical variable **
+ori $4, $0, 4
+ori $5, $0, 3
+multu $4, $5
+mflo $2
+jr $0
+
+34040004
+34050003
+00850019
+00001012
+00000008
+
+register_v0 = 12
+
+==OR	Bitwise or==
+
+ori $4, $0, 5
+ori $5, $0, 3
+or $2, $4, $5
+jr $0
+
+34040005
+34050003
+00851025
+00000008
+
+register_v0 = 7
+
+==ORI	Bitwise or immediate==
+
+ori $2, $0, 3
+ori $2, $0, 5
+jr $0
+
+34020003
+00000008
+34020005
+
+register_v0 = 7
+
+==SB	Store byte==
+
+ori $4, $0, 1029
+ori $5, $0, 1
+sb $4, 1($5)
+jr $0
+
+34040405
+34050001
+a0a40001
+00000008
+
+register_v0 = 5
+
+SH	Store half-word
+
+==SLL	Shift left logical==
+
+ori $4,$0,3
+sll $2,$4,2
+jr $0
+
+34040003
+00041080
+00000008
+
+register_v0 = 16
+
+==SLLV	Shift left logical variable==
+
+ori $4,$0,2
+ori $5,$0,3
+sllv $2,$5,$4
+jr $0
+
+34040002
+34050003
+
+register_v0 = 16
 
 //SLT	Set on less than (signed)
 
-//SLTI	Set on less than immediate (signed)
+==SLTI	Set on less than immediate (signed)==
 
-//SLTIU	Set on less than immediate unsigned
-
-//SLTU	Set on less than unsigned
-
-//SRA	Shift right arithmetic
-
-//SRAV	Shift right arithmetic**
-
-//SRL	Shift right logical
-
-//SRLV	Shift right logical variable**
-
-//SUBU	Subtract unsigned
-
-//SW	Store word
-
-ori $4, $0, 0xFFFF  3404FFFF
-ori $5, $0, 0x1008  34051008
-sw $4, 4($5)        ACA40004
-ori $5, $0, 0x100C   3405100C
-lw $2, 0($5)        8CA20000
-jr $0               00000008
-
-ori $4, $0, 0x1234
-ori $5, $0, 0x1008
-sw $4, 0($5)
-lw $2, 0($5)
+ori $4, $0, 10
+slti $2, $4, 9
 jr $0
+
+3404000a
+28820009
+00000008
+
+register_v0 = 0
+
+==SLTIU	Set on less than immediate unsigned==
+
+ori $4, $0, 10
+sltiu $2, $4, 9
+jr $0
+
+3404000a
+2c820009
+00000008
+
+register_v0 = 0
+
+==SLTU	Set on less than unsigned==
+
+ori $4, $0, 10
+ori $5, $0, 9
+sltu $2, $4, $5
+jr $0
+
+3404000a
+34050009
+0085102b
+00000008
+
+register_v0 = 0
+
+==SRA	Shift right arithmetic==
+
+ori $4,$0,-2147483647
+sra $2,$4,$2
+jr $0
+
+register 0 = -536870912 (first 3 bits high - rest low)
+
+34040001
+00041003
+00000008
+
+==SRAV	Shift right arithmetic==
+
+ori $4, $0, 4
+ori $5,$0,0xF000
+srav $2,$5,$4
+SRAv $v0 $a1 $a0
+jr $0
+
+register 0 = -536870912 (first 3 bits high - rest low)
+
+34040004
+3405F000
+
+==SRL	Shift right logical==
+
+ori $4,$0,-2147483647
+srl $2,$4,$2
+jr $0
+
+register 0 = 536870912 (2^29)
+
+34040001
+00041002
+00000008
+
+==SRLV	Shift right logical variable==
+
+ori $4,$0,2
+ori $5,$0,16
+srlv $2,$5,$4
+jr $0
+
+34040002
+34050010
+00851006
+00000008
+
+register_v0 = 3
+
+==SUBU	Subtract unsigned==
+
+ori $4,$0,5
+ori $5,$0,3
+subu $2,$4,$5
+jr $0
+
+34040005
+34050003
+00851023
+00000008
+
+register_v0 = 2
+
+==SW	Store word==
+
+ori $4, $0, 0xFFFF  
+ori $5, $0, 0x1008  
+sw $4, 4($5)        
+ori $5, $0, 0x100C   
+lw $2, 0($5)       
+jr $0               
 
 3404FFFF
 34051008
-ACA40000
+ACA40004
+3405100C
 8CA20000
 00000008
 
-//XOR	Bitwise exclusive or
+register_v0 = 0x0000FFFF
 
-//XORI	Bitwise exclusive or immediate
+==XOR	Bitwise exclusive or==
+
+ori $4, $0, 5
+ori $5, $0, 2
+xor $2, $4, $5
+jr $0
+
+34040005
+34050002
+00851026
+00000008
+
+register_v0 = 7
+
+==XORI	Bitwise exclusive or immediate==
+
+ori $4,$0,5
+xori $2,$4,0xF
+jr $0
+
+34040005
+3882000F
+00000008
+
+register_v0 = 10
