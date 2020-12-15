@@ -5,7 +5,7 @@ module mips_cpu_alu(
     input logic [4:0] shamt, //5-bit input used to specify shift amount for shift operations. Taken directly from the R-type instruction (Non-Variable) or from 
 
     output logic ALUCond, //If a relevant condition is met, this output goes high(Active High). Note: Relevant as in related to current condition being tested.
-    output logic signed[31:0] ALURes // The ouput of the ALU 
+    output logic[31:0] ALURes // The ouput of the ALU 
 );
 
 /*  
@@ -77,19 +77,19 @@ Ops ALUOps; //Note confusing naming to avoid potential duplicate variable naming
     assign ALUOps = ALUOp;
     case(ALUOps)
       ADD: begin
-          ALURes = $signed(A) + $signed(B);
+          $signed(ALURes) = $signed(A) + $signed(B);
       end
       
       SUB: begin
-          ALURes = $signed(A) - $signed(B) ; 
+          $signed(ALURes) = $signed(A) - $signed(B) ; 
       end        
 
       MUL: begin
-          ALURes = $signed(A) * $signed(B); 
+          $signed(ALURes) = $signed(A) * $signed(B); 
       end
 
       DIV: begin
-          ALURes = $signed(A) / $signed(B);
+          $signed(ALURes) = $signed(A) / $signed(B);
       end
 
       AND: begin
@@ -121,11 +121,11 @@ Ops ALUOps; //Note confusing naming to avoid potential duplicate variable naming
       end
 
       SRA: begin
-          ALURes = $signed(B) >>> shamt;
+          $signed(ALURes) = $signed(B) >>> shamt;
       end
 
       SRAV: begin
-          ALURes = $signed(B) >>> A;
+          $signed(ALURes) = $signed(B) >>> A;
       end
    
       EQ: begin
@@ -205,11 +205,11 @@ Ops ALUOps; //Note confusing naming to avoid potential duplicate variable naming
       end
 
       MULU: begin
-          ALURes = A * B; 
+          $signed(ALURes) = $signed(A) * $signed(B); 
       end
 
       DIVU: begin
-          ALURes = A / B;
+          $signed(ALURes) = $signed(A) / $signed(B);
       end
 
     endcase
