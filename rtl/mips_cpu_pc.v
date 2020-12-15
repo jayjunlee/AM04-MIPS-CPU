@@ -2,7 +2,6 @@ module mips_cpu_pc(
 	input logic clk,
 	input logic rst,
 	input logic[1:0] pc_ctrl,
-	input logic[31:0] pc_in,
 	input logic[31:0] instr,
 	input logic[31:0] reg_readdata,
 	output logic[31:0] pc_out,
@@ -12,7 +11,7 @@ module mips_cpu_pc(
 reg [31:0] pc_next, pc_lit_next;
 
 initial begin
-	pc_out = pc_in;
+	pc_out = 32'hBFC00000;
 	pc_next = pc_out + 32'd4;
 end
 

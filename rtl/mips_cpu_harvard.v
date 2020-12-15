@@ -20,13 +20,13 @@ module mips_cpu_harvard(
     input logic[31:0] data_readdata//port from data memory out, going to the 'Write Register' port in regfile.
 );
 
-assign instr_address = in_pc_in;
+assign instr_address = out_pc_out;
 assign data_address = out_ALURes;
 assign data_write = out_MemWrite;
 assign data_read = out_MemRead;
 assign data_writedata = out_readdata2;
 
-logic[31:0] in_pc_in, out_pc_out = 32'hBFC00000, out_ALURes, out_readdata1, out_readdata2, in_B, in_writedata;
+logic[31:0] out_pc_out, out_ALURes, out_readdata1, out_readdata2, in_B, in_writedata;
 logic[4:0]  in_readreg1, in_readreg2, in_writereg, out_shamt, out_ALUOp;
 logic[5:0]  in_opcode;
 logic out_ALUCond, out_RegWrite, out_ALUSrc, out_MemWrite, out_MemRead;
@@ -81,9 +81,8 @@ mips_cpu_pc pc(
     .instr(instr_readdata), //needed for branches and jumps
     .reg_readdata(out_readdata1), //needed for jump register
     .pc_ctrl(out_PC),
-    .pc_in(out_pc_out),//what the pc will output on the next clock cycle taken from either: PC itself + 4(Normal/Default Operation); or 16-bit signed valued taken from Instr[15-0] sign extend to 32bit then shifted by 2 then added to PC + 4(Branch Operation); or 26-bit instruction address taken from J-type instr[25-0] shifted left by 2 then concatanated to form Jump Address (PC-region branch); or from the GPR rs.
 //PC outputs
-    .pc_out(in_pc_in),//What the pc outputs at every clock edge that goes into the 'Read address' port of Instruction Memory.
+    .pc_out(out_pc_out),//What the pc outputs at every clock edge that goes into the 'Read address' port of Instruction Memory.
     .active(active)
 );
 
