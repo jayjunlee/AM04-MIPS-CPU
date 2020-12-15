@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# 1. Source File & Source Directory Parsing
-SRC_DIR=${1?Error: no source directory given in argument};      # e.g. rtl
+SRC_DIR=${1?Error: no source directory given in argument};
 SRC=$(ls ${SRC_DIR} | grep -E "harvard|memory|alu|regfile|pc|control");
 SRC_TEMP="";
 for src in ${SRC}
@@ -11,55 +10,51 @@ done
 SRC=${SRC_TEMP}
 
 
-# 2. Instruction Argument
-INSTR=${2:-"No instruction specified: running all testcases"};  # e.g. addiu
+INSTR=${2:-"No instruction specified: running all testcases"};
 
-
-# 3. Start Testing
-# 3-1. Running ALL testcases when instruction not specified.
 if [[ ${INSTR} == "No instruction specified: running all testcases" ]];
 then
-    TESTCASES=$(find ./inputs ! -name '*ref*'  ! -name '*log*' ! -name '*out*' ! -name '*inputs*' ! -name '*data*' | sed 's#.*/##');
-    #echo ${TESTCASES}
-    for TESTCASE in ${TESTCASES}
+    for DIR in inputs/*/
     do
-        # Run Each Testcase File
-        #echo ${TESTCASE};
-        TESTCASE="${TESTCASE%%.*}";
-        
-iverilog -Wall -g2012 \
-    -s mips_cpu_harvard_tb \
-    -P mips_cpu_harvard_tb.INSTR_INIT_FILE=\"inputs/${TESTCASE}.txt\" \
-    -P mips_cpu_harvard_tb.DATA_INIT_FILE=\"inputs/${TESTCASE}.data.txt\" \
-    -o exec/mips_cpu_harvard_tb_${TESTCASE} testbench/mips_cpu_harvard_tb.v \
-    ${SRC} 2> /dev/null
-./exec/mips_cpu_harvard_tb_${TESTCASE} &> ./inputs/${TESTCASE}.log.txt;             # log file for debugging (contains $display)
-echo "$(tail -1 ./inputs/${TESTCASE}.log.txt)" > ./inputs/${TESTCASE}.out.txt;      # register v0 output to compare with reference
-if diff -w ./inputs/${TESTCASE}.out.txt ./inputs/${TESTCASE}.ref.txt &> /dev/null   # compare
-then 
-    echo ${TESTCASE} ${TESTCASE} "Pass";
-else 
-    printf '%s %s %s%d %s%d%s\n' "${TESTCASE}" "${TESTCASE}" "Fail Output=" "$(tail -1 ./inputs/${TESTCASE}.out.txt)" "Ref=" "$(tail -1 ./inputs/${TESTCASE}.ref.txt)" 2> /dev/null;
-fi
+        DIR=$(basename ${DIR});
+        LOOP=$(find inputs/${DIR}/* ! -name '*ref*' ! -name '*log*' ! -name '*data*' ! -name '*out*');
+        for TESTCASE in ${LOOP}
+        do
+            TESTCASE=$([[ ${TESTCASE} =~ /([^./]+)\. ]] && echo "${BASH_REMATCH[1]}");
+            iverilog -Wall -g2012 \
+                -s mips_cpu_harvard_tb \
+                -P mips_cpu_harvard_tb.INSTR_INIT_FILE=\"inputs/${DIR}/${TESTCASE}.txt\" \
+                -P mips_cpu_harvard_tb.DATA_INIT_FILE=\"inputs/${DIR}/${TESTCASE}.data.txt\" \
+                -o exec/mips_cpu_harvard_tb_${TESTCASE} testbench/mips_cpu_harvard_tb.v \
+                ${SRC} 2> /dev/null
+            ./exec/mips_cpu_harvard_tb_${TESTCASE} &> ./inputs/${DIR}/${TESTCASE}.log.txt;             # log file for debugging (contains $display)
+            echo "$(tail -1 ./inputs/${DIR}/${TESTCASE}.log.txt)" > ./inputs/${DIR}/${TESTCASE}.out.txt;      # register v0 output to compare with reference
+            if diff -w ./inputs/${DIR}/${TESTCASE}.out.txt ./inputs/${DIR}/${TESTCASE}.ref.txt &> /dev/null   # compare
+            then 
+                echo ${TESTCASE} ${DIR} "Pass";
+            else 
+                printf '%s %s %s%d %s%d%s\n' "${TESTCASE}" "${DIR}" "Fail Output=" "$(tail -1 ./inputs/${DIR}/${TESTCASE}.out.txt)" "Ref=" "$(tail -1 ./inputs/${DIR}/${TESTCASE}.ref.txt)" 2> /dev/null;
+            fi
+        done
     done
-
-# 3-2 Running SINGLE testcase of specified instruction
 else
-
-iverilog -Wall -g2012 \
-    -s mips_cpu_harvard_tb \
-    -P mips_cpu_harvard_tb.INSTR_INIT_FILE=\"inputs/${INSTR}.txt\" \
-    -P mips_cpu_harvard_tb.DATA_INIT_FILE=\"inputs/${INSTR}.data.txt\" \
-    -o exec/mips_cpu_harvard_tb_${INSTR} testbench/mips_cpu_harvard_tb.v \
-    ${SRC} 2> /dev/null
-
-./exec/mips_cpu_harvard_tb_${INSTR} &> ./inputs/${INSTR}.log.txt;                   # log file for debugging (contains $display)
-echo "$(tail -1 ./inputs/${INSTR}.log.txt)" > ./inputs/${INSTR}.out.txt;            # register v0 output to compare with reference
-if diff -w ./inputs/${INSTR}.out.txt ./inputs/${INSTR}.ref.txt &> /dev/null         # compare
-then 
-    echo ${INSTR} ${INSTR} "Pass";
-else 
-    printf '%s %s %s%d %s%d%s\n' "${INSTR}" "${INSTR}" "Fail Output=" "$(tail -1 ./inputs/${INSTR}.out.txt)" "Ref=" "$(tail -1 ./inputs/${INSTR}.ref.txt)" 2> /dev/null;
-fi
-
+    LOOP=$(find inputs/${INSTR}/* ! -name '*ref*' ! -name '*log*' ! -name '*data*' ! -name '*out*');
+    for TESTCASE in ${LOOP}
+    do
+        TESTCASE=$([[ ${TESTCASE} =~ /([^./]+)\. ]] && echo "${BASH_REMATCH[1]}");
+        iverilog -Wall -g2012 \
+        -s mips_cpu_harvard_tb \
+        -P mips_cpu_harvard_tb.INSTR_INIT_FILE=\"inputs/${INSTR}/${TESTCASE}.txt\" \
+        -P mips_cpu_harvard_tb.DATA_INIT_FILE=\"inputs/${INSTR}/${TESTCASE}.data.txt\" \
+        -o exec/mips_cpu_harvard_tb_${TESTCASE} testbench/mips_cpu_harvard_tb.v \
+        ${SRC} 2> /dev/null
+        ./exec/mips_cpu_harvard_tb_${TESTCASE} &> ./inputs/${INSTR}/${TESTCASE}.log.txt;             # log file for debugging (contains $display)
+        echo "$(tail -1 ./inputs/${INSTR}/${TESTCASE}.log.txt)" > ./inputs/${INSTR}/${TESTCASE}.out.txt;      # register v0 output to compare with reference
+        if diff -w ./inputs/${INSTR}/${TESTCASE}.out.txt ./inputs/${INSTR}/${TESTCASE}.ref.txt &> /dev/null   # compare
+        then 
+            echo ${TESTCASE} ${INSTR} "Pass";
+        else 
+            printf '%s %s %s%d %s%d%s\n' "${TESTCASE}" "${INSTR}" "Fail Output=" "$(tail -1 ./inputs/${INSTR}/${TESTCASE}.out.txt)" "Ref=" "$(tail -1 ./inputs/${INSTR}/${TESTCASE}.ref.txt)" 2> /dev/null;
+        fi
+    done
 fi
