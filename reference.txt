@@ -36,7 +36,6 @@ LUI $5,0xCCCC
 ORI $5,$0,0xCCCC
 LUI $4,0xAAAA 
 ORI $4,$0,0xAAAA
- 
 AND  $2,$4,$5
 JR $0
 
@@ -473,14 +472,14 @@ register_v0 = 0x12345678
 
 ==LWL	Load word left==
 
-ORI $4,$0,0x1001
+ORI $4,$0,0x1003
 ORI $2,$0,0x5678
 LWL  $2,3($4)
 JR $0
 
 -Instruction Hex
 
-34041001
+34041003
 34025678
 88820003
 00000008
@@ -498,14 +497,14 @@ register_v0 = 0x12345678
 
 LUI $2,0x1234
 ORI $4,$0,0x1002
-LWR $2,2($4)
+LWR $2,3($4)
 JR $0
 
 -Instruction Hex
 
 3C021234
 34041002
-98820002
+98820003
 00000008
 
 -Memory Hex
@@ -653,7 +652,7 @@ jr $0
 00041080
 00000008
 
-register_v0 = 16
+register_v0 = 12
 
 ==SLLV	Shift left logical variable==
 
@@ -667,7 +666,7 @@ jr $0
 00851004
 00000008
 
-register_v0 = 16
+register_v0 = 12
 
 ==SLT	Set on less than (signed)==
 
@@ -721,7 +720,7 @@ jr $0
 
 register_v0 = 0
 
-==SRA	Shift right arithmetic==
+#==SRA	Shift right arithmetic==
 
 ori $4,$0,2
 sra $2,$4,1
