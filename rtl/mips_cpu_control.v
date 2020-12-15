@@ -5,12 +5,13 @@ module mips_cpu_control(
     output logic[1:0] CtrlRegDst,
     output logic[1:0] CtrlPC,
     output logic CtrlMemRead,
-    output logic[1:0] CtrlMemtoReg,
+    output logic[2:0] CtrlMemtoReg,
     output logic[4:0] CtrlALUOp,
     output logic[4:0] Ctrlshamt,
     output logic CtrlMemWrite,
     output logic CtrlALUSrc,
-    output logic CtrlRegWrite
+    output logic CtrlRegWrite,
+    output logic CtrlSpcRegWriteEn
 );
 
 typedef enum logic[5:0]{
@@ -53,6 +54,8 @@ typedef enum logic[5:0]{
     SRAV    = 6'd7,
     JR      = 6'd8,
     JALR    = 6'd9,
+    MFLO    = 6'd18,
+    MFHI    = 6'd16,
     MTHI    = 6'd17,
     MTLO    = 6'd19,
     MULT    = 6'd24,
@@ -87,7 +90,7 @@ always @(*) begin
     if((op==ADDIU) || (op==ANDI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LUI) || (op==LW) || (op==LWL) || (op==LWR) || (op==ORI) || (op==SLTI) || (op==SLTIU) || (op==XORI))begin
         CtrlRegDst = 2'd0; //Write address comes from rt
         $display("CTRLREGDST: Rt");
-    end else if ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==JALR) || (funct==OR) || (funct==SLL) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRA) || (funct==SRAV) || (funct==SRL) || (funct==SRLV) || (funct==SUBU) || (funct==XOR)))begin
+    end else if ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==JALR) || (funct==MFLO) || (funct==MFHI) || (funct==OR) || (funct==SLL) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRA) || (funct==SRAV) || (funct==SRL) || (funct==SRLV) || (funct==SUBU) || (funct==XOR)))begin
         CtrlRegDst = 2'd1; //Write address comes from rd
         $display("CTRLREGDST: Rd");
     end else if (op == JAL)begin
@@ -106,17 +109,21 @@ always @(*) begin
         //$display("Ctrl PC Jump Register");
     end else begin CtrlPC = 2'd0; /*/$display("Ctrl PC No Jump/Branch");*/end // No jumps or branches, just increment to next word
 
-    //CtrlMemRead and CtrlMemtoReg logic -- Interesting quirk that they have the same logic. Makes sense bc you'd only want to select the read data out when the memory itself is read enabled.
+    //CtrlMemRead and CtrlMemtoReg logic -- Interesting quirk that they have the same logic where both are concerned. Makes sense bc you'd only want to select the read data out when the memory itself is read enabled.
     if((op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LW) || (op==LWL) || (op==LWR))begin
         CtrlMemRead = 1;//Memory is read enabled
-        CtrlMemtoReg = 2'd1;//write data port of memory is fed from data memory
+        CtrlMemtoReg = 3'd1;//write data port of regfile is fed from data memory
         $display("Memory read enabled");
-    end else if ((op==ADDIU) || (op==ANDI) || (op==ORI) || (op==SLTI) || (op==SLTIU) || (op==XORI) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==DIV) || (funct==DIVU) ||  (funct==MTHI) ||  (funct==MTLO) ||  (funct==MULT) ||  (funct==MULTU) ||  (funct==OR) ||  (funct==SLL) ||  (funct==SLLV) ||  (funct==SLT) ||  (funct==SLTU) ||  (funct==SRA) ||  (funct==SRAV) ||  (funct==SRL) || (funct==SRLV) ||  (funct==SUBU) ||  (funct==XOR))))begin
+    end else if ((op==ADDIU) || (op==ANDI) || (op==ORI) || (op==SLTI) || (op==SLTIU) || (op==XORI) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) ||  (funct==OR) ||  (funct==SLL) ||  (funct==SLLV) ||  (funct==SLT) ||  (funct==SLTU) ||  (funct==SRA) ||  (funct==SRAV) ||  (funct==SRL) || (funct==SRLV) ||  (funct==SUBU) ||  (funct==XOR))))begin
         CtrlMemRead = 0;//Memory is read disabled
-        CtrlMemtoReg = 2'd0;//write data port of memory is fed from ALURes
+        CtrlMemtoReg = 3'd0;//write data port of regfile is fed from ALURes
         $display("Memory read disabled");
     end else if ((op==JAL) || ((op==SPECIAL)&&(funct == JALR)))begin
-        CtrlMemtoReg = 2'd2;//write data port of memory is fed from PC + 8
+        CtrlMemtoReg = 3'd2;//write data port of regfile is fed from PC + 8
+    end else if ((op==SPECIAL)&&(funct == MTHI)))begin
+        CtrlMemtoReg = 3'd3;//write data port of regfile is fed from ALUHi
+    end else if ((op==SPECIAL)&&(funct == MTLO)))begin
+        CtrlMemtoReg = 3'd4;//write data port of regfile is fed from ALULo
     end else begin CtrlMemRead = 1'bx;end//Not all instructions are encompassed so, added incase for debug purposes
 
     //CtrlALUOp Logic
@@ -146,8 +153,10 @@ always @(*) begin
         $display("LB IN CONTROL");
     end else if(op==LUI)begin
         CtrlALUOp = 5'd7;//SLL from ALUOps
-    end else if((op==SPECIAL)&&((funct==MTHI) || (funct==MTLO)))begin
-        CtrlALUOp = 5'd19;//PAS from ALUOps
+    end else if((op==SPECIAL)&&((funct==MTHI)))begin
+        CtrlALUOp = 5'd24;//MTHI from ALUOps
+    end else if((op==SPECIAL)&&((funct==MTLO)))begin
+        CtrlALUOp = 5'd25;//MTLO from ALUOps
     end else if((op==SPECIAL)&&(funct==MULT))begin
         CtrlALUOp = 5'd2;//MUL from ALUOps
     end else if((op==SPECIAL)&&(funct==MULTU))begin
@@ -197,6 +206,11 @@ always @(*) begin
         CtrlMemWrite = 1;//Memory is write enabled
     end else begin CtrlMemWrite = 0;end//default is 0 to ensure no accidental overwriting.
     
+    //CtrlSpcRegWriteEn logic
+    if((op==SPECIAL)&&((funct==MTHI) || (funct==MTLO)))begin
+        CtrlSpcRegWriteEn = 1;//Special register Hi and Lo are write enabled
+    end else begin CtrlSpcRegWriteEn = 0;end//default is 0 to ensure no accidental overwriting.
+    
     //CtrlALUSrc logic
     if((op==ADDIU) || (op==ANDI) || (op==LUI) || (op==ORI) || (op==SLTI) || (op==SLTIU) || (op==XORI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LW) || (op==LWL) || (op==LWR) || (op==SB) || (op==SH) || (op==SW))begin
         CtrlALUSrc = 1;//ALU Bus B is fed from the 16-bit immediate sign extended to 32-bit value taken from Instr[15-0]
@@ -205,7 +219,7 @@ always @(*) begin
     end else begin CtrlALUSrc = 1'bx;end
        
     //CtrlRegWrite logic
-    if((op==ADDIU) || (op==ANDI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LUI) || (op==LW) || (op==LWL) || (op==LWR) || (op==ORI) || (op==SLTI) || (op==XORI) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==DIV) || (funct==DIVU)  || (funct==MULT) || (funct==MULTU) || (funct==OR) || (funct==SLL) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRA) || (funct==SRAV) || (funct==SRL) || (funct==SRLV) || (funct==SUBU) || (funct==XOR)))) begin
+    if((op==ADDIU) || (op==ANDI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LUI) || (op==LW) || (op==LWL) || (op==LWR) || (op==ORI) || (op==SLTI) || (op==XORI) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==MFLO) || (funct==MFHI) || (funct==OR) || (funct==SLL) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRA) || (funct==SRAV) || (funct==SRL) || (funct==SRLV) || (funct==SUBU) || (funct==XOR)))) begin
         CtrlRegWrite = 1;//The Registers are Write Enabled
     end else begin CtrlRegWrite = 0;end // The Registers are Write Disabled
 end

@@ -30,7 +30,8 @@ logic[31:0] out_pc_out, out_ALURes, out_readdata1, out_readdata2, in_B, in_write
 logic[4:0]  in_readreg1, in_readreg2, in_writereg, out_shamt, out_ALUOp;
 logic[5:0]  in_opcode;
 logic out_ALUCond, out_RegWrite, out_ALUSrc, out_MemWrite, out_MemRead;
-logic[1:0] out_RegDst, out_PC, out_MemtoReg;
+logic[1:0] out_RegDst, out_PC;
+logic[2:0] out_MemtoReg;
 
 assign in_readreg1 = instr_readdata[25:21];
 assign in_readreg2 = instr_readdata[20:16];
@@ -52,14 +53,20 @@ always @(*) begin
 
     //Picking which output should be written to regfile.
     case(out_MemtoReg)
-        2'd0:begin
+        3'd0:begin
             in_writedata = out_ALURes;//Output from ALU Result.
         end
-        2'd1:begin
+        3'd1:begin
             in_writedata = data_readdata;//Output from Data Memory.
         end
-        2'd2:begin
+        3'd2:begin
             in_writedata = (out_pc_out + 32'd8);//Output from PC +8.
+        end
+        3'd3:begin
+            in_writedata = (out_ALUHi);
+        end
+        3'd4:begin
+            in_writedata = (out_ALULo);
         end
     endcase
 
@@ -99,7 +106,8 @@ mips_cpu_control control( //instance of the 'mips_cpu_control' module called 'co
     .Ctrlshamt(out_shamt),
     .CtrlMemWrite(out_MemWrite),
     .CtrlALUSrc(out_ALUSrc),
-    .CtrlRegWrite(out_RegWrite)
+    .CtrlRegWrite(out_RegWrite),
+    .CtrlSpcRegWriteEn(out_SpcRegWriteEn)
 );
 
 mips_cpu_regfile regfile(
@@ -119,13 +127,20 @@ mips_cpu_regfile regfile(
 
 mips_cpu_alu alu(
 //Inputs to ALU
+    .clk(clk),
+    .rst(reset),
     .A(out_readdata1), //operand 1 taken from 'Read data 1' aka the data stored in GPR rs.
     .B(in_B), //operand 2 taken either from: 'Read data 2' aka the data stored in rt; or 16-bit immediate sign extended to 32 bits.
     .ALUOp(out_ALUOp), //Operation selection for ALU decided, and output by control.
     .shamt(out_shamt), //Shift amount required for shift instruction taken from control.
+    .Hi_in(out_readdata1),
+    .Lo_in(out_readdata1),
+    .SpcRegWriteEn(out_SpcRegWriteEn),
 //Outputs from ALU
     .ALUCond(out_ALUCond), //condition used by control to decide on branch instructions.
-    .ALURes(out_ALURes) //output/result of operation that goes to either: 'Address' port of Data Memory; or 'Write Data' port of the register file.
+    .ALURes(out_ALURes), //output/result of operation that goes to either: 'Address' port of Data Memory; or 'Write Data' port of the register file.
+    .ALUHi(out_ALUHi), //Special register Hi output to be used for MFHI instructions - feeds in_writedata.
+    .ALULo(out_ALULo), //Special register Hi output to be used for MFLO instructions - feeds in_writedata.
 );
 
 endmodule
