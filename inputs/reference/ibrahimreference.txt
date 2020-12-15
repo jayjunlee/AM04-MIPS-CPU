@@ -111,8 +111,8 @@ register 0 = 3
 
 34040002
 34050010
-//////
-//////
+00851006
+00000008
 
 ===============  SRL	Shift right logical  ==============
 
@@ -147,8 +147,8 @@ register 0 = -536870912 (first 3 bits high - rest low)
 
 34040002
 34050001
-////////
-///////
+00851007
+00000008
 
 ====== SRA	Shift right arithmetic ==========
 
@@ -252,8 +252,8 @@ register 0 = 16
 
 34040002
 34050003
-//////
-//////
+00851004
+00000008
 
 
 ======= SLL	Shift left logical  ======
@@ -445,37 +445,83 @@ $HI = 5
 
 ==================== SH	Store half-word =======
 
-/////////
+lui $4, 3
+ori $5, $0, 3 
+or $6, $4, $5
+sh $6, 1($1)
+jr $0
+
+3c040003
+34050003
+00853025
+A4260001
+00000008
 
 
-======== DIV Divide  ======
+======== DIV Divide quotient ======
 
 
 ori $4, $0, 4
 ori $5, $0, 3
 div $4, $5
+mflo $2
 jr $0
 
 
-$LO = 1
-$HI = 1
+register v0 = 1
+
 
 34040004
 34050003
 0085001A
+00001012
 00000008
 
-========= DIVU Divide unsigned =====
+======== DIV Divide remainder ======
+
+
+ori $4, $0, 4
+ori $5, $0, 3
+div $4, $5
+mfhi $2
+jr $0
+
+register v0 = 1
+
+34040004
+34050003
+0085001A
+00001010
+00000008
+
+========= DIVU Divide unsigned quotient =====
 
 ori $4, $0, 4
 ori $5, $0, 3
 divu $4, $5
+mflo $2
 jr $0
 
-$LO = 1
-$HI = 1
+register_vo = 1
 
 34040004
 34050003
 0085001B
+00001012
+00000008
+
+========= DIVU Divide unsigned remainder =====
+
+ori $4, $0, 4
+ori $5, $0, 3
+divu $4, $5
+mfhi $2
+jr $0
+
+register_vo = 1
+
+34040004
+34050003
+0085001B
+00001010
 00000008

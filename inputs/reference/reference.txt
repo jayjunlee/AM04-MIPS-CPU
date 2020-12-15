@@ -537,7 +537,7 @@ register_v0 = 0x12345678
 
 //SLL	Shift left logical
 
-//SLLV	Shift left logical variable **
+//SLLV	Shift left logical variable 
 
 //SLT	Set on less than (signed)
 
@@ -549,11 +549,11 @@ register_v0 = 0x12345678
 
 //SRA	Shift right arithmetic
 
-//SRAV	Shift right arithmetic**
+//SRAV	Shift right arithmetic
 
 //SRL	Shift right logical
 
-//SRLV	Shift right logical variable**
+//SRLV	Shift right logical variable
 
 //SUBU	Subtract unsigned
 
