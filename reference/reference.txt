@@ -32,17 +32,18 @@ register_v0 = 8
 
 ==AND Bitwise and==
 
-ORI $5,$0,0xCCCC
 LUI $5,0xCCCC 
+ORI $5,$0,0xCCCC
+LUI $4,0xAAAA 
 ORI $4,$0,0xAAAA
-LUI $4,0xAAAA  
+ 
 AND  $2,$4,$5
 JR $0
 
-3405cccc
 3c05cccc
-3404aaaa
+3405cccc
 3c04aaaa
+3404aaaa
 00851024
 00000008
 
@@ -50,13 +51,13 @@ register_v0 = 0x88888888
 
 ==ANDI Bitwise and immediate==
 
+LUI $4,0xAAAA 
 ORI $4,$0,0xAAAA
-LUI $4,0xAAAA  
 ANDI $2,$4,0xCCCC
 JR $0
 
-3404aaaa
 3c04aaaa
+3404aaaa
 3082cccc
 00000008
 
@@ -272,26 +273,26 @@ register_v0 = 0x40000000
 
 ==J	Jump==
 
-J 12
+J 4
 NOP
 JR $0
 NOP
 ORI $2,$0,1
 JR $0
 
-0800000C
+08000004
 00000000
 00000008
 00000000
-3402000A
+34020001
 00000008
 
-register_v0 = 10
+register_v0 = 1
 
 ==JALR	Jump and link register==
 
-ORI $5,$0,0x001C
 LUI $5,0xBFC0
+ORI $5,$0,0x001C
 JALR $4,$5
 NOP
 ADDIU $2,$2,1
@@ -300,8 +301,8 @@ NOP
 ORI $2,$0,1
 JR $4
 
-3405001C
 3C05BCF0
+3405001C
 00A02009
 00000000
 24420001
@@ -340,18 +341,18 @@ JR $5
 NOP
 JR $0
 NOP
-ORI $2,$0,0x10
+ORI $2,$0,1
 JR $0
 
 3C05BFC0
-34A50014
+34050014
 00A00008
 00000000
 00000008
-34020010
+34020001
 00000008
 
-register_v0 = 16
+register_v0 = 1
 
 ==LB	Load byte==
 
@@ -495,15 +496,15 @@ register_v0 = 0x12345678
 
 ==LWR	Load word right==
 
-ORI $4,$0,0x1002
 LUI $2,0x1234
+ORI $4,$0,0x1002
 LWR $2,2($4)
 JR $0
 
 -Instruction Hex
 
-34041002
 3C021234
+34041002
 98820002
 00000008
 
@@ -639,6 +640,8 @@ jr $0
 
 34040002
 34050003
+00851004
+00000008
 
 register_v0 = 16
 
@@ -684,40 +687,41 @@ register_v0 = 0
 
 ==SRA	Shift right arithmetic==
 
-ori $4,$0,-2147483647
-sra $2,$4,$2
+ori $4,$0,2
+sra $2,$4,1
 jr $0
 
-register 0 = -536870912 (first 3 bits high - rest low)
-
 34040001
-00041003
+00041043
 00000008
+
+register_v0 = 1
 
 ==SRAV	Shift right arithmetic==
 
-ori $4, $0, 4
-ori $5,$0,0xF000
+ori $4,$0,2
+ori $5 $0,1
 srav $2,$5,$4
-SRAv $v0 $a1 $a0
-jr $0
+jr $0    
 
-register 0 = -536870912 (first 3 bits high - rest low)
+34040002
+34050001
+00851007
+00000008
 
-34040004
-3405F000
+register_v0 = 1
 
 ==SRL	Shift right logical==
 
-ori $4,$0,-2147483647
-srl $2,$4,$2
+ori $4,$0,16
+srl $2,$4,2
 jr $0
 
-register 0 = 536870912 (2^29)
-
-34040001
-00041002
+34040010
+00041082
 00000008
+
+register_v0 = 3
 
 ==SRLV	Shift right logical variable==
 
