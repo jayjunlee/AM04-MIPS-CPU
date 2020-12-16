@@ -720,31 +720,31 @@ jr $0
 
 register_v0 = 0
 
-#==SRA	Shift right arithmetic==
+==SRA	Shift right arithmetic==
 
-ori $4,$0,2
-sra $2,$4,1
-jr $0
+lui $5 $0,0xF000
+srav $2,$5,2
+jr $0    
 
-34040001
-00041043
+3C05F000
+00051083
 00000008
 
-register_v0 = 1
+register_v0 = 0xFC000000
 
-==SRAV	Shift right arithmetic==
+==SRAV	Shift right arithmetic variable==
 
 ori $4,$0,2
-ori $5 $0,1
+lui $5 $0,0xF000
 srav $2,$5,$4
 jr $0    
 
-34040002
-34050001
+34040004
+3C05F000
 00851007
 00000008
 
-register_v0 = 1
+register_v0 = 0xFC000000
 
 ==SRL	Shift right logical==
 
@@ -756,7 +756,7 @@ jr $0
 00041082
 00000008
 
-register_v0 = 3
+register_v0 = 4
 
 ==SRLV	Shift right logical variable==
 
@@ -770,7 +770,7 @@ jr $0
 00851006
 00000008
 
-register_v0 = 3
+register_v0 = 4
 
 ==SUBU	Subtract unsigned==
 
@@ -790,16 +790,14 @@ register_v0 = 2
 
 ori $4, $0, 0xFFFF  
 ori $5, $0, 0x1008  
-sw $4, 4($5)        
-ori $5, $0, 0x100C   
-lw $2, 0($5)       
+sw $4, 4($5)         
+lw $2, 4($5)       
 jr $0               
 
 3404FFFF
 34051008
 ACA40004
-3405100C
-8CA20000
+8CA20004
 00000008
 
 register_v0 = 0x0000FFFF
@@ -821,7 +819,7 @@ register_v0 = 7
 ==XORI	Bitwise exclusive or immediate==
 
 ori $4,$0,5
-xori $2,$4,0xF
+xori $2,$4,0x000F
 jr $0
 
 34040005
