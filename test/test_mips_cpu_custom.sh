@@ -21,7 +21,7 @@
 # branches
 ./test/test_mips_cpu_harvard.sh rtl beq              #Pass
 ./test/test_mips_cpu_harvard.sh rtl bgez             #Pass
-#./test/test_mips_cpu_harvard.sh rtl bgezal          #Place return address thing how??
+./test/test_mips_cpu_harvard.sh rtl bgezal           #Pass
 ./test/test_mips_cpu_harvard.sh rtl bgtz             #Pass
 ./test/test_mips_cpu_harvard.sh rtl blez             #Pass
 ./test/test_mips_cpu_harvard.sh rtl bltz             #Pass
@@ -30,7 +30,7 @@
 
 # jumps
 ./test/test_mips_cpu_harvard.sh rtl j                #Pass
-#./test/test_mips_cpu_harvard.sh rtl jalr            #Again how to link?
+./test/test_mips_cpu_harvard.sh rtl jalr             #Pass
 ./test/test_mips_cpu_harvard.sh rtl jal              #Pass
 ./test/test_mips_cpu_harvard.sh rtl jr               #Pass
 
