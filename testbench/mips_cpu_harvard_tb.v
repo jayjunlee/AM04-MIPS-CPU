@@ -49,15 +49,8 @@ module mips_cpu_harvard_tb;
     end
 
     initial begin
-        $display("Initial Reset 0");
-        reset <= 0;
-        
-        
-        $display("Initial Reset 1");
-        @(posedge clk);
-        reset <= 1;
 
-        $display("Initial Reset 0: Start Program");
+        reset <= 1;
         @(posedge clk);
         reset <= 0;
 
