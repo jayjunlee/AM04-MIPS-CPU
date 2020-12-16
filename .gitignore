@@ -3,3 +3,6 @@ exec/*
 *.log.txt
 *.out.txt
 mips_cpu_harvard.vcd
+.DS_Store
+.DS_Store
+inputs/.DS_Store
