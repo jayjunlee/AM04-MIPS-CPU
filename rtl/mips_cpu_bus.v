@@ -92,22 +92,22 @@ always_comb begin
             partial_write = 1'b1;
             case (harvard_data_address[1:0])
                 2'b00: begin
-                    partial_writedata = {24{1'b0}, harvard_writedata[7:0]};
+                    partial_writedata = {{24{1'b0}}, harvard_writedata[7:0]};
                     write_byteenable = 4'b0001;
                     write_data_address = {harvard_data_address[31:2], 2'b00};
                 end
                 2'b01: begin
-                    partial_writedata = {16{1'b0}, harvard_writedata[7:0], 8{1'b0}};
+                    partial_writedata = {{16{1'b0}}, harvard_writedata[7:0], {8{1'b0}}};
                     write_byteenable = 4'b0010;
                     write_data_address = {harvard_data_address[31:2], 2'b00};
                 end
                 2'b10: begin
-                    partial_writedata = {8{1'b0}, harvard_writedata[7:0], 16{1'b0}};
+                    partial_writedata = {{8{1'b0}}, harvard_writedata[7:0], {16{1'b0}}};
                     write_byteenable = 4'b0100;
                     write_data_address = {harvard_data_address[31:2], 2'b00};
                 end
                 2'b11: begin
-                    partial_writedata = {harvard_writedata[7:0], 24{1'b0}};
+                    partial_writedata = {harvard_writedata[7:0], {24{1'b0}}};
                     write_byteenable = 4'b1000;
                     write_data_address = {harvard_data_address[31:2], 2'b00};
                 end
@@ -117,7 +117,7 @@ always_comb begin
             partial_write = 1'b1;
             case (harvard_data_address[1:0])
                 2'b00: begin
-                    partial_writedata = {16{1'b0}, harvard_writedata[15:0]};
+                    partial_writedata = {{16{1'b0}}, harvard_writedata[15:0]};
                     write_byteenable = 4'b0011;
                     write_data_address = {harvard_data_address[31:2], 2'b00};
                 end
@@ -127,7 +127,7 @@ always_comb begin
                     write_data_address = 32'hxxxxxxxx;
                 end
                 2'b10: begin
-                    partial_writedata = {harvard_writedata[15:0], 16{1'b0}};
+                    partial_writedata = {harvard_writedata[15:0], {16{1'b0}}};
                     write_byteenable = 4'b1100;
                     write_data_address = {harvard_data_address[31:2], 2'b00};
                 end
@@ -221,4 +221,4 @@ mips_cpu_harvard mips_cpu_harvard( // Harvard CPU within wrapper
 .data_readdata(harvard_readdata) // data in from read instruction, input
 );
 
-endmodule : mips_cpu_bus
+endmodule
