@@ -22,23 +22,24 @@ end
 
 assign regv0 = memory[2]; //assigning debug $v0 line to $2 of memory
 
-always_comb begin
-	readdata1 = memory[readreg1]; //combinatorially output register value based on read port 1 selector
-	readdata2 = memory[readreg2]; //combinatorially output register value based on read port 2 selector
-end
+assign readdata1 = memory[readreg1]; //combinatorially output register value based on read port 1 selector
+assign readdata2 = memory[readreg2]; //combinatorially output register value based on read port 2 selector
 
 always_ff @(negedge clk) begin
 	if (writereg == 5'b00000) begin
 		// skip writing if rd is $0
 	end else if (regwrite) begin
+		$display("%b", opcode);
 		case (opcode)
 			6'b100000: begin //lb, load byte
-				case (readdata1[1:0])
+				case (readdata1[1:0])	
 					2'b00: memory[writereg] <= {{24{writedata[7]}}, writedata[7:0]};
 					2'b01: memory[writereg] <= {{24{writedata[15]}}, writedata[15:8]};
 					2'b10: memory[writereg] <= {{24{writedata[23]}}, writedata[23:16]};
 					2'b11: memory[writereg] <= {{24{writedata[31]}}, writedata[31:24]};
 				endcase // readdata1[1:0]
+				$display("writedata %h", writedata);
+				$display("memory writereg %h", memory[writereg]);
 			end
 			6'b100100: begin //lbu, load byte unsigned
 				case (readdata1[1:0])
@@ -76,7 +77,10 @@ always_ff @(negedge clk) begin
 					2'b11: memory[writereg][7:0] <= writedata[31:24];
 				endcase // readdata1[1:0]
 			end
-			default: memory[writereg] <= writedata; //most instructions
+			default: begin 
+				memory[writereg] <= writedata; //most instructions
+				$display("Write %d in regfile", writedata);
+			end
 		endcase // opcode
 	end
 end
