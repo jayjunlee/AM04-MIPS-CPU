@@ -69,7 +69,8 @@ end
 always_ff @(negedge clk) begin // CLK Falling Edge
     if (!waitrequest && clk_state) begin
         case (state)
-            2'b00: // nothing happens on fetch negedge
+            2'b00: begin // nothing happens on fetch negedge
+            end
             2'b01: begin // execute negedge
                 if (!harvard_read && !harvard_write) begin // instruction complete, trigger writeback
                     clk_internal <= 1'b0;
