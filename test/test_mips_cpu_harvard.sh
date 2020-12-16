@@ -1,13 +1,13 @@
 #!/bin/bash
 
 SRC_DIR=${1?Error: no source directory given in argument};
-SRC=$(ls ${SRC_DIR} | grep -E "harvard|memory|alu|regfile|pc|control");
+SRC=$(find ./${SRC_DIR}/*);
 SRC_TEMP="";
 for src in ${SRC}
 do
-    SRC_TEMP+=${SRC_DIR}/${src}" ";
+    SRC_TEMP+=${src}" ";
 done
-SRC=${SRC_TEMP}
+SRC=${SRC_TEMP};
 
 
 INSTR=${2:-"No instruction specified: running all testcases"};
