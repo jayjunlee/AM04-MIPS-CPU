@@ -52,16 +52,36 @@ end
 always_ff @(posedge clk) begin
     if (waitrequest) begin
         if (read) begin
-            // read code
+            if (address >= 32'hBFC00000) begin // instruction read
+                readdata <= instr_memory[{address-32'hBFC00000}>>2];
+            end else if (address >= 32'h00001000) begin // data read
+                readdata <= data_memory[{address-32'h00001000}>>2];
+            end
+            waitrequest <= 1'b0; // end with setting waitrequest low
         end else if (write) begin
-            // write code
+            if (address >= 32'hBFC00000) begin // writing to instr mem area is invalid
+                $display("Error, write attempted in instr area at address: %h", address);
+            end else if (address >= 32'h00001000) begin // write to data mem
+                if (byteenable[3]) begin // if first byte enabled, write
+                    data_memory[{address-32'h00001000}>>2][31:24] <= writedata[31:24];
+                end
+                if (byteenable[2]) begin // if second byte enabled, write
+                    data_memory[{address-32'h00001000}>>2][23:16] <= writedata[23:16];
+                end
+                if (byteenable[1]) begin // if third byte enabled, write
+                    data_memory[{address-32'h00001000}>>2][15:8] <= writedata[15:8];
+                end
+                if (byteenable[0]) begin // if fourth byte enabled, write
+                    data_memory[{address-32'h00001000}>>2][7:0] <= writedata[7:0];
+                end
+                waitrequest <= 1'b0; // end with setting waitrequest low
         end else begin
-            waitrequest = 1'bx;
-            readdata = 32'hxxxxxxxx;
+            waitrequest <= 1'bx;
+            readdata <= 32'hxxxxxxxx;
         end
     end else begin
-        waitrequest = 1'b0;
-        readdata = 32'h00000000;
+        waitrequest <= 1'b0;
+        readdata <= 32'h00000000;
     end
 end
 
