@@ -114,7 +114,7 @@ always @(*) begin
         CtrlMemRead = 1;//Memory is read enabled
         CtrlMemtoReg = 3'd1;//write data port of regfile is fed from data memory
         $display("Memory read enabled");
-    end else if ((op==ADDIU) || (op==ANDI) || (op==ORI) || (op==SLTI) || (op==SLTIU) || (op==XORI) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) ||  (funct==OR) ||  (funct==SLL) ||  (funct==SLLV) ||  (funct==SLT) ||  (funct==SLTU) ||  (funct==SRA) ||  (funct==SRAV) ||  (funct==SRL) || (funct==SRLV) ||  (funct==SUBU) ||  (funct==XOR))))begin
+    end else if ((op==ADDIU) || (op==ANDI) || (op==ORI) || (op==LUI) || (op==SLTI) || (op==SLTIU) || (op==XORI) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) ||  (funct==OR) ||  (funct==SLL) ||  (funct==SLLV) ||  (funct==SLT) ||  (funct==SLTU) ||  (funct==SRA) ||  (funct==SRAV) ||  (funct==SRL) || (funct==SRLV) ||  (funct==SUBU) ||  (funct==XOR))))begin
         CtrlMemRead = 0;//Memory is read disabled
         CtrlMemtoReg = 3'd0;//write data port of regfile is fed from ALURes
         $display("Memory read disabled");

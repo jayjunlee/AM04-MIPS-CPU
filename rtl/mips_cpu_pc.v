@@ -1,56 +1,53 @@
 module mips_cpu_pc(
-	input logic clk,
-	input logic rst,
-	input logic[1:0] pc_ctrl,
-	input logic[31:0] instr,
-	input logic[31:0] reg_readdata,
-	output logic[31:0] pc_out,
-	output logic active
+input logic clk,
+input logic rst,
+input logic[31:0] Instr,
+input logic[31:0] JumpReg,
+input logic[1:0] pc_ctrl,
+output logic[31:0] pc_out,
+output logic active
 );
 
-reg [31:0] pc_next, pc_lit_next, pc_next_next;
+logic[31:0] out_cpc_out;
+logic[31:0] out_npc_out;
+logic[31:0] in_npc_in;
 
-initial begin
-	pc_out = 32'hBFC00000;
-	pc_next = pc_out + 32'd4;
-
-end
-
-assign pc_lit_next = pc_out + 32'd4;
-
-always_ff @(posedge clk) begin
-	if (rst) begin
-		active <= 1;
-		pc_out <= 32'hBFC00000;
-	end else begin
-		if(pc_out == 32'd0) begin
-			active <= 0;
-		end
-		pc_out <= pc_next;
-		pc_next <= pc_next_next;
-	end
-end
+assign pc_out = out_cpc_out;
 
 always @(*) begin
-		case(pc_ctrl)
-			2'd1: begin // Branch
-				pc_next_next = pc_out + 32'd4 + {{14{instr[15]}},instr[15:0],2'b00};
-			end
-			2'd2: begin // Jump
-				pc_next_next = {pc_lit_next[31:28], instr[25:0], 2'b00};
-				$display("JUMPING");
-				$display("pc_lit_next: %h", pc_lit_next[31:28]);
-				$display("instr: %b", instr[25:0]);
-				$display("%h",pc_next);
-			end
-			2'd3: begin // Jump using Register
-				pc_next_next = reg_readdata;
-				$display("REGREADEADTAATATAT %h", reg_readdata);
-			end
-			default: begin
-				pc_next_next = pc_out + 32'd4;
-			end
-		endcase
+    case(pc_ctrl)
+        2'd0: begin
+            in_npc_in = out_npc_out + 32'd4;//No branch or jump or load.
+        end
+        2'd1: begin
+            in_npc_in = out_npc_out + {{14{Instr[15]}}, Instr[15:0], 2'b00};
+        end
+        2'd2: begin
+            in_npc_in = {out_npc_out[31:28], Instr[25:0], 2'b00};
+        end
+        2'd3: begin
+            in_npc_in = JumpReg;
+        end
+    endcase	
 end
 
-endmodule // pc
+mips_cpu_cpc cpc(
+//Inputs for cpc
+	.clk(clk),
+	.rst(rst),
+	.cpc_in(out_npc_out),
+//Outputs for cpc
+	.cpc_out(out_cpc_out),
+    .active(active)
+);
+
+mips_cpu_npc npc(
+//Inputs for npc
+	.clk(clk),
+	.rst(rst),
+	.npc_in(in_npc_in),
+//Outputs for npc
+	.npc_out(out_npc_out)
+);
+
+endmodule

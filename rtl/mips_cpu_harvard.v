@@ -88,8 +88,8 @@ mips_cpu_pc pc(
 //PC inputs
     .clk(clk),//clk taken from the Standard signals
     .rst(reset),//clk taken from the Standard signals
-    .instr(instr_readdata), //needed for branches and jumps
-    .reg_readdata(out_readdata1), //needed for jump register
+    .Instr(instr_readdata), //needed for branches and jumps
+    .JumpReg(out_readdata1), //needed for jump register
     .pc_ctrl(out_PC),
 //PC outputs
     .pc_out(out_pc_out),//What the pc outputs at every clock edge that goes into the 'Read address' port of Instruction Memory.
