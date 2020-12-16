@@ -1,7 +1,7 @@
 module mips_cpu_bus_tb;
 
-parameter INSTR_INIT_FILE = "inputs/addiu.txt";
-parameter DATA_INIT_FILE = "inputs/addiu.data.txt";
+parameter INSTR_INIT_FILE = "";
+parameter DATA_INIT_FILE = "";
 parameter TIMEOUT_CYCLES = 1000; // Timeout cycles are higher to account for memory stall delays
 
 logic clk, reset, active, write, read, waitrequest;
