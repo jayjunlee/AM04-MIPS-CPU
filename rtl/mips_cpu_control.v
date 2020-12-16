@@ -200,6 +200,7 @@ always @(*) begin
         Ctrlshamt = Instr[10:6];// Shift amount piped in from the instruction
     end else if(op == LUI)begin
         Ctrlshamt = 5'd16;//Used specifically to implement LUI as the instruction itslef does not include shamt
+        $display("LUI SHIFTING");
     end else begin Ctrlshamt = 5'bxxxxx;end
 
     //CtrlMemWrite logic
@@ -223,7 +224,7 @@ always @(*) begin
     end else begin CtrlALUSrc = 1'bx;end
        
     //CtrlRegWrite logic
-    if((op==ADDIU) || (op==ANDI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LUI) || (op==LW) || (op==LWL) || (op==LWR) || (op==ORI) || (op==SLTI) || (op==XORI) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==MFLO) || (funct==MFHI) || (funct==OR) || (funct==SLL) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRA) || (funct==SRAV) || (funct==SRL) || (funct==SRLV) || (funct==SUBU) || (funct==XOR)))) begin
+    if((op==ADDIU) || (op==ANDI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LUI) || (op==LW) || (op==LWL) || (op==LWR) || (op==ORI) || (op==JAL) || (op==SLTI) || (op==XORI) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==MFLO) || (funct==MFHI) || (funct==OR) || (funct==SLL) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRA) || (funct==SRAV) || (funct==SRL) || (funct==SRLV) || (funct==SUBU) || (funct==JALR) || (funct==XOR)))) begin
         CtrlRegWrite = 1;//The Registers are Write Enabled
         $display("OPcode mflo: %h", op);
     end else begin CtrlRegWrite = 0;end // The Registers are Write Disabled

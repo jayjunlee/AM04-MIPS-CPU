@@ -8,11 +8,12 @@ module mips_cpu_pc(
 	output logic active
 );
 
-reg [31:0] pc_next, pc_lit_next;
+reg [31:0] pc_next, pc_lit_next, pc_next_next;
 
 initial begin
 	pc_out = 32'hBFC00000;
 	pc_next = pc_out + 32'd4;
+
 end
 
 assign pc_lit_next = pc_out + 32'd4;
@@ -26,27 +27,28 @@ always_ff @(posedge clk) begin
 			active <= 0;
 		end
 		pc_out <= pc_next;
+		pc_next <= pc_next_next;
 	end
 end
-
 
 always @(*) begin
 		case(pc_ctrl)
 			2'd1: begin // Branch
-				pc_next = pc_out + 32'd4 + {{14{instr[15]}},instr[15:0],2'b00};
+				pc_next_next = pc_out + 32'd4 + {{14{instr[15]}},instr[15:0],2'b00};
 			end
 			2'd2: begin // Jump
-				pc_next = {pc_lit_next[31:28], instr[25:0], 2'b00};
+				pc_next_next = {pc_lit_next[31:28], instr[25:0], 2'b00};
 				$display("JUMPING");
 				$display("pc_lit_next: %h", pc_lit_next[31:28]);
 				$display("instr: %b", instr[25:0]);
 				$display("%h",pc_next);
 			end
 			2'd3: begin // Jump using Register
-				pc_next = reg_readdata;
+				pc_next_next = reg_readdata;
+				$display("REGREADEADTAATATAT %h", reg_readdata);
 			end
 			default: begin
-				pc_next = pc_out + 32'd4;
+				pc_next_next = pc_out + 32'd4;
 			end
 		endcase
 end

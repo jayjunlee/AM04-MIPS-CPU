@@ -135,6 +135,7 @@ end
 
       SLL: begin
           ALURes = B << shamt;
+          $display("ALURES SLL: %h", ALURes);
       end
 
       SLLV: begin

@@ -24,14 +24,14 @@
 #./test/test_mips_cpu_harvard.sh rtl bgezal          #Place return address thing how??
 ./test/test_mips_cpu_harvard.sh rtl bgtz             #Pass
 ./test/test_mips_cpu_harvard.sh rtl blez             #Pass
-./test/test_mips_cpu_harvard.sh rtl bltz             #Probably fails due to jump register thing?
+./test/test_mips_cpu_harvard.sh rtl bltz             #Pass
 ./test/test_mips_cpu_harvard.sh rtl bltzal           #Pass
 ./test/test_mips_cpu_harvard.sh rtl bne              #Pass
 
 # jumps
-#./test/test_mips_cpu_harvard.sh rtl j               #Need new testcase
+./test/test_mips_cpu_harvard.sh rtl j                #Pass
 #./test/test_mips_cpu_harvard.sh rtl jalr            #Again how to link?
-#./test/test_mips_cpu_harvard.sh rtl jal             #how to link?
+./test/test_mips_cpu_harvard.sh rtl jal              #Pass
 ./test/test_mips_cpu_harvard.sh rtl jr               #Pass
 
 # shift
