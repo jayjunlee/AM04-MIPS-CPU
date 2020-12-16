@@ -12,8 +12,8 @@ module mips_cpu_bus_memory( //Avalon memory mapped bus controller (slave)
 parameter INSTR_INIT_FILE = "";
 parameter DATA_INIT_FILE = "";
 
-reg [31:0] data_memory [0:63]; // location 0x00001000 onwards
-reg [31:0] instr_memory [0:63]; // location 0xBFC00000 onwards
+logic [31:0] data_memory [0:63]; // location 0x00001000 onwards
+logic [31:0] instr_memory [0:63]; // location 0xBFC00000 onwards
 
 initial begin
     for (integer i=0; i<$size(data_memory); i++) begin //Initialise data to zero by default
@@ -44,5 +44,26 @@ initial begin
         $display("byte +%h: %h", 32'h00001000+i*4, data_memory[i]);
     end
 end
+
+always_ff @(posedge read or posedge write) begin
+    waitrequest <= 1;
+end
+
+always_ff @(posedge clk) begin
+    if (waitrequest) begin
+        if (read) begin
+            // read code
+        end else if (write) begin
+            // write code
+        end else begin
+            waitrequest = 1'bx;
+            readdata = 32'hxxxxxxxx;
+        end
+    end else begin
+        waitrequest = 1'b0;
+        readdata = 32'h00000000;
+    end
+end
+
 
 endmodule
