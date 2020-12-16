@@ -9,7 +9,7 @@ module mips_cpu_control(
     output logic[4:0] CtrlALUOp,
     output logic[4:0] Ctrlshamt,
     output logic CtrlMemWrite,
-    output logic CtrlALUSrc,
+    output logic[1:0] CtrlALUSrc,
     output logic CtrlRegWrite,
     output logic CtrlSpcRegWriteEn
 );
@@ -104,9 +104,9 @@ always @(*) begin
     end else if((op==J) || (op==JAL))begin
         CtrlPC = 2'd2; // Jumps within 256MB Region using 26-bit immediate in J type instruction
         $display("Jump PC Ctrl");
-    end else if((op==SPECIAL)&&(funct==JR) || (funct==JALR))begin
+    end else if((op==SPECIAL)&&((funct==JR) || (funct==JALR)))begin
         CtrlPC = 2'd3; // Jumps using Register.
-        //$display("Ctrl PC Jump Register");
+        $display("Ctrl PC Jump Register");
     end else begin CtrlPC = 2'd0; /*/$display("Ctrl PC No Jump/Branch");*/end // No jumps or branches, just increment to next word
 
     //CtrlMemRead and CtrlMemtoReg logic -- Interesting quirk that they have the same logic where both are concerned. Makes sense bc you'd only want to select the read data out when the memory itself is read enabled.
@@ -120,12 +120,12 @@ always @(*) begin
         $display("Memory read disabled");
     end else if ((op==JAL) || ((op==SPECIAL)&&(funct == JALR)))begin
         CtrlMemtoReg = 3'd2;//write data port of regfile is fed from PC + 8
-    end else if ((op==SPECIAL)&&(funct == MTHI))begin
+    end else if ((op==SPECIAL)&&(funct == MFHI))begin
         CtrlMemtoReg = 3'd3;//write data port of regfile is fed from ALUHi
-    end else if ((op==SPECIAL)&&(funct == MTLO))begin
+    end else if ((op==SPECIAL)&&(funct == MFLO))begin
         CtrlMemtoReg = 3'd4;//write data port of regfile is fed from ALULo
     end else begin CtrlMemRead = 1'bx;end//Not all instructions are encompassed so, added incase for debug purposes
-
+    $display("OP: %d, Funct: %d", op, funct);
     //CtrlALUOp Logic
     if((op==ADDIU) || ((op==SPECIAL)&&(funct==ADDU)))begin
         CtrlALUOp = 5'd0; //ADD from ALUOps
@@ -146,6 +146,7 @@ always @(*) begin
         CtrlALUOp = 5'd18;//NEQ from ALUOps
     end else if((op==SPECIAL)&&(funct==DIV))begin
         CtrlALUOp = 5'd3;//DIV from ALUOps
+        $display("DIV CONTROL ALUOps");
     end else if((op==SPECIAL)&&(funct==DIVU))begin
         CtrlALUOp = 5'd23;//DIVU from ALUOps
     end else if((op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LW) || (op==LWL) || (op==LWR) || (op==SB) || (op==SH) || (op==SW))begin
@@ -207,20 +208,24 @@ always @(*) begin
     end else begin CtrlMemWrite = 0;end//default is 0 to ensure no accidental overwriting.
     
     //CtrlSpcRegWriteEn logic
-    if((op==SPECIAL)&&((funct==MTHI) || (funct==MTLO)))begin
+    if((op==SPECIAL)&&((funct==MTHI) || (funct==MTLO) || (funct==MULT) || (funct==MULTU) || (funct==DIV) || (funct==DIVU)))begin
         CtrlSpcRegWriteEn = 1;//Special register Hi and Lo are write enabled
+        $display("Temp being written");
     end else begin CtrlSpcRegWriteEn = 0;end//default is 0 to ensure no accidental overwriting.
     
     //CtrlALUSrc logic
-    if((op==ADDIU) || (op==ANDI) || (op==LUI) || (op==ORI) || (op==SLTI) || (op==SLTIU) || (op==XORI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LW) || (op==LWL) || (op==LWR) || (op==SB) || (op==SH) || (op==SW))begin
+    if((op==ADDIU) || (op==LUI) || (op==SLTI) || (op==SLTIU) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LW) || (op==LWL) || (op==LWR) || (op==SB) || (op==SH) || (op==SW))begin
         CtrlALUSrc = 1;//ALU Bus B is fed from the 16-bit immediate sign extended to 32-bit value taken from Instr[15-0]
     end else if((op==BEQ) || (op==BGTZ) || (op==BLEZ) || (op==BNE) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==DIV) || (funct==DIVU) || (funct==MULT) || (funct==MULTU) || (funct==OR) || (funct==SLL) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRA) || (funct==SRAV) || (funct==SRL) || (funct==SRLV) || (funct==SUBU) || (funct==XOR))) || ((op==REGIMM)&&((rt==BGEZ) || (rt==BGEZAL) || (rt==BLTZ) || (rt==BLTZAL))))begin 
         CtrlALUSrc = 0;///ALU Bus B is fed from rt.
+    end else if ((op==ORI) || (op==ANDI) || (op==XORI)) begin
+        CtrlALUSrc = 2;
     end else begin CtrlALUSrc = 1'bx;end
        
     //CtrlRegWrite logic
     if((op==ADDIU) || (op==ANDI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LUI) || (op==LW) || (op==LWL) || (op==LWR) || (op==ORI) || (op==SLTI) || (op==XORI) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==MFLO) || (funct==MFHI) || (funct==OR) || (funct==SLL) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRA) || (funct==SRAV) || (funct==SRL) || (funct==SRLV) || (funct==SUBU) || (funct==XOR)))) begin
         CtrlRegWrite = 1;//The Registers are Write Enabled
+        $display("OPcode mflo: %h", op);
     end else begin CtrlRegWrite = 0;end // The Registers are Write Disabled
 end
 endmodule

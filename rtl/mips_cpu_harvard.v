@@ -29,8 +29,8 @@ assign data_writedata = out_readdata2;
 logic[31:0] out_pc_out, out_ALURes, out_readdata1, out_readdata2, in_B, in_writedata, out_ALUHi, out_ALULo;
 logic[4:0]  in_readreg1, in_readreg2, in_writereg, out_shamt, out_ALUOp;
 logic[5:0]  in_opcode;
-logic out_ALUCond, out_RegWrite, out_ALUSrc, out_MemWrite, out_MemRead, out_SpcRegWriteEn;
-logic[1:0] out_RegDst, out_PC;
+logic out_ALUCond, out_RegWrite, out_MemWrite, out_MemRead, out_SpcRegWriteEn;
+logic[1:0] out_RegDst, out_PC, out_ALUSrc;
 logic[2:0] out_MemtoReg;
 
 assign in_readreg1 = instr_readdata[25:21];
@@ -72,10 +72,13 @@ always @(*) begin
 
     //Picking which output should be taken as the second operand for ALU.
     case(out_ALUSrc)
-        1'b1:begin
+        2'd2: begin
+            in_B = {16'd0,instr_readdata[15:0]};
+        end
+        2'd1:begin
             in_B = {{16{instr_readdata[15]}},instr_readdata[15:0]};//Output from the 16-bit immediate values sign extened to 32bits.
         end
-        1'b0:begin
+        2'd0:begin
             in_B = out_readdata2;//Output from 'Read data 2' port of regfile.
         end
     endcase

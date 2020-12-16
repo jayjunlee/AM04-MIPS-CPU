@@ -73,8 +73,8 @@ Alu Operations:
       // PAS  = 5'd19, no need for PAS as it was based on faulty reasoning that speical registers Hi and Lo are in the reg file.
       SLT  = 5'd20,//signed compare
       SLTU = 5'd21,//unsigned compare
-      MULU = 5'd22,//unsigned divide
-      DIVU = 5'd23,//unsigned multiply
+      MULU = 5'd22,//unsigned multiply
+      DIVU = 5'd23,//unsigned divide
       MTHI = 5'd24,
       MTLO = 5'd25
 
@@ -168,6 +168,7 @@ end
       end
 
       LES: begin
+          $display("ALU A: %h B: %h", $signed(A), $signed(B));
           if ($signed(A) < $signed(B)) begin
             ALUCond = 1;
           end
@@ -225,11 +226,17 @@ end
         if ($signed(A) < $signed(B)) begin
           ALURes = 1;
         end
+        else begin
+          ALURes = 0;
+        end
       end
 
       SLTU: begin
         if (A < B) begin
           ALURes = 1;
+        end
+        else begin
+          ALURes = 0;
         end
       end
 
@@ -240,6 +247,7 @@ end
       end
 
       DIVU: begin
+        $display("ALU A: %h B: %h", A, B);
           temp_Lo = A / B;
           temp_Hi = A % B;
       end

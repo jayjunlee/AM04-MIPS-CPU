@@ -10,12 +10,12 @@
 ./test/test_mips_cpu_harvard.sh rtl ori              #Pass
 ./test/test_mips_cpu_harvard.sh rtl xor              #Pass
 ./test/test_mips_cpu_harvard.sh rtl xori             #Pass
-#./test/test_mips_cpu_harvard.sh rtl div
-#./test/test_mips_cpu_harvard.sh rtl divu
-#./test/test_mips_cpu_harvard.sh rtl mthi
-#./test/test_mips_cpu_harvard.sh rtl mtlo
-#./test/test_mips_cpu_harvard.sh rtl mult
-#./test/test_mips_cpu_harvard.sh rtl multu
+./test/test_mips_cpu_harvard.sh rtl div              #Pass
+./test/test_mips_cpu_harvard.sh rtl divu             #pass
+./test/test_mips_cpu_harvard.sh rtl mthi             #Pass
+./test/test_mips_cpu_harvard.sh rtl mtlo             #Pass
+./test/test_mips_cpu_harvard.sh rtl mult             #Pass
+./test/test_mips_cpu_harvard.sh rtl multu            #Pass
 
 
 # branches
@@ -24,7 +24,7 @@
 #./test/test_mips_cpu_harvard.sh rtl bgezal          #Place return address thing how??
 ./test/test_mips_cpu_harvard.sh rtl bgtz             #Pass
 ./test/test_mips_cpu_harvard.sh rtl blez             #Pass
-#./test/test_mips_cpu_harvard.sh rtl bltz            #Probably fails due to jump register thing?
+./test/test_mips_cpu_harvard.sh rtl bltz             #Probably fails due to jump register thing?
 ./test/test_mips_cpu_harvard.sh rtl bltzal           #Pass
 ./test/test_mips_cpu_harvard.sh rtl bne              #Pass
 

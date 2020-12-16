@@ -77,7 +77,10 @@ always_ff @(negedge clk) begin
 					2'b11: memory[writereg][7:0] <= writedata[31:24];
 				endcase // readdata1[1:0]
 			end
-			default: memory[writereg] <= writedata; //most instructions
+			default: begin 
+				memory[writereg] <= writedata; //most instructions
+				$display("Write %d in regfile", writedata);
+			end
 		endcase // opcode
 	end
 end

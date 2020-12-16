@@ -32,17 +32,17 @@ register_v0 = 8
 
 ==AND Bitwise and==
 
-LUI $5,0xCCCC 
-ORI $5,$0,0xCCCC
+LUI $5,0xCCCC
+ORI $5,$5,0xCCCC
 LUI $4,0xAAAA 
-ORI $4,$0,0xAAAA
+ORI $4,$4,0xAAAA
 AND  $2,$4,$5
 JR $0
 
-3c05cccc
-3405cccc
+3c05cccc 
+34A5cccc
 3c04aaaa
-3404aaaa
+3484aaaa
 00851024
 00000008
 
@@ -103,6 +103,22 @@ JR $0
 00000008
 
 register_v0 = 1
+
+ORI $4,$0,3
+BGEZ $4,3
+NOP
+ADDIU $2,$2,1
+NOP
+ADDIU $2,$2,5
+JR $0
+
+34040003
+04810003
+00000000
+24420001
+00000000
+24420005
+00000008
 
 ==BGEZAL Branch on non-negative (>=0) and link==
 
@@ -176,7 +192,7 @@ NOP
 ORI $2,$0,1
 JR $0
 
-3C05FFFF
+3C04FFFF
 04800003
 00000000
 00000008
@@ -252,15 +268,15 @@ register_v0 = 3
 
 ==DIVU	Divide unsigned== //May need other testcases for -ve/+ve, -ve/-ve
 
-LUI $4,0x8000 
+LUI $4,0x8000
 ORI $5,$0,2
 DIVU  $4,$5
 MFHI $4
-MFLO $5
+MFLO $5 
 ADDU $2,$4,$5
 JR $0
 
-34048000
+3C048000
 34050002
 0085001B
 00002010
@@ -343,12 +359,14 @@ NOP
 ORI $2,$0,1
 JR $0
 
-3C05BFC0
-34050014
-00A00008
-00000000
-00000008
-34020001
+BFC00014
+0,4,8,c,10,14
+3C05BFC0  0
+34050014 4
+00A00008 8 
+00000000 c
+00000008 10
+34020001 14
 00000008
 
 register_v0 = 1
@@ -472,14 +490,14 @@ register_v0 = 0x12345678
 
 ==LWL	Load word left==
 
-ORI $4,$0,0x1003
+ORI $4,$0,0x1001
 ORI $2,$0,0x5678
 LWL  $2,3($4)
 JR $0
 
 -Instruction Hex
 
-34041003
+34041001
 34025678
 88820003
 00000008
@@ -590,17 +608,25 @@ jr $0
 
 register_v0 = 7
 
+
 ==ORI	Bitwise or immediate==
 
 ori $2, $0, 3
-ori $2, $0, 5
+ori $2, $2, 5
 jr $0
 
 34020003
 00000008
-34020005
+34420005
 
 register_v0 = 7
+
+ori $4, $0, 0xFFFF
+ori $5, $0, 0x1234
+or $2, $4, $5
+jr $0
+
+register_v0 = 65535
 
 ==SB	Store byte==
 
@@ -735,9 +761,11 @@ register_v0 = 0xFC000000
 ==SRAV	Shift right arithmetic variable==
 
 ori $4,$0,2
-lui $5 $0,0xF000
+lui $5, 0xF000
 srav $2,$5,$4
 jr $0    
+
+F000000 -> FC000000
 
 34040004
 3C05F000
@@ -788,16 +816,30 @@ register_v0 = 2
 
 ==SW	Store word==
 
-ori $4, $0, 0xFFFF  
-ori $5, $0, 0x1008  
-sw $4, 4($5)         
-lw $2, 4($5)       
+ori $4, $0, 0xFFFF     
+ori $5, $0, 0x1008    
+sw $4, 4($5)      
+lw $2, 4($5)                    
 jr $0               
 
 3404FFFF
 34051008
 ACA40004
 8CA20004
+00000008
+
+register_v0 = 0x0000FFFF
+
+ori $4, $0, 0xFFFF     
+ori $5, $0, 0x1008    
+sw $4, -4($5)      
+lw $2, -4($5)                    
+jr $0               
+
+3404FFFF
+34051008
+ACA4FFFC
+8CA2FFFC
 00000008
 
 register_v0 = 0x0000FFFF
