@@ -120,9 +120,9 @@ always @(*) begin
         $display("Memory read disabled");
     end else if ((op==JAL) || ((op==SPECIAL)&&(funct == JALR)))begin
         CtrlMemtoReg = 3'd2;//write data port of regfile is fed from PC + 8
-    end else if ((op==SPECIAL)&&(funct == MTHI)))begin
+    end else if ((op==SPECIAL)&&(funct == MTHI))begin
         CtrlMemtoReg = 3'd3;//write data port of regfile is fed from ALUHi
-    end else if ((op==SPECIAL)&&(funct == MTLO)))begin
+    end else if ((op==SPECIAL)&&(funct == MTLO))begin
         CtrlMemtoReg = 3'd4;//write data port of regfile is fed from ALULo
     end else begin CtrlMemRead = 1'bx;end//Not all instructions are encompassed so, added incase for debug purposes
 

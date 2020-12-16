@@ -26,10 +26,10 @@ assign data_write = out_MemWrite;
 assign data_read = out_MemRead;
 assign data_writedata = out_readdata2;
 
-logic[31:0] out_pc_out, out_ALURes, out_readdata1, out_readdata2, in_B, in_writedata;
+logic[31:0] out_pc_out, out_ALURes, out_readdata1, out_readdata2, in_B, in_writedata, out_ALUHi, out_ALULo;
 logic[4:0]  in_readreg1, in_readreg2, in_writereg, out_shamt, out_ALUOp;
 logic[5:0]  in_opcode;
-logic out_ALUCond, out_RegWrite, out_ALUSrc, out_MemWrite, out_MemRead;
+logic out_ALUCond, out_RegWrite, out_ALUSrc, out_MemWrite, out_MemRead, out_SpcRegWriteEn;
 logic[1:0] out_RegDst, out_PC;
 logic[2:0] out_MemtoReg;
 
@@ -140,7 +140,7 @@ mips_cpu_alu alu(
     .ALUCond(out_ALUCond), //condition used by control to decide on branch instructions.
     .ALURes(out_ALURes), //output/result of operation that goes to either: 'Address' port of Data Memory; or 'Write Data' port of the register file.
     .ALUHi(out_ALUHi), //Special register Hi output to be used for MFHI instructions - feeds in_writedata.
-    .ALULo(out_ALULo), //Special register Hi output to be used for MFLO instructions - feeds in_writedata.
+    .ALULo(out_ALULo) //Special register Hi output to be used for MFLO instructions - feeds in_writedata.
 );
 
 endmodule

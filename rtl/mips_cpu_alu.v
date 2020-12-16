@@ -99,7 +99,7 @@ initial begin
   Lo <= 32'd0;
 end
 
-  always_comb begin
+  always @(*) begin
     assign ALUOps = ALUOp;
     case(ALUOps)
       ADD: begin
@@ -216,11 +216,11 @@ end
           end
           
       end
-
+/*
       PAS: begin
         ALURes = A;
       end
-
+*/
       SLT: begin
         if ($signed(A) < $signed(B)) begin
           ALURes = 1;

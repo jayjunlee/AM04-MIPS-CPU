@@ -30,7 +30,7 @@ always_ff @(posedge clk) begin
 end
 
 
-always_comb begin
+always @(*) begin
 		case(pc_ctrl)
 			2'd1: begin // Branch
 				pc_next = pc_out + 32'd4 + {{14{instr[15]}},instr[15:0],2'b00};
