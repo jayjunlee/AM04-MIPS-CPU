@@ -75,6 +75,7 @@ always_ff @(posedge clk) begin
                     data_memory[{address-32'h00001000}>>2][7:0] <= writedata[7:0];
                 end
                 waitrequest <= 1'b0; // end with setting waitrequest low
+            end
         end else begin
             waitrequest <= 1'bx;
             readdata <= 32'hxxxxxxxx;
