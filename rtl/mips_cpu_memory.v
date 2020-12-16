@@ -16,7 +16,7 @@ module mips_cpu_memory(
     parameter INSTR_INIT_FILE = "";
     parameter DATA_INIT_FILE = "";
     reg [31:0] data_memory [0:31];
-    reg [31:0] instr_memory [0:31];
+    reg [31:0] instr_memory [0:63];
 
     initial begin
         integer i;

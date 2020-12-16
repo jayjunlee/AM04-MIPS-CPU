@@ -13,11 +13,11 @@ module mips_cpu_harvard(
     input logic[31:0] instr_readdata,//port from instruction memory out, going to various inputs.
 
     /* Combinatorial read and single-cycle write access to instructions */
-    output logic[31:0] data_address,//Port from ALURes going into Data Memory 'Address' port
-    output logic data_write,//Control line from 'control' CtrlMemWrite enabling/disabling write access for Data Memory.
-    output logic data_read,//Control line from 'control' CtrlMemRead enabling/disabling read access for Data Memory.
-    output logic[31:0] data_writedata,//Data from Register file 'Read data 2' port, aka rt's data, going to 'Write data' port on Data Memory.
-    input logic[31:0] data_readdata//port from data memory out, going to the 'Write Register' port in regfile.
+    output logic[31:0] data_address,
+    output logic data_write,
+    output logic data_read,
+    output logic[31:0] data_writedata,
+    input logic[31:0] data_readdata
 );
 
 assign instr_address = out_pc_out;
@@ -61,6 +61,7 @@ always @(*) begin
         end
         3'd2:begin
             in_writedata = (out_pc_out + 32'd8);//Output from PC +8.
+            $display("LINKING-----------<: %h", in_writedata);
         end
         3'd3:begin
             in_writedata = (out_ALUHi);

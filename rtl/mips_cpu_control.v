@@ -93,7 +93,7 @@ always @(*) begin
     end else if ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==JALR) || (funct==MFLO) || (funct==MFHI) || (funct==OR) || (funct==SLL) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRA) || (funct==SRAV) || (funct==SRL) || (funct==SRLV) || (funct==SUBU) || (funct==XOR)))begin
         CtrlRegDst = 2'd1; //Write address comes from rd
         $display("CTRLREGDST: Rd");
-    end else if (op == JAL)begin
+    end else if ((op == JAL) || ((op==REGIMM)&&((rt==BGEZAL) || (rt==BLTZAL))))begin
         CtrlRegDst = 2'd2; //const reg 31, for writing to the link register
         $display("CTRLREGDST: Link");
     end else begin CtrlRegDst = 1'bx; $display("xxxxxxxxxxxxxx");end//Not all instructions are encompassed so, added incase for debug purposes
@@ -118,7 +118,7 @@ always @(*) begin
         CtrlMemRead = 0;//Memory is read disabled
         CtrlMemtoReg = 3'd0;//write data port of regfile is fed from ALURes
         $display("Memory read disabled");
-    end else if ((op==JAL) || ((op==SPECIAL)&&(funct == JALR)))begin
+    end else if ((op==JAL) || ((op==SPECIAL)&&(funct == JALR)) || ((op==REGIMM)&&((rt==BGEZAL) || (rt==BLTZAL))))begin
         CtrlMemtoReg = 3'd2;//write data port of regfile is fed from PC + 8
     end else if ((op==SPECIAL)&&(funct == MFHI))begin
         CtrlMemtoReg = 3'd3;//write data port of regfile is fed from ALUHi
@@ -224,7 +224,7 @@ always @(*) begin
     end else begin CtrlALUSrc = 1'bx;end
        
     //CtrlRegWrite logic
-    if((op==ADDIU) || (op==ANDI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LUI) || (op==LW) || (op==LWL) || (op==LWR) || (op==ORI) || (op==JAL) || (op==SLTI) || (op==XORI) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==MFLO) || (funct==MFHI) || (funct==OR) || (funct==SLL) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRA) || (funct==SRAV) || (funct==SRL) || (funct==SRLV) || (funct==SUBU) || (funct==JALR) || (funct==XOR)))) begin
+    if((op==ADDIU) || (op==ANDI) || (op==LB) || (op==LBU) || (op==LH) || (op==LHU) || (op==LUI) || (op==LW) || (op==LWL) || (op==LWR) || (op==ORI) || (op==JAL) || (op==SLTI) || (op==XORI) || ((op==REGIMM)&&((rt==BGEZAL) || (rt==BLTZAL))) || ((op==SPECIAL)&&((funct==ADDU) || (funct==AND) || (funct==MFLO) || (funct==MFHI) || (funct==OR) || (funct==SLL) || (funct==SLLV) || (funct==SLT) || (funct==SLTU) || (funct==SRA) || (funct==SRAV) || (funct==SRL) || (funct==SRLV) || (funct==SUBU) || (funct==JALR) || (funct==XOR)))) begin
         CtrlRegWrite = 1;//The Registers are Write Enabled
         $display("OPcode mflo: %h", op);
     end else begin CtrlRegWrite = 0;end // The Registers are Write Disabled
