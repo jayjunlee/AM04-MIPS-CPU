@@ -87,7 +87,7 @@ always_ff @(negedge clk) begin // CLK Falling Edge
     clk_state <= 1'b0;
 end
 
-always_comb begin
+always @(*) begin
     case (instr_reg[31:26])
         6'b101000: begin // Store Byte
             partial_write = 1'b1;
