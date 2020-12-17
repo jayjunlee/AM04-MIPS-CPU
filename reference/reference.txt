@@ -30,6 +30,20 @@ ADDU $2,$4,$5
 
 register_v0 = 8
 
+-Test not overflowing property
+
+lui $4,$0,0x1000
+lui $5,$0,0xF000
+JR $0
+ADDU $2,$4,$5
+
+3C041000
+3C05F000
+00000008
+00851021
+
+register_v0 = 0
+
 ==AND Bitwise and==
 
 LUI $5,0xCCCC
@@ -123,6 +137,22 @@ JR $31
 00000000
 34020001
 03E00008
+
+register_v0 = 2
+
+-Testing whether it would link if branch fails
+
+lui $4,0xFFFF
+BGEZAL $4,4
+JR $31
+ADDIU $2,$2,1
+JR $0
+
+3C04FFFF
+04910004
+03E00008
+24420001
+00000008
 
 register_v0 = 2
 
@@ -362,6 +392,20 @@ ORI $2,$0,5
 34020005
 
 register_v0 = 5
+
+-This broke testbench once due to log.txt weirdness
+
+LUI $5,0xBFC0  
+ORI $5,$5,0x0008
+JR $5  
+JR $0
+
+3C05BFC0
+34A50008
+00A00008
+00000008
+
+register_v0 = 0
 
 ==LB	Load byte==
 
