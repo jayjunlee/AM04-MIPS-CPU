@@ -1,4 +1,60 @@
 #!/bin/bash
 
-# should not create any files in the rtl dir
-# but auxiliary files / dirs can be utilised
+SRC_DIR=${1?Error: no source directory given in argument};
+SRC=$(find ./${SRC_DIR}/*);
+SRC_TEMP="";
+for src in ${SRC}
+do
+    SRC_TEMP+=${src}" ";
+done
+SRC=${SRC_TEMP};
+
+
+INSTR=${2:-"No instruction specified: running all testcases"};
+
+if [[ ${INSTR} == "No instruction specified: running all testcases" ]];
+then
+    for DIR in inputs/*/
+    do
+        DIR=$(basename ${DIR});
+        LOOP=$(find inputs/${DIR}/* ! -name '*ref*' ! -name '*log*' ! -name '*data*' ! -name '*out*');
+        for TESTCASE in ${LOOP}
+        do
+            TESTCASE=$([[ ${TESTCASE} =~ /([^./]+)\. ]] && echo "${BASH_REMATCH[1]}");
+            iverilog -Wall -g2012 \
+                -s mips_cpu_bus_tb \
+                -P mips_cpu_bus_tb.INSTR_INIT_FILE=\"inputs/${DIR}/${TESTCASE}.txt\" \
+                -P mips_cpu_bus_tb.DATA_INIT_FILE=\"inputs/${DIR}/${TESTCASE}.data.txt\" \
+                -o exec/mips_cpu_bus_tb_${TESTCASE} testbench/mips_cpu_bus_tb.v testbench/mips_cpu_bus_memory.v \
+                ${SRC} 2> /dev/null
+            ./exec/mips_cpu_bus_tb_${TESTCASE} &> ./inputs/${DIR}/${TESTCASE}.log.txt;             # log file for debugging (contains $display)
+            echo "$(tail -1 ./inputs/${DIR}/${TESTCASE}.log.txt)" > ./inputs/${DIR}/${TESTCASE}.out.txt;      # register v0 output to compare with reference
+            if diff -w ./inputs/${DIR}/${TESTCASE}.out.txt ./inputs/${DIR}/${TESTCASE}.ref.txt &> /dev/null   # compare
+            then 
+                echo ${TESTCASE} ${DIR} "Pass";
+            else 
+                printf '%s %s %s%d %s%d%s\n' "${TESTCASE}" "${DIR}" "Fail Output=" "$(tail -1 ./inputs/${DIR}/${TESTCASE}.out.txt)" "Ref=" "$(tail -1 ./inputs/${DIR}/${TESTCASE}.ref.txt)" 2> /dev/null;
+            fi
+        done
+    done
+else
+    LOOP=$(find inputs/${INSTR}/* ! -name '*ref*' ! -name '*log*' ! -name '*data*' ! -name '*out*');
+    for TESTCASE in ${LOOP}
+    do
+        TESTCASE=$([[ ${TESTCASE} =~ /([^./]+)\. ]] && echo "${BASH_REMATCH[1]}");
+        iverilog -Wall -g2012 \
+        -s mips_cpu_bus_tb \
+        -P mips_cpu_bus_tb.INSTR_INIT_FILE=\"inputs/${INSTR}/${TESTCASE}.txt\" \
+        -P mips_cpu_bus_tb.DATA_INIT_FILE=\"inputs/${INSTR}/${TESTCASE}.data.txt\" \
+        -o exec/mips_cpu_bus_tb_${TESTCASE} testbench/mips_cpu_bus_tb.v testbench/mips_cpu_bus_memory.v \
+        ${SRC} 2> /dev/null
+        ./exec/mips_cpu_bus_tb_${TESTCASE} &> ./inputs/${INSTR}/${TESTCASE}.log.txt;             # log file for debugging (contains $display)
+        echo "$(tail -1 ./inputs/${INSTR}/${TESTCASE}.log.txt)" > ./inputs/${INSTR}/${TESTCASE}.out.txt;      # register v0 output to compare with reference
+        if diff -w ./inputs/${INSTR}/${TESTCASE}.out.txt ./inputs/${INSTR}/${TESTCASE}.ref.txt &> /dev/null   # compare
+        then 
+            echo ${TESTCASE} ${INSTR} "Pass";
+        else 
+            printf '%s %s %s%d %s%d%s\n' "${TESTCASE}" "${INSTR}" "Fail Output=" "$(tail -1 ./inputs/${INSTR}/${TESTCASE}.out.txt)" "Ref=" "$(tail -1 ./inputs/${INSTR}/${TESTCASE}.ref.txt)" 2> /dev/null;
+        fi
+    done
+fi
