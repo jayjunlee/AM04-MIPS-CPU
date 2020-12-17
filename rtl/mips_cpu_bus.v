@@ -30,6 +30,7 @@ logic clk_state; // make sure posedge and negedge of clk do not occur repeatedly
 logic partial_write; // flag to control datapath when doing a partial write
 logic[31:0] partial_writedata; // modified data for partial writes (StoreHalfword or StoreByte)
 logic[31:0] write_data_address; // modified data address for partial writes
+logic clk_enable; // unused floating wire
 
 initial begin
     clk_internal = 1'b0;
@@ -42,6 +43,11 @@ initial begin
     writedata = 32'h00000000;
     byteenable = 4'b0000;
     clk_state = 0;
+end
+
+always_ff @(negedge reset) begin // kickstart clock after reset
+    clk_internal <= 1'b1;
+    state <= 2'b00;
 end
 
 always_ff @(posedge clk) begin // CLK Rising Edge
@@ -212,7 +218,7 @@ mips_cpu_harvard mips_cpu_harvard( // Harvard CPU within wrapper
 .reset(reset), // CPU reset, input
 .active(active), // Is CPU active, output
 .register_v0(register_v0), // $2 / $v0 debug bus, output
-.clk_enable(1'b0), // unused clock enable, input
+.clk_enable(clk_enable), // unused clock enable, input
 .instr_address(harvard_instr_address), // instr addr from pc, output
 .instr_readdata(instr_reg), // cached instruction passed into harvard cpu, input
 .data_address(harvard_data_address), // harvard data memory address, output
