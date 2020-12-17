@@ -25,7 +25,7 @@ then
                 -s mips_cpu_bus_tb \
                 -P mips_cpu_bus_tb.INSTR_INIT_FILE=\"inputs/${DIR}/${TESTCASE}.txt\" \
                 -P mips_cpu_bus_tb.DATA_INIT_FILE=\"inputs/${DIR}/${TESTCASE}.data.txt\" \
-                -o exec/mips_cpu_bus_tb_${TESTCASE} testbench/mips_cpu_bus_tb.v testbench/mips_bus_cpu_memory.v \
+                -o exec/mips_cpu_bus_tb_${TESTCASE} testbench/mips_cpu_bus_tb.v testbench/mips_cpu_bus_memory.v \
                 ${SRC} 2> /dev/null
             ./exec/mips_cpu_bus_tb_${TESTCASE} &> ./inputs/${DIR}/${TESTCASE}.log.txt;             # log file for debugging (contains $display)
             echo "$(tail -1 ./inputs/${DIR}/${TESTCASE}.log.txt)" > ./inputs/${DIR}/${TESTCASE}.out.txt;      # register v0 output to compare with reference
