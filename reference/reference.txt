@@ -1,61 +1,66 @@
 == Instruction ==
-C code
 Assembly code
 Hex code
 Reference Output
 ================
 
-ADDIU Add immediate unsigned (no overflow) 
+==ADDIU Add immediate unsigned (no overflow)==
+
+ORI $4,$0,0xA
+JR $0
+ADDIU $2,$4,20
+
+3404000a
+00000008
+24820014
+
+register_v0 = 30
 
 == ADDU Add unsigned (no overflow) ==
 
-int main(void) {
-    int a = 3 + 5;
-}
-
 ORI $4,$0,3
 ORI $5,$0,5
-ADDU $2,$4,$5
 JR $0
+ADDU $2,$4,$5
 
 34040003
 34050005
-00851021
 00000008
+00851021
 
 register_v0 = 8
 
 ==AND Bitwise and==
 
-ORI $5,$0,0xCCCC
-LUI $5,0xCCCC 
-ORI $4,$0,0xAAAA
-LUI $4,0xAAAA  
-AND  $2,$4,$5
+LUI $5,0xCCCC
+ORI $5,$5,0xCCCC
+LUI $4,0xAAAA 
+ORI $4,$4,0xAAAA
 JR $0
+AND  $2,$4,$5
 
-3405cccc
-3c05cccc
-3404aaaa
+3c05cccc 
+34A5cccc
 3c04aaaa
-00851024
+3484aaaa
 00000008
+00851024
 
-register_v0 = 0x88888888
+register_v0 = 0x88888888 / 2290649224
 
 ==ANDI Bitwise and immediate==
 
+LUI $4,0xAAAA 
 ORI $4,$0,0xAAAA
-LUI $4,0xAAAA  
-ANDI $2,$4,0xCCCC
 JR $0
+ANDI $2,$4,0xCCCC
 
-3404aaaa
 3c04aaaa
-3082cccc
+3404aaaa
 00000008
+3082cccc
 
-register_v0 = 0x00008888
+register_v0 = 0x00008888 / 34952
 
 ==BEQ	Branch on equal==
 
@@ -171,7 +176,7 @@ NOP
 ORI $2,$0,1
 JR $0
 
-3C05FFFF
+3C04FFFF
 04800003
 00000000
 00000008
@@ -247,15 +252,15 @@ register_v0 = 3
 
 ==DIVU	Divide unsigned== //May need other testcases for -ve/+ve, -ve/-ve
 
-LUI $4,0x8000 
+LUI $4,0x8000
 ORI $5,$0,2
 DIVU  $4,$5
 MFHI $4
-MFLO $5
+MFLO $5 
 ADDU $2,$4,$5
 JR $0
 
-34048000
+3C048000
 34050002
 0085001B
 00002010
@@ -263,7 +268,7 @@ JR $0
 00851021
 00000008
 
-register_v0 = 0x40000000
+register_v0 = 0x40000000 / 1073741824
 
 ==J	Jump==
 
@@ -285,8 +290,8 @@ register_v0 = 1
 
 ==JALR	Jump and link register==
 
-ORI $5,$0,0x001C
 LUI $5,0xBFC0
+ORI $5,$5,0x001C
 JALR $4,$5
 NOP
 ADDIU $2,$2,1
@@ -295,8 +300,8 @@ NOP
 ORI $2,$0,1
 JR $4
 
-3405001C
 3C05BCF0
+34A5001C
 00A02009
 00000000
 24420001
@@ -329,36 +334,36 @@ register_v0 = 2
 
 ==JR	Jump register==
 
-ORI $5,$0,0x0014
 LUI $5,0xBFC0  
+ORI $5,$5,0x0014
 JR $5  
 NOP
 JR $0
 NOP
-ORI $2,$0,1
+ORI $2,$0,0xA
 JR $0
 
-34050014
-3C05BCF0
+3C05BFC0
+34A50014
 00A00008
 00000000
 00000008
-34020001
+3402000A
 00000008
 
-register_v0 = 1
+register_v0 = 10
 
 ==LB	Load byte==
 
-ORI $4,$0,0x1003
-LB  $2,3($4)
+ORI $4,$0,0x1001
 JR $0
+LB  $2,5($4)
 
 -Instruction Hex
 
-34041003
-80820003
+34041001
 00000008
+80820005
 
 -Memory Hex
 
@@ -367,94 +372,94 @@ JR $0
 00000000
 00000000
 
-register_v0 = 0xFFFFFF8A
+register_v0 = 0xFFFFFF8A / 4294967178
 
 ==LBU	Load byte unsigned==
 
-ORI $4,$0,0x1003
-LBU  $2,3($4)
-JR $0
-
--Instruction Hex
-
-34041003
-90820003
-00000008
-
--Memory Hex
-
-00000000
-008A0000
-00000000
-00000000
-
-register_v0 = 0x0000008A
-
-==LH	Load half-word==
-
-ORI $4,$0,0x1003
-LH  $2,4($4)
-JR $0
-
--Instruction Hex
-
-34041003
-84820004
-00000008
-
--Memory Hex
-
-00000000
-00008123
-00000000
-00000000
-
-register_v0 = 0xFFFF8123
-
-==LHU	Load half-word unsigned==
-
-ORI $4,$0,0x1003
-LHU $2,4($4)
-JR $0
-
--Instruction Hex
-
-34041003
-94820004
-00000008
-
--Memory Hex
-
-00000000
-00008123
-00000000
-00000000
-
-register_v0 = 0x00008123
-
-==LUI	Load upper immediate==
-
-ORI $2,$0,0x5678
-LUI $2,0x1234
-JR $0
-
-34045678
-3C021234
-00000008
-
-register_v0 = 0x12345678
-
-==LW	Load word==
-
 ORI $4,$0,0x1002
-LW  $2, 2($4)
 JR $0
+LBU  $2,4($4)
 
 -Instruction Hex
 
 34041002
-8C820002
 00000008
+90820004
+
+-Memory Hex
+
+00000000
+008A0000
+00000000
+00000000
+
+register_v0 = 0x0000008A / 138
+
+==LH	Load half-word==
+
+ORI $4,$0,0x1000
+JR $0
+LH  $2,4($4)
+
+-Instruction Hex
+
+34041003
+00000008
+84820004
+
+-Memory Hex
+
+00000000
+00008123
+00000000
+00000000
+
+register_v0 = 0xFFFF8123 / 4294934819
+
+==LHU	Load half-word unsigned==
+
+ORI $4,$0,0x1000
+JR $0
+LHU $2,4($4)
+
+-Instruction Hex
+
+34041000
+00000008
+94820004
+
+-Memory Hex
+
+00000000
+00008123
+00000000
+00000000
+
+register_v0 = 0x00008123 / 33059
+
+==LUI	Load upper immediate==
+
+LUI $2,0x1234
+ORI $2,$2,0x5678
+JR $0
+
+3C021234
+34425678
+00000008
+
+register_v0 = 0x12345678 / 305419896
+
+==LW	Load word==
+
+ORI $4,$0,0x1002
+JR $0
+LW  $2, 2($4)
+
+-Instruction Hex
+
+34041002
+00000008
+8C820002
 
 -Memory Hex
 
@@ -463,21 +468,21 @@ JR $0
 00000000
 00000000
 
-register_v0 = 0x12345678
+register_v0 = 0x12345678 / 305419896
 
 ==LWL	Load word left==
 
-ORI $4,$0,0x1003
+ORI $4,$0,0x1001
 ORI $2,$0,0x5678
-LWL  $2,3($4)
 JR $0
+LWL  $2,3($4)
 
 -Instruction Hex
 
-34041003
+34041001
 34025678
-88820003
 00000008
+88820003
 
 -Memory Hex
 
@@ -486,21 +491,21 @@ AAAA1234
 00000000
 00000000
 
-register_v0 = 0x12345678
+register_v0 = 0x12345678 / 305419896
 
 ==LWR	Load word right==
 
-ORI $4,$0,0x1003
 LUI $2,0x1234
-LWR $2,2($4)
+ORI $4,$0,0x1002
 JR $0
+LWR $2,3($4)
 
 -Instruction Hex
 
-34041003
 3C021234
-98820002
+34041002
 00000008
+98820003
 
 -Memory Hex
 
@@ -509,56 +514,335 @@ JR $0
 00000000
 00000000
 
-register_v0 = 0x12345678
+register_v0 = 0x12345678 / 305419896
 
-// DIVU Divide unsigned
+==MTHI	Move to HI==
 
-// DIV Divide
+ori $4, $0, 5
+mthi $4
+mfhi $2
+jr $0
 
-//MFHI Move from Hi 
+34040005
+00800011
+00001010
+00000008
 
-//MFLO Move from lo 
+register_v0 = 5
 
-//MTHI	Move to HI
+==MTLO	Move to LO==
 
-//MTLO	Move to LO
+ori $4, $0, 5
+mtlo $4
+mflo $2
+jr $0
 
-//MULT	Multiply**
+34040005
+00800013
+00001012
+00000008
 
-//MULTU	Multiply unsigned**
+register_v0 = 5
 
-//OR	Bitwise or
+==MULT	Multiply==
 
-//ORI	Bitwise or immediate
+ori $4, $0, 4
+ori $5, $0, 3
+mult $4, $5
+mflo $2
+jr $0
 
-//SB	Store byte
+34040004
+34050003
+00850018
+00001012
+00000008
 
-//SH	Store half-word**
+register_v0 = 12
 
-//SLL	Shift left logical
+==MULTU	Multiply unsigned==
 
-//SLLV	Shift left logical variable 
+ori $4, $0, 4
+ori $5, $0, 3
+multu $4, $5
+mflo $2
+jr $0
 
-//SLT	Set on less than (signed)
+34040004
+34050003
+00850019
+00001012
+00000008
 
-//SLTI	Set on less than immediate (signed)
+register_v0 = 12
 
-//SLTIU	Set on less than immediate unsigned
+==OR	Bitwise or==
 
-//SLTU	Set on less than unsigned
+ori $4, $0, 5
+ori $5, $0, 3
+jr $0
+or $2, $4, $5
 
-//SRA	Shift right arithmetic
+34040005
+34050003
+00000008
+00851025
 
-//SRAV	Shift right arithmetic
+register_v0 = 7
 
-//SRL	Shift right logical
+==ORI	Bitwise or immediate==
 
-//SRLV	Shift right logical variable
+ori $4, $0, 0xFFFF
+ori $5, $0, 0x1234
+jr $0
+or $2, $4, $5
 
-//SUBU	Subtract unsigned
+3404FFFF
+34051234
+00851025
+00000008
 
-//SW	Store word
+register_v0 = 65535
 
-//XOR	Bitwise exclusive or
+==SB	Store byte==
 
-//XORI	Bitwise exclusive or immediate
+lui $4, 0x1234
+ori $4, $0, 0x5678
+lui $5, 0xBFC0
+ori $5, $0, 0x001C
+sb $4, 0($5)
+lb $2, 0($5)
+jr $0
+
+3C041234
+34045678
+3C05BFC0
+3405001C
+A0A40000
+80A20000
+00000008
+
+register_v0 = 0x00000078
+
+==SH	Store half-word==
+
+lui $4, 0x1234
+ori $4, $0, 0x5678
+lui $5, 0xBFC0
+ori $5, $0, 0x001C
+sh $4, 0($5)
+lh $2, 0($5)
+jr $0
+
+3C041234
+34045678
+3C05BFC0
+3405001C
+A4A40000
+84A40000
+00000008
+
+register_v0 = 0x00005678
+
+==SLL	Shift left logical==
+
+ori $4,$0,3
+jr $0
+sll $2,$4,2
+
+
+34040003
+00000008
+00041080
+
+register_v0 = 12
+
+==SLLV	Shift left logical variable==
+
+ori $4,$0,2
+ori $5,$0,3
+jr $0
+sllv $2,$5,$4
+
+34040002
+34050003
+00000008
+00851004
+
+register_v0 = 12
+
+==SLT	Set on less than (signed)==
+
+ORI $4 $zero 0xFFFF
+ORI $5 $zero 0x000B
+jr $0
+SLT $2 $4 $5
+
+3404FFFF
+3405000B
+00000008
+0085102A
+
+register_v0 = 0
+
+==SLTI	Set on less than immediate (signed)==
+
+ori $4, $0, 10
+jr $0
+slti $2, $4, 9
+
+3404000a
+00000008
+28820009
+
+register_v0 = 0
+
+==SLTIU	Set on less than immediate unsigned==
+
+ori $4, $0, 10
+jr $0
+sltiu $2, $4, 9
+
+3404000a
+00000008
+2c820009
+
+register_v0 = 0
+
+==SLTU	Set on less than unsigned==
+
+ori $4, $0, 10
+ori $5, $0, 9
+jr $0
+sltu $2, $4, $5
+
+3404000a
+34050009
+00000008
+0085102b
+
+register_v0 = 0
+
+==SRA	Shift right arithmetic==
+
+lui $5 $0,0xF000
+jr $0  
+srav $2,$5,2
+  
+3C05F000
+00000008
+00051083
+
+register_v0 = 0xFC000000 / 4227858432
+
+==SRAV	Shift right arithmetic variable==
+
+ori $4,$0,2
+lui $5, 0xF000
+jr $0  
+srav $2,$5,$4
+
+34040002
+3C05F000
+00000008
+00851007
+
+register_v0 = 0xFC000000 / 4227858432
+
+==SRL	Shift right logical==
+
+ori $4,$0,16
+jr $0
+srl $2,$4,2
+
+34040010
+00000008
+00041082
+
+register_v0 = 4
+
+==SRLV	Shift right logical variable==
+
+ori $4,$0,2
+ori $5,$0,16
+jr $0
+srlv $2,$5,$4
+
+34040002
+34050010
+00000008
+00851006
+
+register_v0 = 4
+
+==SUBU	Subtract unsigned==
+
+ori $4,$0,5
+ori $5,$0,3
+jr $0
+subu $2,$4,$5
+
+34040005
+34050003
+00000008
+00851023
+
+register_v0 = 2
+
+==SW	Store word==
+
+ori $4, $0, 0xFFFF     
+ori $5, $0, 0x1008    
+sw $4, 4($5)      
+lw $2, 4($5)                    
+jr $0               
+
+3404FFFF
+34051008
+ACA40004
+8CA20004
+00000008
+
+register_v0 = 0x0000FFFF / 65535
+
+-Negative Offset
+
+ori $4, $0, 0xFFFF     
+ori $5, $0, 0x1008    
+sw $4, -4($5)      
+lw $2, -4($5)                    
+jr $0               
+
+3404FFFF
+34051008
+ACA4FFFC
+8CA2FFFC
+00000008
+
+register_v0 = 0x0000FFFF / 65535
+
+==XOR	Bitwise exclusive or==
+
+ori $4, $0, 5
+ori $5, $0, 2
+jr $0
+xor $2, $4, $5
+
+34040005
+34050002
+00000008
+00851026
+
+register_v0 = 7
+
+==XORI	Bitwise exclusive or immediate==
+
+ori $4,$0,5
+jr $0
+xori $2,$4,0x000F
+
+34040005
+00000008
+3882000F
+
+register_v0 = 10
