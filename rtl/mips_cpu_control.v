@@ -124,6 +124,8 @@ always @(*) begin
         CtrlMemtoReg = 3'd3;//write data port of regfile is fed from ALUHi
     end else if ((op==SPECIAL)&&(funct == MFLO))begin
         CtrlMemtoReg = 3'd4;//write data port of regfile is fed from ALULo
+    end else if ((op==SPECIAL)&&(funct == JR))begin
+        CtrlMemRead = 0;//Read disabled during jump
     end else begin CtrlMemRead = 1'bx;end//Not all instructions are encompassed so, added incase for debug purposes
     $display("OP: %d, Funct: %d", op, funct);
     //CtrlALUOp Logic

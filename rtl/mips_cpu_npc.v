@@ -9,6 +9,7 @@ reg[31:0] npc_curr;
 
 initial begin
 	npc_curr = (32'hBFC00000 + 32'd4);
+	npc_out = 32'hBFC00000;
 end // initial
 
 always_comb begin
