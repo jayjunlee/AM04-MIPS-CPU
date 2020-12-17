@@ -193,7 +193,7 @@ always_comb begin
             end
             2'b10: begin // connecting wires when in read state
                 address = harvard_data_address;
-                read = 1'b1;
+                read = clk_internal ? 1'b1 : 1'b0;
                 write = 1'b0;
                 byteenable = 4'b1111;
                 harvard_readdata = readdata;
