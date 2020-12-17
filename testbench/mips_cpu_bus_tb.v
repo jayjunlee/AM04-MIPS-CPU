@@ -10,6 +10,7 @@ logic[3:0] byteenable;
 
 mips_cpu_bus_memory #(INSTR_INIT_FILE, DATA_INIT_FILE) memInst( //Avalon memory mapped bus controller (slave)
     .clk(clk), // clk input to mem
+    .reset(reset), // reset input to stall mem during cpu reset
     .address(address), // addr input to mem
     .write(write), // write flag input
     .read(read), // read flag input

@@ -1,5 +1,6 @@
 module mips_cpu_bus_memory( //Avalon memory mapped bus controller (slave)
     input logic clk,
+    input logic reset,
     input logic[31:0] address,
     input logic write,
     input logic read,
@@ -43,10 +44,20 @@ initial begin
     for (integer i = 0; i<$size(data_memory); i++) begin //Read out data contents to log
         $display("byte +%h: %h", 32'h00001000+i*4, data_memory[i]);
     end
+
+    waitrequest = 1'b0; // set waitrequest low to begin
+    readdata = 32'h00000000; // set readdata low to begin
+
+end
+
+always_comb begin
+    if (reset) begin
+        waitrequest = 1'b0;
+    end
 end
 
 always_ff @(posedge read or posedge write) begin
-    waitrequest <= 1;
+    waitrequest <= 1'b1;
 end
 
 always_ff @(posedge clk) begin
@@ -85,6 +96,5 @@ always_ff @(posedge clk) begin
         readdata <= 32'h00000000;
     end
 end
-
 
 endmodule
