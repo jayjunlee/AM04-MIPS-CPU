@@ -61,7 +61,6 @@ always @(*) begin
         end
         3'd2:begin
             in_writedata = (out_pc_out + 32'd8);//Output from PC +8.
-            $display("LINKING-----------<: %h", in_writedata);
         end
         3'd3:begin
             in_writedata = (out_ALUHi);

@@ -135,7 +135,6 @@ end
 
       SLL: begin
           ALURes = B << shamt;
-          $display("ALURES SLL: %h", ALURes);
       end
 
       SLLV: begin
@@ -169,7 +168,6 @@ end
       end
 
       LES: begin
-          $display("ALU A: %h B: %h", $signed(A), $signed(B));
           if ($signed(A) < $signed(B)) begin
             ALUCond = 1;
           end
@@ -248,7 +246,6 @@ end
       end
 
       DIVU: begin
-        $display("ALU A: %h B: %h", A, B);
           temp_Lo = A / B;
           temp_Hi = A % B;
       end
