@@ -25,7 +25,7 @@ then
                 -s mips_cpu_harvard_tb \
                 -P mips_cpu_harvard_tb.INSTR_INIT_FILE=\"inputs/${DIR}/${TESTCASE}.txt\" \
                 -P mips_cpu_harvard_tb.DATA_INIT_FILE=\"inputs/${DIR}/${TESTCASE}.data.txt\" \
-                -o exec/mips_cpu_harvard_tb_${TESTCASE} testbench/mips_cpu_harvard_tb.v \
+                -o exec/mips_cpu_harvard_tb_${TESTCASE} testbench/mips_cpu_harvard_tb.v testbench/mips_cpu_memory.v\
                 ${SRC} 2> /dev/null
             ./exec/mips_cpu_harvard_tb_${TESTCASE} &> ./inputs/${DIR}/${TESTCASE}.log.txt;             # log file for debugging (contains $display)
             echo "$(tail -1 ./inputs/${DIR}/${TESTCASE}.log.txt)" > ./inputs/${DIR}/${TESTCASE}.out.txt;      # register v0 output to compare with reference
@@ -46,7 +46,7 @@ else
         -s mips_cpu_harvard_tb \
         -P mips_cpu_harvard_tb.INSTR_INIT_FILE=\"inputs/${INSTR}/${TESTCASE}.txt\" \
         -P mips_cpu_harvard_tb.DATA_INIT_FILE=\"inputs/${INSTR}/${TESTCASE}.data.txt\" \
-        -o exec/mips_cpu_harvard_tb_${TESTCASE} testbench/mips_cpu_harvard_tb.v \
+        -o exec/mips_cpu_harvard_tb_${TESTCASE} testbench/mips_cpu_harvard_tb.v testbench/mips_cpu_memory.v\
         ${SRC} 2> /dev/null
         ./exec/mips_cpu_harvard_tb_${TESTCASE} &> ./inputs/${INSTR}/${TESTCASE}.log.txt;             # log file for debugging (contains $display)
         echo "$(tail -1 ./inputs/${INSTR}/${TESTCASE}.log.txt)" > ./inputs/${INSTR}/${TESTCASE}.out.txt;      # register v0 output to compare with reference
