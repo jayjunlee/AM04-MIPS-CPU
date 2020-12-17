@@ -353,6 +353,16 @@ JR $0
 
 register_v0 = 10
 
+-Branch Delay slot test
+
+JR $0
+ORI $2,$0,5
+
+00000008
+34020005
+
+register_v0 = 5
+
 ==LB	Load byte==
 
 ORI $4,$0,0x1001
