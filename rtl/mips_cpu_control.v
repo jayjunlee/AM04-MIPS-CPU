@@ -117,7 +117,7 @@ always @(*) begin
         CtrlMemtoReg = 3'd3;//write data port of regfile is fed from ALUHi
     end else if ((op==SPECIAL)&&(funct == MFLO))begin
         CtrlMemtoReg = 3'd4;//write data port of regfile is fed from ALULo
-    end else if (((op==SPECIAL)&&(funct == JR)) || (op == BEQ) || ((op==REGIMM)&&(rt==BGEZ)) || (op==BGTZ) || ((op==REGIMM)&&(rt==BLTZ)) || (op==BLEZ) || (op==BNE) || (op==J))begin
+    end else if (((op==SPECIAL)&&(funct == JR)) || (op == BEQ) || (op==SW) ||((op==REGIMM)&&(rt==BGEZ)) || (op==BGTZ) || ((op==REGIMM)&&(rt==BLTZ)) || (op==BLEZ) || (op==BNE) || (op==J) || ((op==SPECIAL)&&(funct==MTHI)) || ((op==SPECIAL)&&(funct==MTLO)) || ((op==SPECIAL)&&(funct==MULT)) || ((op==SPECIAL)&&(funct==MULTU)) || ((op==SPECIAL)&&(funct==DIV)) || ((op==SPECIAL)&&(funct==DIVU)) || (op==SB) || (op==SH))begin
         CtrlMemRead = 0;//Read disabled during jump
     end else begin CtrlMemRead = 1'bx;end//Not all instructions are encompassed so, added incase for debug purposes
 
