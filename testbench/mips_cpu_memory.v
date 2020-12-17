@@ -56,16 +56,9 @@ module mips_cpu_memory(
 
     //Synchronous write path
     always_ff @(posedge clk) begin
-        //$display("Instruction: %h", instr_readdata);
-        //$display("RAM : INFO : data_read=%h, data_address = %h, mem=%h", data_read, data_address, memory[data_address]);
         if (data_write) begin              //cannot read and write to memory in the same cycle
             if (instr_address != data_address) begin    //cannot modify the instruction being read
-                data_memory[(data_address-32'h00001000)>>2] <= data_writedata; 
-                $display("Store in memory");     
-                $display(data_writedata);      
-            end
-            for (integer k = 0; k<$size(data_memory); k++) begin
-            $display("byte +%h: %h", 32'h00001000+k*4, data_memory[k]);
+                data_memory[(data_address-32'h00001000)>>2] <= data_writedata;    
             end
         end
         

@@ -29,7 +29,6 @@ always_ff @(negedge clk) begin
 	if (writereg == 5'b00000) begin
 		// skip writing if rd is $0
 	end else if (regwrite) begin
-		$display("%b", opcode);
 		case (opcode)
 			6'b100000: begin //lb, load byte
 				case (readdata1[1:0])	
@@ -38,8 +37,6 @@ always_ff @(negedge clk) begin
 					2'b10: memory[writereg] <= {{24{writedata[23]}}, writedata[23:16]};
 					2'b11: memory[writereg] <= {{24{writedata[31]}}, writedata[31:24]};
 				endcase // readdata1[1:0]
-				$display("writedata %h", writedata);
-				$display("memory writereg %h", memory[writereg]);
 			end
 			6'b100100: begin //lbu, load byte unsigned
 				case (readdata1[1:0])
@@ -79,7 +76,6 @@ always_ff @(negedge clk) begin
 			end
 			default: begin 
 				memory[writereg] <= writedata; //most instructions
-				$display("Write %d in regfile", writedata);
 			end
 		endcase // opcode
 	end
