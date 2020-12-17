@@ -692,6 +692,22 @@ A4A40000
 84A20000
 00000008
 
+-Load Entire Word Version
+
+lui $4, 0x1234
+ori $4, $0, 0x5678
+ori $5, $0, 0x101C
+sh $4, 0($5)
+lw $2, 0($5)
+jr $0
+
+3C041234
+34045678
+3405101C
+A4A40000
+8CA20000
+00000008
+
 register_v0 = 0x00005678
 
 ==SLL	Shift left logical==
