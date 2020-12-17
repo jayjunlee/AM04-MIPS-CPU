@@ -63,8 +63,8 @@ module mips_cpu_harvard_tb;
             @(posedge clk);
             //$display("Register v0: %d", register_v0);
             //$display("Reg File Write data: %d", cpuInst.in_writedata);
-            $display("Reg File Out Read data: %h", cpuInst.out_readdata1);
-            $display("Reg File opcode: %b", cpuInst.regfile.opcode);
+            //$display("Reg File Out Read data: %h", cpuInst.out_readdata1);
+            //$display("Reg File opcode: %b", cpuInst.regfile.opcode);
             //$display("ALU output: %h", cpuInst.out_ALURes);
             //$display("ALU input B: %h", cpuInst.alu.B);
         end

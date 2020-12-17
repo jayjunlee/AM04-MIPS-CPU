@@ -96,7 +96,7 @@ always @(*) begin
     end else if ((op == JAL) || ((op==REGIMM)&&((rt==BGEZAL) || (rt==BLTZAL))))begin
         CtrlRegDst = 2'd2; //const reg 31, for writing to the link register
         $display("CTRLREGDST: Link");
-    end else begin CtrlRegDst = 1'bx; $display("xxxxxxxxxxxxxx");end//Not all instructions are encompassed so, added incase for debug purposes
+    end else begin CtrlRegDst = 1'bx; end//Not all instructions are encompassed so, added incase for debug purposes
 
     //CtrlPC logic
     if(ALUCond && ((op==BEQ) || (op==BGTZ) || (op==BLEZ) || (op==BNE) || ((op==REGIMM)&&((rt==BGEZ) || (rt==BGEZAL) || (rt==BLTZ) || (rt==BLTZAL)))))begin
@@ -106,7 +106,7 @@ always @(*) begin
         $display("Jump PC Ctrl");
     end else if((op==SPECIAL)&&((funct==JR) || (funct==JALR)))begin
         CtrlPC = 2'd3; // Jumps using Register.
-        $display("Ctrl PC Jump Register");
+        //$display("Ctrl PC Jump Register");
     end else begin CtrlPC = 2'd0; /*/$display("Ctrl PC No Jump/Branch");*/end // No jumps or branches, just increment to next word
 
     //CtrlMemRead and CtrlMemtoReg logic -- Interesting quirk that they have the same logic where both are concerned. Makes sense bc you'd only want to select the read data out when the memory itself is read enabled.
@@ -125,7 +125,7 @@ always @(*) begin
     end else if ((op==SPECIAL)&&(funct == MFLO))begin
         CtrlMemtoReg = 3'd4;//write data port of regfile is fed from ALULo
     end else begin CtrlMemRead = 1'bx;end//Not all instructions are encompassed so, added incase for debug purposes
-    $display("OP: %d, Funct: %d", op, funct);
+    //$display("OP: %d, Funct: %d", op, funct);
     //CtrlALUOp Logic
     if((op==ADDIU) || ((op==SPECIAL)&&(funct==ADDU)))begin
         CtrlALUOp = 5'd0; //ADD from ALUOps
