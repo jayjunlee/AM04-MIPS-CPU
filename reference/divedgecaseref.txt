@@ -57,17 +57,17 @@ div - 5 // is it seperating quotients & remainders correctly - when dealing with
 
 ori $4, $0, -4
 ori $5, $0, 3
-div $5, $4 
+div $4, $5 
 mfhi $4
 mflo $5
 addu $2,$4,$5
 jr $0
 
-ref file = 0
+ref file = 2 - as we are adding -1 and -1 using addu 
 
 34040004
 34050003
-00A4001A
+0085001A
 00002010
 00002812
 00851021
