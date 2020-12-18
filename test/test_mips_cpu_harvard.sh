@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SRC_DIR=${1?Error: no source directory given in argument};
-SRC=$(find ./${SRC_DIR}/*);
+SRC=$(find ${SRC_DIR}/*);
 SRC_TEMP="";
 for src in ${SRC}
 do
