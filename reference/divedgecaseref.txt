@@ -1,0 +1,74 @@
+==========DIV-Divide========== 
+
+div - 2 // is it seperating quotients & remainders correctly 
+
+ori $4, $0, 4
+ori $5, $0, 3
+div $4, $5 
+mfhi $4
+mflo $5
+addu $2,$4,$5
+jr $0
+
+ref file = 2
+
+34040004
+34050003
+0085001A
+00002010
+00002812
+00851021
+00000008
+
+div - 3 // -ve/-ve
+
+ori $4, $0, -4
+ori $5, $0, -2
+div $4, $5
+mflo $2
+jr $0
+
+reg file = 2
+
+3404fffc
+3405fffe
+0085001A
+00001012
+00000008
+
+div - 4 // +ve/-ve
+
+ori $4, $0, 4
+ori $5, $0, -2
+div $4, $5
+mflo $2
+jr $0
+
+reg file = -2
+
+34040004
+3405fffe
+0085001A
+00001012
+00000008
+
+
+div - 5 // is it seperating quotients & remainders correctly - when dealing with negatives
+
+ori $4, $0, -4
+ori $5, $0, 3
+div $5, $4 
+mfhi $4
+mflo $5
+addu $2,$4,$5
+jr $0
+
+ref file = 0
+
+34040004
+34050003
+00A4001A
+00002010
+00002812
+00851021
+00000008
