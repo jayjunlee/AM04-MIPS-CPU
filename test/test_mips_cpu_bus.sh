@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SRC_DIR=${1?Error: no source directory given in argument};
-SRC=$(find ./${SRC_DIR}/*);
+SRC=$(find ${SRC_DIR}/*);
 SRC_TEMP="";
 for src in ${SRC}
 do
@@ -23,7 +23,7 @@ then
             TESTCASE=$([[ ${TESTCASE} =~ /([^./]+)\. ]] && echo "${BASH_REMATCH[1]}");
             iverilog -Wall -g2012 \
                 -s mips_cpu_bus_tb \
-                -P mips_cpu_bus_tb.INSTR_INIT_FILE=\"inputs/${DIR}/${TESTCASE}.txt\" \
+                -P mips_cpu_bus_tb.INSTR_INIT_FILE=\"inputs/${DIR}/${TESTCASE}.instr.txt\" \
                 -P mips_cpu_bus_tb.DATA_INIT_FILE=\"inputs/${DIR}/${TESTCASE}.data.txt\" \
                 -o exec/mips_cpu_bus_tb_${TESTCASE} testbench/mips_cpu_bus_tb.v testbench/mips_cpu_bus_memory.v \
                 ${SRC} 2> inputs/${DIR}/${TESTCASE}.stderr.txt
@@ -44,7 +44,7 @@ else
         TESTCASE=$([[ ${TESTCASE} =~ /([^./]+)\. ]] && echo "${BASH_REMATCH[1]}");
         iverilog -Wall -g2012 \
         -s mips_cpu_bus_tb \
-        -P mips_cpu_bus_tb.INSTR_INIT_FILE=\"inputs/${INSTR}/${TESTCASE}.txt\" \
+        -P mips_cpu_bus_tb.INSTR_INIT_FILE=\"inputs/${INSTR}/${TESTCASE}.instr.txt\" \
         -P mips_cpu_bus_tb.DATA_INIT_FILE=\"inputs/${INSTR}/${TESTCASE}.data.txt\" \
         -o exec/mips_cpu_bus_tb_${TESTCASE} testbench/mips_cpu_bus_tb.v testbench/mips_cpu_bus_memory.v \
         ${SRC} 2> inputs/${INSTR}/${TESTCASE}.stderr.txt
