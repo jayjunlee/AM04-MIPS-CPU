@@ -1,4 +1,4 @@
-module mips_cpu_memory(
+module mips_cpu_harvard_memory(
     input logic clk,
 
     //Data Memory
