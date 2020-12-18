@@ -1,0 +1,40 @@
+==XOR	Bitwise exclusive or ==
+
+xor -3 //checking if all 1s gives us 0 for all 1 inputs
+
+lui $4, 0xFFFF 
+ori $4, $4, 0xFFFF 
+lui $5, 0xFFFF 
+ori $5, $5, 0xFFFF 
+xor $2, $4, $5
+jr $0
+
+ref = 0
+
+3c04ffff
+3484ffff
+3c05ffff
+34a5ffff
+00851026
+00000008
+
+==XOR	Bitwise exclusive or ==
+
+xor -4 //checking if all 1s gives us 1 for all opposite inputs
+
+lui $4, 0xFFFF 
+ori $4, $4, 0xFFFF 
+lui $5, 0x0000 
+ori $5, $5, 0x0000 
+xor $2, $4, $5
+jr $0
+
+ref = 4294967295 (FFFFFFFF)
+
+3c04ffff
+3484ffff
+3c050000
+34a50000
+00851026
+00000008
+

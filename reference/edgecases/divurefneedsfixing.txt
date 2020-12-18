@@ -1,0 +1,90 @@
+==========DIVU - Divide unsigned========== 
+
+divu - 2 // is it seperating quotients & remainders correctly 
+
+ori $4, $0, 4
+ori $5, $0, 3
+divu $4, $5 
+mfhi $4
+mflo $5
+addu $2,$4,$5
+jr $0
+
+ref file = 2
+
+34040004
+34050003
+0085001B
+00002010
+00002812
+00851021
+00000008
+
+divu - 3 // -ve/-ve
+
+lui $4, $0, 65535
+ori $4, $4, -4
+lui $5, $0, 65535
+ori $5, $0, -2
+divu $4, $5
+mflo $2
+jr $0
+
+reg file = 2
+
+3c04ffff
+34a4fffc
+3c05ffff
+34a5fffe
+0085001B
+00001012
+00000008
+
+divu - 4 // +ve/-ve
+
+ori $4, $0, 4
+lui $5, $0, 65535 (All 1s 16 bits)
+ori $5, $5, -2
+divu $4, $5
+mflo $2
+jr $0
+
+reg file = -2
+
+34040004
+3c05ffff
+3405fffe
+0085001A
+00001012
+00000008
+
+
+divu - 5 // is it seperating quotients & remainders correctly - when dealing with negatives
+
+ori $4, $0, 4
+lui $4, $4, 65535
+ori $5, $0, 3
+lui $5, $5, 65535
+divu $4, $5 
+mfhi $4
+mflo $5
+addu $2,$4,$5
+jr $0
+
+ref file = 2 - as we are adding -1 and -1 using addu 
+
+34040004
+34050003
+0085001A
+00002010
+00002812
+00851021
+00000008
+
+
+
+
+
+
+
+

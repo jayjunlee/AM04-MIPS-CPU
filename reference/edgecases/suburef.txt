@@ -1,0 +1,36 @@
+==SUBU	Subtract unsigned==
+
+subu - 2 // can it deal with "negative" outputs
+
+ori $4,$0,5
+ori $5,$0,3
+subu $2,$5,$4
+jr $0
+
+34040005
+34050003
+00a41023
+00000008
+
+register_v0 = FFFFFFFE (4294967294)
+
+subu - 3 // can it deal with 2 negatives
+
+lui $4, 0xFFFF
+ori $4, $4, 0xFFFE
+lui $5, 0xFFFF
+ori $5, $5, 0xFFFF
+subu $2, $4, $5
+jr $0
+
+
+
+register_v0 = FFFFFFFF (4294967295)
+
+
+3c04ffff
+3484fffe
+3c05ffff
+34a5ffff
+00851023
+00000008

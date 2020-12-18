@@ -1,0 +1,3 @@
+==SW	Store word==
+
+Negative & postive offset as well as actual functionality already tested 

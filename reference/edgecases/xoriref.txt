@@ -1,0 +1,29 @@
+==XORI	Bitwise exclusive or immediate==
+
+xori -3 //checking if all 1s gives us 0 for the first 16 bits
+
+lui $4, 0xFFFF 
+ori $4, $4, 0xFFFF 
+xori $2, $4, 0xFFFF
+jr $0
+
+ref = 4294901760 - (FFFF0000)
+
+3c04ffff
+3484ffff
+3882ffff
+00000008
+
+xori -4 //should have all 1s
+
+lui $4, 0xFFFF 
+ori $4, $4, 0xFFFF 
+xori $2, $4, 0x0000
+jr $0
+
+ref = 4294967295 - (FFFFFFFF)
+
+3c04ffff
+3484ffff
+38820000
+00000008

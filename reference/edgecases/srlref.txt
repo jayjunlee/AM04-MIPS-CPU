@@ -1,0 +1,28 @@
+==SRLV	Shift right logical ==
+
+srl -2 // Will it be able to handle shifts greater than the highest 1 value
+
+ori $4,$0,16
+srl $2,$4,6
+jr $0
+
+ref  = 0
+
+34040010
+00000008
+00041182
+
+
+srl - 3 // negative number - does it push in a 0? (not sign extend)
+
+lui $4, 0xFFFF
+ori $4, $4, 0x00FF
+srl $2, $4, 4
+jr $0
+
+ref = 0FFFF00F (268431375)
+
+3c04ffff
+348400ff
+00000008
+00041102
