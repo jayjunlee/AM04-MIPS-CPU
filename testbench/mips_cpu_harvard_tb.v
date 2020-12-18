@@ -7,7 +7,7 @@ module mips_cpu_harvard_tb;
     logic clk, clk_enable, reset, active, data_read, data_write;
     logic[31:0] register_v0, instr_address, instr_readdata, data_readdata, data_writedata, data_address;
 
-    mips_cpu_memory #(INSTR_INIT_FILE, DATA_INIT_FILE) ramInst(
+    mips_cpu_harvard_memory #(INSTR_INIT_FILE, DATA_INIT_FILE) ramInst(
         .clk(clk), 
         .data_address(data_address), 
         .data_write(data_write), 

@@ -55,7 +55,7 @@ reg file = -2
 
 div - 5 // is it seperating quotients & remainders correctly - when dealing with negatives
 
-ori $4, $0, -4
+ori $4, $0, 4
 ori $5, $0, 3
 div $4, $5 
 mfhi $4
