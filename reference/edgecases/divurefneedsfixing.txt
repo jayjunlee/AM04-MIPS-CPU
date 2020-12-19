@@ -20,69 +20,68 @@ ref file = 2
 00851021
 00000008
 
-divu - 3 // -ve/-ve
+divu - 3 // check if unsigned despite MSB=1
 
-lui $4, $0, 65535
-ori $4, $4, -4
-lui $5, $0, 65535
-ori $5, $0, -2
+lui $4, $0, 0xFFFF
+ori $4, $4, 0xFFFC
+lui $5, $0, 0xFFFF
+ori $5, $5, 0xFFFE
 divu $4, $5
-mflo $2
+mfhi $2			// look at remainder
 jr $0
 
-reg file = 2
+reg file = 4294967292 (0xFFFFFFFC)
 
-3c04ffff
-34a4fffc
+3c04FFFF
+3484FFFC
 3c05ffff
-34a5fffe
+34A5FFFE
 0085001B
-00001012
+00001010
 00000008
 
-divu - 4 // +ve/-ve
+divu - 4 // +ve/(-ve value if signed but unsigned div here)
 
-ori $4, $0, 4
-lui $5, $0, 65535 (All 1s 16 bits)
-ori $5, $5, -2
+ori $4, $0, 0x4
+lui $5, $0, 0xFFFF
+ori $5, $5, 0xFFFC
 divu $4, $5
-mflo $2
+mfhi $2
 jr $0
 
-reg file = -2
+reg file = 4 (0x4)
 
 34040004
-3c05ffff
-3405fffe
-0085001A
-00001012
+3c05FFFF
+34A5FFFC
+0085001B
+00001010
 00000008
 
 
-divu - 5 // is it seperating quotients & remainders correctly - when dealing with negatives
+divu - 5 // is it seperating quotients & remainders correctly 
 
-ori $4, $0, 4
-lui $4, $4, 65535
-ori $5, $0, 3
-lui $5, $5, 65535
+lui $4, $0, 0xFF00
+ori $4, $4, 0xFF04
+lui $5, $0, 0x00FF
+ori $5, $5, 0x00FF
 divu $4, $5 
 mfhi $4
 mflo $5
 addu $2,$4,$5
 jr $0
 
-ref file = 2 - as we are adding -1 and -1 using addu 
+ref file = 256 (remainder) + 4 (quotient)
 
-34040004
-34050003
+3404FF00
+3484FF04
+340500FF
+34A500FF
 0085001A
 00002010
 00002812
 00851021
 00000008
-
-
-
 
 
 
