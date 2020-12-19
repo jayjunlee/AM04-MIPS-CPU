@@ -1,5 +1,6 @@
 module mips_cpu_regfile(
 input logic clk, //clock input for triggering write port
+input logic rst,
 input logic[4:0] readreg1, //read port 1 register selector
 input logic[4:0] readreg2, //read port 2 register selector
 input logic[4:0] writereg, //write port register selector
@@ -25,6 +26,13 @@ assign regv0 = memory[2]; //assigning debug $v0 line to $2 of memory
 
 assign readdata1 = memory[readreg1]; //combinatorially output register value based on read port 1 selector
 assign readdata2 = memory[readreg2]; //combinatorially output register value based on read port 2 selector
+
+always_ff @(posedge rst) begin
+	integer i; //Initialise to zero when reset
+    for (i = 0; i < 32; i++) begin
+        memory[i] = 0;
+    end
+end
 
 always_ff @(negedge clk) begin
 	if (writereg == 5'b00000) begin

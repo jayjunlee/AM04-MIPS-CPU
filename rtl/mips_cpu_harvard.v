@@ -117,6 +117,7 @@ mips_cpu_control control( //instance of the 'mips_cpu_control' module called 'co
 mips_cpu_regfile regfile(
 //Inputs to refile
     .clk(clk), //clock input for triggering write port
+    .rst(reset),
     .readreg1(in_readreg1), //read port 1 selector
     .readreg2(in_readreg2), //read port 2 selector
     .writereg(in_writereg), //write port selector
