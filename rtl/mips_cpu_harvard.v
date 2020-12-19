@@ -30,12 +30,13 @@ logic[31:0] out_pc_out, out_ALURes, out_readdata1, out_readdata2, in_B, in_write
 logic[4:0]  in_readreg1, in_readreg2, in_writereg, out_shamt, out_ALUOp;
 logic[5:0]  in_opcode;
 logic out_ALUCond, out_RegWrite, out_MemWrite, out_MemRead, out_SpcRegWriteEn;
-logic[1:0] out_RegDst, out_PC, out_ALUSrc;
+logic[1:0] out_RegDst, out_PC, out_ALUSrc, ALURes_offset;
 logic[2:0] out_MemtoReg;
 
 assign in_readreg1 = instr_readdata[25:21];
 assign in_readreg2 = instr_readdata[20:16];
 assign in_opcode   = instr_readdata[31:26];
+assign ALURes_offset = out_ALURes[1:0];
 
 always @(*) begin
     //Picking what register should be written to.
@@ -125,6 +126,7 @@ mips_cpu_regfile regfile(
 //Outputs from regfile
     .readdata1(out_readdata1), //read port 1 output
     .readdata2(out_readdata2), //read port 2 output
+    .vaddr(ALURes_offset), //base+offset[1:0]
     .regv0(register_v0) //debug output of $v0 or $2 (first register for returning function results
 );
 
