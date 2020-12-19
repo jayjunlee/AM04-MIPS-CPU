@@ -48,7 +48,7 @@ always_ff @(negedge clk) begin
 				endcase // readdata1[1:0]
 			end
 			6'b100001: begin //lh, load half-word
-				case (vaddr]) // must be half-word aligned, readdata1[0] = 0
+				case (vaddr) // must be half-word aligned, readdata1[0] = 0
 					2'b00: memory[writereg] <= {{16{writedata[15]}}, writedata[15:0]};
 					2'b10: memory[writereg] <= {{16{writedata[31]}}, writedata[31:16]};
 				endcase // readdata1[1:0]
