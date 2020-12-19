@@ -49,40 +49,6 @@ Alu Operations:
 
  */
 
-  typedef enum logic [4:0]{ //Enum list to use words instead of numbers when refering to operations.
-
-      ADD  = 5'd0,
-      SUB  = 5'd1,
-      MUL  = 5'd2,//signed multiply
-      DIV  = 5'd3,//signed divide
-      AND  = 5'd4,
-      OR   = 5'd5,
-      XOR  = 5'd6,
-      SLL  = 5'd7,
-      SLLV = 5'd8,
-      SRL  = 5'd9,
-      SRLV = 5'd10,
-      SRA  = 5'd11,
-      SRAV = 5'd12,
-      EQ   = 5'd13,
-      LES  = 5'd14,
-      LEQ  = 5'd15,
-      GRT  = 5'd16,
-      GEQ  = 5'd17,
-      NEQ  = 5'd18,
-      // PAS  = 5'd19, no need for PAS as it was based on faulty reasoning that speical registers Hi and Lo are in the reg file.
-      SLT  = 5'd20,//signed compare
-      SLTU = 5'd21,//unsigned compare
-      MULU = 5'd22,//unsigned multiply
-      DIVU = 5'd23,//unsigned divide
-      MTHI = 5'd24,
-      MTLO = 5'd25
-
-
-  } Ops;
-
-Ops ALUOps; //Note confusing naming to avoid potential duplicate variable naming errors, as a result of enum implemetnation.
-
 logic signed[63:0] SMulRes;//signed result of multiplication.
 logic[63:0] UMulRes;//unsigned result of multiplication.
 logic[31:0] temp_Hi;
@@ -100,64 +66,63 @@ initial begin
 end
 
   always @(*) begin
-    assign ALUOps = ALUOp;
-    case(ALUOps)
-      ADD: begin
+    case(ALUOp)
+      5'd0: begin
           ALURes = $signed(A) + $signed(B);
       end
       
-      SUB: begin
+      5'd1: begin
           ALURes = $signed(A) - $signed(B); 
       end        
 
-      MUL: begin
+      5'd2: begin
           SMulRes = $signed(A) * $signed(B);
           temp_Hi   = SMulRes[63:32];
           temp_Lo   = SMulRes[31:0];
       end
 
-      DIV: begin
+      5'd3: begin
           temp_Lo = $signed(A) / $signed(B);
           temp_Hi = $signed(A) % $signed(B);
       end
 
-      AND: begin
+      5'd4: begin
           ALURes = A & B;
       end
 
-      OR: begin
+      5'd5: begin
           ALURes = A | B;
       end
 
-      XOR: begin
+      5'd6: begin
           ALURes = A^B;
       end
 
-      SLL: begin
+      5'd7: begin
           ALURes = B << shamt;
       end
 
-      SLLV: begin
+      5'd8: begin
           ALURes = B << A;
       end
 
-      SRL: begin
+      5'd9: begin
           ALURes = B >> shamt;
       end
 
-      SRLV: begin
+      5'd10: begin
           ALURes = B >> A;
       end
 
-      SRA: begin
+      5'd11: begin
           ALURes = $signed(B) >>> shamt;
       end
 
-      SRAV: begin
+      5'd12: begin
           ALURes = $signed(B) >>> A;
       end
    
-      EQ: begin
+      5'd13: begin
           if ($signed(A) == $signed(B)) begin
             ALUCond = 1;
           end
@@ -167,7 +132,7 @@ end
           
       end
 
-      LES: begin
+      5'd14: begin
           if ($signed(A) < $signed(B)) begin
             ALUCond = 1;
           end
@@ -177,7 +142,7 @@ end
           
       end
 
-      LEQ: begin
+      5'd15: begin
           if ($signed(A) <= $signed(B)) begin
             ALUCond = 1;
           end
@@ -187,7 +152,7 @@ end
           
       end
 
-      GRT: begin
+      5'd16: begin
           if ($signed(A) > $signed(B)) begin
             ALUCond = 1;
           end
@@ -197,7 +162,7 @@ end
           
       end
 
-      GEQ: begin
+      5'd17: begin
           if ($signed(A) >= $signed(B)) begin
             ALUCond = 1;
           end
@@ -207,7 +172,7 @@ end
           
       end
 
-      NEQ: begin
+      5'd18: begin
           if ($signed(A) != $signed(B)) begin
             ALUCond = 1;
           end
@@ -221,7 +186,7 @@ end
         ALURes = A;
       end
 */
-      SLT: begin
+      5'd20: begin
         if ($signed(A) < $signed(B)) begin
           ALURes = 1;
         end
@@ -230,7 +195,7 @@ end
         end
       end
 
-      SLTU: begin
+      5'd21: begin
         if (A < B) begin
           ALURes = 1;
         end
@@ -239,22 +204,22 @@ end
         end
       end
 
-      MULU: begin
+      5'd22: begin
           UMulRes = A * B;
           temp_Hi   = UMulRes[63:32];
           temp_Lo   = UMulRes[31:0];
       end
 
-      DIVU: begin
+      5'd23: begin
           temp_Lo = A / B;
           temp_Hi = A % B;
       end
 
-      MTHI: begin
+      5'd24: begin
         temp_Hi = Hi_in;
       end
 
-      MTLO: begin
+      5'd25: begin
         temp_Lo = Lo_in;
       end
 
