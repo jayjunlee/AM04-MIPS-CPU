@@ -112,8 +112,8 @@ end
 
       MUL: begin
           SMulRes = $signed(A) * $signed(B);
-          temp_Hi   = SMulRes[63:32];
-          temp_Lo   = SMulRes[31:0];
+          temp_Hi = SMulRes[63:32];
+          temp_Lo = SMulRes[31:0];
       end
 
       DIV: begin
@@ -241,8 +241,8 @@ end
 
       MULU: begin
           UMulRes = A * B;
-          temp_Hi   = UMulRes[63:32];
-          temp_Lo   = UMulRes[31:0];
+          temp_Hi = UMulRes[63:32];
+          temp_Lo = UMulRes[31:0];
       end
 
       DIVU: begin
