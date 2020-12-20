@@ -1,7 +1,7 @@
 module mips_cpu_harvard_tb;
 
-    parameter INSTR_INIT_FILE = "inputs/addiu.txt";
-    parameter DATA_INIT_FILE = "inputs/addiu.data.txt";
+    parameter INSTR_INIT_FILE = "inputs/lw/lw-1.instr.txt";
+    parameter DATA_INIT_FILE = "inputs/lw/lw-1.data.txt";
     parameter TIMEOUT_CYCLES = 100;
 
     logic clk, clk_enable, reset, active, data_read, data_write;
