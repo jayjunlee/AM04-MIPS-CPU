@@ -1,48 +1,43 @@
-==SRAV	Shift right arithmetic variable ==
+==SRA	Shift right arithmetic ==
 
-srav -2 // Will it be able to handle shifts greater than the highest 1 value
+sra -3 // Will it be able to handle shifts greater than the highest 1 value
 
-ori $4,$0,6
-ori $5,$0,16
-srav $2,$5,$4
+ori $4,$0,16
+sra $2,$4, 6
 jr $0
 
 ref  = 0
 
-34040006
-34050010
+34040010
 00000008
-00851007
+00041183
 
 
-srav - 3 // negative number - does it sign extened (negative)
+sra- 4 // negative number - does it sign extened (negative)
 
 lui $4, 0xFFFF
 ori $4, $4, 0x00FF
-ori $5, $0, 4
-srav $2, $4, $5
+sra $2, $4, 4
 jr $0
 
 ref = FFFFF00F (4294963215 / -4081)
 
 3c04ffff
 348400ff
-34050004
 00000008
-00A41007
+00041103
 
-srav - 4 // Does it sign extend 0s
+
+sra - 5 // Does it sign extend 0s
 
 lui $4, 0x0FFF
 ori $4, $4, 0x00FF
-ori $5, $0, 4
-srav $2, $4, $5
+sra $2, $4, 4
 jr $0
 
 ref = 00FFF00F (16773135)
 
 3c040fff
 348400ff
-34050004
 00000008
-00A41007
+00041103
