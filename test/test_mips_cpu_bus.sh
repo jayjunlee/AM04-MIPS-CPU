@@ -17,7 +17,7 @@ then
     for DIR in inputs/*/
     do
         DIR=$(basename ${DIR});
-        LOOP=$(find inputs/${DIR}/* ! -name '*ref*' ! -name '*log*' ! -name '*data*' ! -name '*out*' ! -name '*stderr*' ! -name '*diff*');
+        LOOP=$(find inputs/${DIR}/* ! -name '*ref*' ! -name '*log*' ! -name '*data*' ! -name '*out*' ! -name '*stderr*' ! -name '*diff*' ! -name '*.vcd');
         for TESTCASE in ${LOOP}
         do
             TESTCASE=$([[ ${TESTCASE} =~ /([^./]+)\. ]] && echo "${BASH_REMATCH[1]}");
@@ -39,7 +39,7 @@ then
         done
     done
 else
-    LOOP=$(find inputs/${INSTR}/* ! -name '*ref*' ! -name '*log*' ! -name '*data*' ! -name '*out*' ! -name '*stderr*' ! -name '*diff*');
+    LOOP=$(find inputs/${INSTR}/* ! -name '*ref*' ! -name '*log*' ! -name '*data*' ! -name '*out*' ! -name '*stderr*' ! -name '*diff*' ! -name '*.vcd');
     for TESTCASE in ${LOOP}
     do
         TESTCASE=$([[ ${TESTCASE} =~ /([^./]+)\. ]] && echo "${BASH_REMATCH[1]}");
