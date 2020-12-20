@@ -19,12 +19,12 @@ always_comb begin
 		is_active = 1;
 	end else begin
 		cpc_curr = cpc_in;
-	end
-
-	if(cpc_in == 32'd0)begin
-		is_active = 0;
-	end
-	
+		if(cpc_in == 32'd0)begin
+			is_active = 0;
+		end else begin
+			is_active = 1;
+		end
+	end	
 end
 
 always_ff @(posedge clk) begin

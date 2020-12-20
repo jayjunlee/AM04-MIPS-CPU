@@ -1,10 +1,13 @@
-module mips_cpu_harvard_tb;
+module mips_cpu_harvard_tb(
+input logic clk,
+input logic reset
+);
 
     parameter INSTR_INIT_FILE = "inputs/lw/lw-1.instr.txt";
     parameter DATA_INIT_FILE = "inputs/lw/lw-1.data.txt";
     parameter TIMEOUT_CYCLES = 100;
 
-    logic clk, clk_enable, reset, active, data_read, data_write;
+    logic clk_enable, active, data_read, data_write;
     logic[31:0] register_v0, instr_address, instr_readdata, data_readdata, data_writedata, data_address;
 
     mips_cpu_harvard_memory #(INSTR_INIT_FILE, DATA_INIT_FILE) ramInst(
@@ -33,6 +36,7 @@ module mips_cpu_harvard_tb;
     );
 
     // Generate clock
+	 /*
     initial begin
         $dumpfile("mips_cpu_harvard.vcd");
         $dumpvars(0,mips_cpu_harvard_tb);
@@ -68,4 +72,5 @@ module mips_cpu_harvard_tb;
         $finish;
 
     end
+	 */
 endmodule

@@ -50,6 +50,9 @@ always @(*) begin
         2'd2: begin
             in_writereg = 5'd31;//Link Register 31.
         end
+		  default: begin
+				in_writereg = 5'bxxxxx;
+		  end
     endcase
 
     //Picking which output should be written to regfile.
@@ -69,6 +72,9 @@ always @(*) begin
         3'd4:begin
             in_writedata = (out_ALULo);
         end
+		  default: begin
+				in_writedata = 32'hxxxxxxxx;
+		  end
     endcase
 
     //Picking which output should be taken as the second operand for ALU.

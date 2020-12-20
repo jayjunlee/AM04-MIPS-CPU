@@ -222,7 +222,9 @@ end
       5'd25: begin
         temp_Lo = Lo_in;
       end
-
+		
+		default: begin
+		end
     endcase
   end
 
