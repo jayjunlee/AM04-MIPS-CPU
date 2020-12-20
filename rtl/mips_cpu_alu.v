@@ -138,7 +138,7 @@ end
       end
 
       SLLV: begin
-          ALURes = B << A;
+          ALURes = B << A[4:0];
       end
 
       SRL: begin
@@ -146,7 +146,7 @@ end
       end
 
       SRLV: begin
-          ALURes = B >> A;
+          ALURes = B >> A[4:0];
       end
 
       SRA: begin
@@ -154,7 +154,7 @@ end
       end
 
       SRAV: begin
-          ALURes = $signed(B) >>> A;
+          ALURes = $signed(B) >>> A[4:0];
       end
    
       EQ: begin
