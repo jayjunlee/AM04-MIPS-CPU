@@ -25,7 +25,7 @@ then
                 -s mips_cpu_bus_tb \
                 -P mips_cpu_bus_tb.INSTR_INIT_FILE=\"inputs/${DIR}/${TESTCASE}.instr.txt\" \
                 -P mips_cpu_bus_tb.DATA_INIT_FILE=\"inputs/${DIR}/${TESTCASE}.data.txt\" \
-                -P mips_cpu_bus_tb.TESTCASE=\"inputs/${DIR}/${TESTCASE}.vcd\" \
+                -P mips_cpu_bus_tb.TESTCASE=\"inputs/${DIR}/${TESTCASE}_bus.vcd\" \
                 -o exec/mips_cpu_bus_tb_${TESTCASE} testbench/mips_cpu_bus_tb.v testbench/mips_cpu_bus_memory.v \
                 ${SRC} 2> inputs/${DIR}/${TESTCASE}.stderr.txt
             ./exec/mips_cpu_bus_tb_${TESTCASE} &> ./inputs/${DIR}/${TESTCASE}.log.txt;             # log file for debugging (contains $display)
@@ -47,7 +47,7 @@ else
         -s mips_cpu_bus_tb \
         -P mips_cpu_bus_tb.INSTR_INIT_FILE=\"inputs/${INSTR}/${TESTCASE}.instr.txt\" \
         -P mips_cpu_bus_tb.DATA_INIT_FILE=\"inputs/${INSTR}/${TESTCASE}.data.txt\" \
-        -P mips_cpu_bus_tb.TESTCASE=\"inputs/${INSTR}/${TESTCASE}.vcd\" \
+        -P mips_cpu_bus_tb.TESTCASE=\"inputs/${INSTR}/${TESTCASE}_bus.vcd\" \
         -o exec/mips_cpu_bus_tb_${TESTCASE} testbench/mips_cpu_bus_tb.v testbench/mips_cpu_bus_memory.v \
         ${SRC} 2> inputs/${INSTR}/${TESTCASE}.stderr.txt
         ./exec/mips_cpu_bus_tb_${TESTCASE} &> ./inputs/${INSTR}/${TESTCASE}.log.txt;             # log file for debugging (contains $display)

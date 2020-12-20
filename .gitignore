@@ -2,8 +2,6 @@ exec/*
 !exec/executable.txt
 *.log.txt
 *.out.txt
-mips_cpu_harvard.vcd
-mips_cpu_bus.vcd
 .DS_Store
 inputs/.DS_Store
 *.stderr.txt
