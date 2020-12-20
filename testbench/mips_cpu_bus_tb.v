@@ -2,6 +2,7 @@ module mips_cpu_bus_tb;
 
 parameter INSTR_INIT_FILE = "";
 parameter DATA_INIT_FILE = "";
+parameter TESTCASE = "";
 parameter TIMEOUT_CYCLES = 100; // Timeout cycles are higher to account for memory stall delays
 
 logic clk, reset, active, write, read, waitrequest;
@@ -36,7 +37,7 @@ mips_cpu_bus cpuInst(
 
 // Setup and clock
 initial begin
-    $dumpfile("mips_cpu_bus.vcd");
+    $dumpfile(TESTCASE);
     $dumpvars(0,mips_cpu_bus_tb);
     clk=0;
 
@@ -60,14 +61,7 @@ initial begin
     else $display("TB : CPU did not set active=1 after reset.");
 
     while (active) begin
-        //$display("Clk: %d", clk);
         @(posedge clk);
-        //$display("Register v0: %d", register_v0);
-        //$display("Reg File Write data: %d", cpuInst.in_writedata);
-        $display("Reg File Out Read data: %h", cpuInst.mips_cpu_harvard.out_readdata1);
-        $display("Reg File opcode: %b", cpuInst.mips_cpu_harvard.regfile.opcode);
-        //$display("ALU output: %h", cpuInst.out_ALURes);
-        //$display("ALU input B: %h", cpuInst.alu.B);
     end
 
     @(posedge clk);

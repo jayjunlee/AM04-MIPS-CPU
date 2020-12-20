@@ -1,7 +1,8 @@
 module mips_cpu_harvard_tb;
 
-    parameter INSTR_INIT_FILE = "inputs/addiu.txt";
-    parameter DATA_INIT_FILE = "inputs/addiu.data.txt";
+    parameter INSTR_INIT_FILE = "";
+    parameter DATA_INIT_FILE = "";
+    parameter TESTCASE = "";
     parameter TIMEOUT_CYCLES = 100;
 
     logic clk, clk_enable, reset, active, data_read, data_write;
@@ -34,7 +35,7 @@ module mips_cpu_harvard_tb;
 
     // Generate clock
     initial begin
-        $dumpfile("mips_cpu_harvard.vcd");
+        $dumpfile(TESTCASE);
         $dumpvars(0,mips_cpu_harvard_tb);
         clk=0;
 

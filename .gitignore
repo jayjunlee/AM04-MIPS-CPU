@@ -8,3 +8,4 @@ mips_cpu_bus.vcd
 inputs/.DS_Store
 *.stderr.txt
 *.diff.txt
+inputs/*/*.vcd
